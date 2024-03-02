@@ -709,9 +709,10 @@ namespace AntdUI
             get => expand;
             set
             {
+                if (expand == value) return;
+                expand = value;
                 if (items != null && items.Count > 0)
                 {
-                    expand = value;
                     if (Config.Animation)
                     {
                         ThreadExpand?.Dispose();

@@ -896,9 +896,10 @@ namespace AntdUI
             get => expand;
             set
             {
+                if (expand == value) return;
+                expand = value;
                 if (Sub != null && Sub.Count > 0)
                 {
-                    expand = value;
                     if (PARENT != null && PARENT.IsHandleCreated && Config.Animation)
                     {
                         ThreadExpand?.Dispose();
