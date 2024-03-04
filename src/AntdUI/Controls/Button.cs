@@ -787,7 +787,7 @@ namespace AntdUI
 
         #region 渲染帮助
 
-        internal void PaintTextLoading(Graphics g, string? text, Color color, RectangleF rect_read)
+        internal void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read)
         {
             var font_size = g.MeasureString(text ?? Config.NullText, Font);
             if (text == null)
@@ -831,51 +831,154 @@ namespace AntdUI
             else
             {
                 bool right = RightToLeft == RightToLeft.Yes;
-                var rect = ReadRectangle.IconRect(font_size.Height, loading || HasImage, showArrow, right, false);
-                if (showArrow)
+                bool has_left = loading || HasImage, has_rigth = showArrow;
+                if (has_left || has_rigth)
                 {
-                    using (var pen = new Pen(color, 2F * Config.Dpi))
+                    int font_width = (int)Math.Ceiling(font_size.Width);
+                    int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
+
+                    if (has_left && has_rigth)
                     {
-                        pen.StartCap = pen.EndCap = LineCap.Round;
-                        if (isLink)
+                        int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
+
+                        Rectangle rect_text, rect_l, rect_r;
+
+                        if (right)
                         {
-                            float size2 = rect.r.Width / 2F;
-                            g.TranslateTransform(rect.r.X + size2, rect.r.Y + size2);
-                            g.RotateTransform(-90F);
-                            g.DrawLines(pen, new RectangleF(-size2, -size2, rect.r.Width, rect.r.Height).TriangleLines(ArrowProg));
-                            g.ResetTransform();
+                            rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + read_width - icon_size - sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+
+                            rect_r = new Rectangle(rect_read.X + sps, rect_l.Y, icon_size, icon_size);
                         }
                         else
                         {
-                            g.DrawLines(pen, rect.r.TriangleLines(ArrowProg));
+                            rect_text = new Rectangle(read_x + sps + icon_size + sp, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+
+                            rect_r = new Rectangle((rect_read.X + sps + rect_read.Width - sps2 - icon_size - sp) + sp, rect_l.Y, icon_size, icon_size);
+                        }
+
+                        if (loading)
+                        {
+                            float loading_size = rect_read.Height * 0.06F;
+                            using (var brush = new Pen(color, loading_size))
+                            {
+                                brush.StartCap = brush.EndCap = LineCap.Round;
+                                g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
+                            }
+                        }
+                        else PaintImage(g, color, rect_l);
+
+                        #region ARROW
+
+                        using (var pen = new Pen(color, 2F * Config.Dpi))
+                        {
+                            pen.StartCap = pen.EndCap = LineCap.Round;
+                            if (isLink)
+                            {
+                                float size2 = rect_r.Width / 2F;
+                                g.TranslateTransform(rect_r.X + size2, rect_r.Y + size2);
+                                g.RotateTransform(-90F);
+                                g.DrawLines(pen, new RectangleF(-size2, -size2, rect_r.Width, rect_r.Height).TriangleLines(ArrowProg));
+                                g.ResetTransform();
+                            }
+                            else
+                            {
+                                g.DrawLines(pen, rect_r.TriangleLines(ArrowProg));
+                            }
+                        }
+
+                        #endregion
+
+                        using (var brush = new SolidBrush(color))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
                         }
                     }
-                }
-                if (loading)
-                {
-                    float loading_size = rect_read.Height * 0.06F;
+                    else if (has_left)
+                    {
+                        int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
 
-                    using (var brush = new Pen(color, loading_size))
-                    {
-                        brush.StartCap = brush.EndCap = LineCap.Round;
-                        g.DrawArc(brush, rect.l, AnimationLoadingValue, 100);
+                        Rectangle rect_text, rect_l;
+                        if (right)
+                        {
+                            rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + read_width - icon_size - sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+                        else
+                        {
+                            rect_text = new Rectangle(read_x + sps + icon_size + sp, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+                        if (loading)
+                        {
+                            float loading_size = rect_read.Height * 0.06F;
+                            using (var brush = new Pen(color, loading_size))
+                            {
+                                brush.StartCap = brush.EndCap = LineCap.Round;
+                                g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
+                            }
+                        }
+                        else PaintImage(g, color, rect_l);
+                        using (var brush = new SolidBrush(color))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
+                        }
                     }
-                    using (var brush = new SolidBrush(color))
+                    else
                     {
-                        g.DrawString(text, Font, brush, rect.text, stringFormat);
+                        Rectangle rect_text, rect_r;
+
+                        if (right)
+                        {
+                            rect_text = new Rectangle(rect_read.X + sps + icon_size + sp, rect_read.Y + sps, rect_read.Width - sps2 - icon_size - sp, rect_read.Height - sps2);
+                            rect_r = new Rectangle(rect_read.X + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+                        else
+                        {
+                            rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2 - icon_size - sp, rect_read.Height - sps2);
+                            rect_r = new Rectangle(rect_text.Right + sp, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+
+                        #region ARROW
+
+                        using (var pen = new Pen(color, 2F * Config.Dpi))
+                        {
+                            pen.StartCap = pen.EndCap = LineCap.Round;
+                            if (isLink)
+                            {
+                                float size2 = rect_r.Width / 2F;
+                                g.TranslateTransform(rect_r.X + size2, rect_r.Y + size2);
+                                g.RotateTransform(-90F);
+                                g.DrawLines(pen, new RectangleF(-size2, -size2, rect_r.Width, rect_r.Height).TriangleLines(ArrowProg));
+                                g.ResetTransform();
+                            }
+                            else
+                            {
+                                g.DrawLines(pen, rect_r.TriangleLines(ArrowProg));
+                            }
+                        }
+
+                        #endregion
+
+                        using (var brush = new SolidBrush(color))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
+                        }
                     }
                 }
                 else
                 {
-                    PaintImage(g, color, rect.l);
+                    int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
+                    var rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
                     using (var brush = new SolidBrush(color))
                     {
-                        g.DrawString(text, Font, brush, rect.text, stringFormat);
+                        g.DrawString(text, Font, brush, rect_text, stringFormat);
                     }
                 }
             }
         }
-        internal void PaintTextLoading(Graphics g, string? text, Color color, Color colorHover, RectangleF rect_read)
+        internal void PaintTextLoading(Graphics g, string? text, Color color, Color colorHover, Rectangle rect_read)
         {
             var font_size = g.MeasureString(text ?? Config.NullText, Font);
             if (text == null)
@@ -927,56 +1030,177 @@ namespace AntdUI
             else
             {
                 bool right = RightToLeft == RightToLeft.Yes;
-                var rect = ReadRectangle.IconRect(font_size.Height, loading || HasImage, showArrow, right, false);
-                if (showArrow)
+                bool has_left = loading || HasImage, has_rigth = showArrow;
+                if (has_left || has_rigth)
                 {
-                    using (var pen = new Pen(color, 2F * Config.Dpi))
-                    using (var penHover = new Pen(colorHover, pen.Width))
+                    int font_width = (int)Math.Ceiling(font_size.Width);
+                    int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
+
+                    if (has_left && has_rigth)
                     {
-                        penHover.StartCap = penHover.EndCap = pen.StartCap = pen.EndCap = LineCap.Round;
-                        if (isLink)
+                        int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
+
+                        Rectangle rect_text, rect_l, rect_r;
+
+                        if (right)
                         {
-                            float size2 = rect.r.Width / 2F;
-                            g.TranslateTransform(rect.r.X + size2, rect.r.Y + size2);
-                            g.RotateTransform(-90F);
-                            var rect_arrow = new RectangleF(-size2, -size2, rect.r.Width, rect.r.Height).TriangleLines(ArrowProg);
-                            g.DrawLines(pen, rect_arrow);
-                            g.DrawLines(penHover, rect_arrow);
-                            g.ResetTransform();
+                            rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + read_width - icon_size - sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+
+                            rect_r = new Rectangle(rect_read.X + sps, rect_l.Y, icon_size, icon_size);
                         }
                         else
                         {
-                            var rect_arrow = rect.r.TriangleLines(ArrowProg);
-                            g.DrawLines(pen, rect_arrow);
-                            g.DrawLines(penHover, rect_arrow);
+                            rect_text = new Rectangle(read_x + sps + icon_size + sp, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+
+                            rect_r = new Rectangle((rect_read.X + sps + rect_read.Width - sps2 - icon_size - sp) + sp, rect_l.Y, icon_size, icon_size);
+                        }
+
+                        if (loading)
+                        {
+                            float loading_size = rect_read.Height * 0.06F;
+                            using (var brush = new Pen(color, loading_size))
+                            {
+                                brush.StartCap = brush.EndCap = LineCap.Round;
+                                g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
+                            }
+                        }
+                        else
+                        {
+                            PaintImage(g, color, rect_l);
+                            PaintImage(g, colorHover, rect_l);
+                        }
+
+                        #region ARROW
+
+                        using (var pen = new Pen(color, 2F * Config.Dpi))
+                        using (var penHover = new Pen(colorHover, pen.Width))
+                        {
+                            penHover.StartCap = penHover.EndCap = pen.StartCap = pen.EndCap = LineCap.Round;
+                            if (isLink)
+                            {
+                                float size2 = rect_r.Width / 2F;
+                                g.TranslateTransform(rect_r.X + size2, rect_r.Y + size2);
+                                g.RotateTransform(-90F);
+                                var rect_arrow = new RectangleF(-size2, -size2, rect_r.Width, rect_r.Height).TriangleLines(ArrowProg);
+                                g.DrawLines(pen, rect_arrow);
+                                g.DrawLines(penHover, rect_arrow);
+                                g.ResetTransform();
+                            }
+                            else
+                            {
+                                var rect_arrow = rect_r.TriangleLines(ArrowProg);
+                                g.DrawLines(pen, rect_arrow);
+                                g.DrawLines(penHover, rect_arrow);
+                            }
+                        }
+
+                        #endregion
+
+                        using (var brush = new SolidBrush(color))
+                        using (var brushHover = new SolidBrush(colorHover))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
+                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
                         }
                     }
-                }
-                if (loading)
-                {
-                    float loading_size = rect_read.Height * 0.06F;
+                    else if (has_left)
+                    {
+                        int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
+                        Rectangle rect_text, rect_l;
+                        if (right)
+                        {
+                            rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + read_width - icon_size - sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+                        else
+                        {
+                            rect_text = new Rectangle(read_x + sps + icon_size + sp, rect_read.Y + sps, font_width, rect_read.Height - sps2);
+                            rect_l = new Rectangle(read_x + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
 
-                    using (var brush = new Pen(color, loading_size))
-                    {
-                        brush.StartCap = brush.EndCap = LineCap.Round;
-                        g.DrawArc(brush, rect.l, AnimationLoadingValue, 100);
+                        if (loading)
+                        {
+                            float loading_size = rect_read.Height * 0.06F;
+                            using (var brush = new Pen(color, loading_size))
+                            {
+                                brush.StartCap = brush.EndCap = LineCap.Round;
+                                g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
+                            }
+                        }
+                        else
+                        {
+                            PaintImage(g, color, rect_l);
+                            PaintImage(g, colorHover, rect_l);
+                        }
+
+                        using (var brush = new SolidBrush(color))
+                        using (var brushHover = new SolidBrush(colorHover))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
+                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
+                        }
                     }
-                    using (var brush = new SolidBrush(color))
-                    using (var brushHover = new SolidBrush(colorHover))
+                    else
                     {
-                        g.DrawString(text, Font, brush, rect.text, stringFormat);
-                        g.DrawString(text, Font, brushHover, rect.text, stringFormat);
+                        Rectangle rect_text, rect_r;
+
+                        if (right)
+                        {
+                            rect_text = new Rectangle(rect_read.X + sps + icon_size + sp, rect_read.Y + sps, rect_read.Width - sps2 - icon_size - sp, rect_read.Height - sps2);
+                            rect_r = new Rectangle(rect_read.X + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+                        else
+                        {
+                            rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2 - icon_size - sp, rect_read.Height - sps2);
+                            rect_r = new Rectangle(rect_text.Right + sp, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
+                        }
+
+                        #region ARROW
+
+                        using (var pen = new Pen(color, 2F * Config.Dpi))
+                        using (var penHover = new Pen(colorHover, pen.Width))
+                        {
+                            penHover.StartCap = penHover.EndCap = pen.StartCap = pen.EndCap = LineCap.Round;
+                            if (isLink)
+                            {
+                                float size2 = rect_r.Width / 2F;
+                                g.TranslateTransform(rect_r.X + size2, rect_r.Y + size2);
+                                g.RotateTransform(-90F);
+                                var rect_arrow = new RectangleF(-size2, -size2, rect_r.Width, rect_r.Height).TriangleLines(ArrowProg);
+                                g.DrawLines(pen, rect_arrow);
+                                g.DrawLines(penHover, rect_arrow);
+                                g.ResetTransform();
+                            }
+                            else
+                            {
+                                var rect_arrow = rect_r.TriangleLines(ArrowProg);
+                                g.DrawLines(pen, rect_arrow);
+                                g.DrawLines(penHover, rect_arrow);
+                            }
+                        }
+
+                        #endregion
+
+                        using (var brush = new SolidBrush(color))
+                        using (var brushHover = new SolidBrush(colorHover))
+                        {
+                            g.DrawString(text, Font, brush, rect_text, stringFormat);
+                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
+                        }
                     }
                 }
                 else
                 {
-                    PaintImage(g, color, rect.l);
-                    PaintImage(g, colorHover, rect.l);
+                    int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
+                    var rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
+
                     using (var brush = new SolidBrush(color))
                     using (var brushHover = new SolidBrush(colorHover))
                     {
-                        g.DrawString(text, Font, brush, rect.text, stringFormat);
-                        g.DrawString(text, Font, brushHover, rect.text, stringFormat);
+                        g.DrawString(text, Font, brush, rect_text, stringFormat);
+                        g.DrawString(text, Font, brushHover, rect_text, stringFormat);
                     }
                 }
             }
