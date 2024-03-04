@@ -29,8 +29,6 @@ namespace AntdUI
     {
         internal readonly static StringFormat stringFormatCenter = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
         internal readonly static StringFormat stringFormatCenter2 = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
-        internal readonly static StringFormat stringFormatCenter3 = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.EllipsisCharacter };
-        internal readonly static StringFormat stringFormatCenter4 = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
         internal readonly static StringFormat stringFormatLeft = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
 
         #region 渲染帮助
@@ -654,6 +652,24 @@ namespace AntdUI
                     //内容在垂直方向上底边对齐，在水平方向上右边对齐
                     stringFormat.Alignment = StringAlignment.Far;
                     stringFormat.LineAlignment = StringAlignment.Far;
+                    break;
+            }
+        }
+        internal static void SetAlignment(this HorizontalAlignment textAlign, ref StringFormat stringFormat)
+        {
+            switch (textAlign)
+            {
+                case HorizontalAlignment.Left:
+                    //内容在垂直方向上中间对齐，在水平方向上左边对齐
+                    stringFormat.Alignment = StringAlignment.Near;
+                    break;
+                case HorizontalAlignment.Center:
+                    //内容在垂直方向上中间对齐，在水平方向上居中对齐
+                    stringFormat.Alignment = StringAlignment.Center;
+                    break;
+                case HorizontalAlignment.Right:
+                    //内容在垂直方向上中间对齐，在水平方向上右边对齐
+                    stringFormat.Alignment = StringAlignment.Far;
                     break;
             }
         }

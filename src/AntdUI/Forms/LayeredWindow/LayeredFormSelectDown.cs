@@ -40,7 +40,7 @@ namespace AntdUI
             ClickEnd = control.ClickEnd;
             select_x = 0;
             scrollY = new ScrollY(this);
-            textBox = control.textBox;
+            textBox = control;
             MaxCount = control.MaxCount;
             Font = control.Font;
             selectedValue = control.SelectedValue;
