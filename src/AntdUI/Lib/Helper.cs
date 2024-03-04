@@ -1497,6 +1497,14 @@ namespace AntdUI
         }
 
         #endregion
+
+        public static Form? FindPARENT(this Control? control)
+        {
+            if (control == null) return null;
+            if (control is Form form) return form;
+            else if (control.Parent != null) return FindPARENT(control.Parent);
+            return null;
+        }
     }
 
     internal class AnchorDock

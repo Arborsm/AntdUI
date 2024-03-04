@@ -1335,19 +1335,6 @@ namespace AntdUI
         /// <param name="datas">DATA</param>
         void PrintCalendar(Graphics g, Brush brush_fore, Brush brush_fore_disable, Brush brush_bg_disable, Brush brush_bg_active, Brush brush_bg_activebg, Brush brush_fore_active, List<Calendari> datas)
         {
-            foreach (var it in datas)
-            {
-                if (DateNow.ToString("yyyy-MM-dd") == it.date_str)
-                {
-                    using (var path = it.rect_read.RoundPath(Radius))
-                    {
-                        using (var pen_active = new Pen(Style.Db.Primary, 0.1F))
-                        {
-                            g.DrawPath(pen_active, path);
-                        }
-                    }
-                }
-            }
             if (badge_list.Count > 0)
             {
                 using (var font = new Font(control.Font.FontFamily, control.BadgeSize))
@@ -1427,6 +1414,33 @@ namespace AntdUI
                         {
                             if (it.hover) g.FillPath(brush_bg_disable, path);
                             g.DrawString(it.v, Font, it.t == 1 ? brush_fore : brush_fore_disable, it.rect, stringFormatC);
+                        }
+                    }
+                }
+            }
+
+            string nowstr = DateNow.ToString("yyyy-MM-dd");
+            if (oldtime2.HasValue)
+            {
+                if (oldtime.ToString("yyyy-MM-dd") == nowstr || oldtime2.Value.ToString("yyyy-MM-dd") == nowstr) return;
+            }
+            if (SelDate != null && SelDate.Length > 0)
+            {
+                if (SelDate.Length > 1)
+                {
+                    if (SelDate[1].ToString("yyyy-MM-dd") == nowstr) return;
+                }
+                else if (SelDate[0].ToString("yyyy-MM-dd") == nowstr) return;
+            }
+            foreach (var it in datas)
+            {
+                if (nowstr == it.date_str)
+                {
+                    using (var path = it.rect_read.RoundPath(Radius))
+                    {
+                        using (var pen_active = new Pen(Style.Db.Primary, 0.1F))
+                        {
+                            g.DrawPath(pen_active, path);
                         }
                     }
                 }

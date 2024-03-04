@@ -41,6 +41,7 @@ namespace AntdUI
             Resizable = false;
 
             config = _config;
+            TopMost = config.Form.TopMost;
             close_button = new ITaskOpacity(this);
 
             #region InitializeComponent
