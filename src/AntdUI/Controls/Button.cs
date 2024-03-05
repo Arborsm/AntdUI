@@ -787,7 +787,7 @@ namespace AntdUI
 
         #region 渲染帮助
 
-        internal void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read)
+        void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read)
         {
             var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
@@ -832,6 +832,7 @@ namespace AntdUI
             {
                 bool right = RightToLeft == RightToLeft.Yes;
                 bool has_left = loading || HasImage, has_rigth = showArrow;
+                Rectangle rect_text;
                 if (has_left || has_rigth)
                 {
                     int font_width = font_size.Width;
@@ -841,7 +842,7 @@ namespace AntdUI
                     {
                         int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
 
-                        Rectangle rect_text, rect_l, rect_r;
+                        Rectangle rect_l, rect_r;
 
                         if (right)
                         {
@@ -889,17 +890,12 @@ namespace AntdUI
                         }
 
                         #endregion
-
-                        using (var brush = new SolidBrush(color))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                        }
                     }
                     else if (has_left)
                     {
                         int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
 
-                        Rectangle rect_text, rect_l;
+                        Rectangle rect_l;
                         if (right)
                         {
                             rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
@@ -920,14 +916,10 @@ namespace AntdUI
                             }
                         }
                         else PaintImage(g, color, rect_l);
-                        using (var brush = new SolidBrush(color))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                        }
                     }
                     else
                     {
-                        Rectangle rect_text, rect_r;
+                        Rectangle rect_r;
 
                         if (right)
                         {
@@ -960,25 +952,21 @@ namespace AntdUI
                         }
 
                         #endregion
-
-                        using (var brush = new SolidBrush(color))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                        }
                     }
                 }
                 else
                 {
                     int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
-                    var rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
-                    using (var brush = new SolidBrush(color))
-                    {
-                        g.DrawString(text, Font, brush, rect_text, stringFormat);
-                    }
+                    rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
+                }
+                PaintTextAlign(rect_read, ref rect_text);
+                using (var brush = new SolidBrush(color))
+                {
+                    g.DrawString(text, Font, brush, rect_text, stringFormat);
                 }
             }
         }
-        internal void PaintTextLoading(Graphics g, string? text, Color color, Color colorHover, Rectangle rect_read)
+        void PaintTextLoading(Graphics g, string? text, Color color, Color colorHover, Rectangle rect_read)
         {
             var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
@@ -1031,6 +1019,7 @@ namespace AntdUI
             {
                 bool right = RightToLeft == RightToLeft.Yes;
                 bool has_left = loading || HasImage, has_rigth = showArrow;
+                Rectangle rect_text;
                 if (has_left || has_rigth)
                 {
                     int font_width = font_size.Width;
@@ -1040,7 +1029,7 @@ namespace AntdUI
                     {
                         int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
 
-                        Rectangle rect_text, rect_l, rect_r;
+                        Rectangle rect_l, rect_r;
 
                         if (right)
                         {
@@ -1097,18 +1086,11 @@ namespace AntdUI
                         }
 
                         #endregion
-
-                        using (var brush = new SolidBrush(color))
-                        using (var brushHover = new SolidBrush(colorHover))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
-                        }
                     }
                     else if (has_left)
                     {
                         int read_width = font_width + icon_size + (sp * 2) + sps2, read_x = rect_read.X + ((rect_read.Width - read_width) / 2);
-                        Rectangle rect_text, rect_l;
+                        Rectangle rect_l;
                         if (right)
                         {
                             rect_text = new Rectangle(read_x + sps, rect_read.Y + sps, font_width, rect_read.Height - sps2);
@@ -1134,17 +1116,10 @@ namespace AntdUI
                             PaintImage(g, color, rect_l);
                             PaintImage(g, colorHover, rect_l);
                         }
-
-                        using (var brush = new SolidBrush(color))
-                        using (var brushHover = new SolidBrush(colorHover))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
-                        }
                     }
                     else
                     {
-                        Rectangle rect_text, rect_r;
+                        Rectangle rect_r;
 
                         if (right)
                         {
@@ -1182,27 +1157,38 @@ namespace AntdUI
                         }
 
                         #endregion
-
-                        using (var brush = new SolidBrush(color))
-                        using (var brushHover = new SolidBrush(colorHover))
-                        {
-                            g.DrawString(text, Font, brush, rect_text, stringFormat);
-                            g.DrawString(text, Font, brushHover, rect_text, stringFormat);
-                        }
                     }
                 }
                 else
                 {
                     int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
-                    var rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
-
-                    using (var brush = new SolidBrush(color))
-                    using (var brushHover = new SolidBrush(colorHover))
-                    {
-                        g.DrawString(text, Font, brush, rect_text, stringFormat);
-                        g.DrawString(text, Font, brushHover, rect_text, stringFormat);
-                    }
+                    rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
                 }
+                PaintTextAlign(rect_read, ref rect_text);
+                using (var brush = new SolidBrush(color))
+                using (var brushHover = new SolidBrush(colorHover))
+                {
+                    g.DrawString(text, Font, brush, rect_text, stringFormat);
+                    g.DrawString(text, Font, brushHover, rect_text, stringFormat);
+                }
+            }
+        }
+
+        void PaintTextAlign(Rectangle rect_read, ref Rectangle rect_text)
+        {
+            switch (textAlign)
+            {
+                case ContentAlignment.MiddleCenter:
+                case ContentAlignment.MiddleLeft:
+                case ContentAlignment.MiddleRight:
+                    rect_text.Y = rect_read.Y;
+                    rect_text.Height = rect_read.Height;
+                    break;
+                case ContentAlignment.TopLeft:
+                case ContentAlignment.TopRight:
+                case ContentAlignment.TopCenter:
+                    rect_text.Height = rect_read.Height - rect_text.Y;
+                    break;
             }
         }
 
@@ -1587,11 +1573,11 @@ namespace AntdUI
             {
                 return Helper.GDI(g =>
                 {
-                    var font_size = g.MeasureString(text ?? Config.NullText, Font);
-                    float gap = 20 * Config.Dpi;
+                    var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
+                    int gap = (int)(20 * Config.Dpi);
                     if (shape == TShape.Circle)
                     {
-                        int s = (int)Math.Ceiling(font_size.Height + margins + gap);
+                        int s = font_size.Height + margins + gap;
                         return new Size(s, s);
                     }
                     else
@@ -1601,7 +1587,7 @@ namespace AntdUI
                         int count = 0;
                         if (loading || HasImage) count++;
                         if (showArrow) count++;
-                        return new Size((int)Math.Ceiling(font_size.Width + m + gap + (font_size.Height * 1.2F * count)), (int)(font_size.Height + margins + gap));
+                        return new Size(font_size.Width + m + gap + ((int)Math.Ceiling(font_size.Height * 1.2F) * count), font_size.Height + margins + gap);
                     }
                 });
             }
