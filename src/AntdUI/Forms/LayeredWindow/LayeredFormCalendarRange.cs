@@ -1335,17 +1335,6 @@ namespace AntdUI
         /// <param name="datas">DATA</param>
         void PrintCalendar(Graphics g, Brush brush_fore, Brush brush_fore_disable, Brush brush_bg_disable, Brush brush_bg_active, Brush brush_bg_activebg, Brush brush_fore_active, List<Calendari> datas)
         {
-            if (badge_list.Count > 0)
-            {
-                using (var font = new Font(control.Font.FontFamily, control.BadgeSize))
-                {
-                    foreach (var it in datas)
-                    {
-                        if (badge_list.TryGetValue(it.date_str, out var find)) control.PaintBadge(find, font, it.rect, g);
-                    }
-                }
-            }
-
             foreach (var it in datas)
             {
                 using (var path = it.rect_read.RoundPath(Radius))
@@ -1424,6 +1413,18 @@ namespace AntdUI
             {
                 if (oldtime.ToString("yyyy-MM-dd") == nowstr || oldtime2.Value.ToString("yyyy-MM-dd") == nowstr) return;
             }
+
+            if (badge_list.Count > 0)
+            {
+                using (var font = new Font(control.Font.FontFamily, control.BadgeSize))
+                {
+                    foreach (var it in datas)
+                    {
+                        if (badge_list.TryGetValue(it.date_str, out var find)) control.PaintBadge(find, font, it.rect, g);
+                    }
+                }
+            }
+
             if (SelDate != null && SelDate.Length > 0)
             {
                 if (SelDate.Length > 1)

@@ -789,7 +789,7 @@ namespace AntdUI
 
         internal void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read)
         {
-            var font_size = g.MeasureString(text ?? Config.NullText, Font);
+            var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
             {
                 //没有文字
@@ -834,7 +834,7 @@ namespace AntdUI
                 bool has_left = loading || HasImage, has_rigth = showArrow;
                 if (has_left || has_rigth)
                 {
-                    int font_width = (int)Math.Ceiling(font_size.Width);
+                    int font_width = font_size.Width;
                     int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
 
                     if (has_left && has_rigth)
@@ -980,7 +980,7 @@ namespace AntdUI
         }
         internal void PaintTextLoading(Graphics g, string? text, Color color, Color colorHover, Rectangle rect_read)
         {
-            var font_size = g.MeasureString(text ?? Config.NullText, Font);
+            var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
             {
                 if (loading)
@@ -1033,7 +1033,7 @@ namespace AntdUI
                 bool has_left = loading || HasImage, has_rigth = showArrow;
                 if (has_left || has_rigth)
                 {
-                    int font_width = (int)Math.Ceiling(font_size.Width);
+                    int font_width = font_size.Width;
                     int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
 
                     if (has_left && has_rigth)
@@ -1215,7 +1215,7 @@ namespace AntdUI
         /// <param name="color">颜色</param>
         /// <param name="font_size">字体大小</param>
         /// <param name="rect_read">客户区域</param>
-        bool PaintImageNoText(Graphics g, Color? color, SizeF font_size, RectangleF rect_read)
+        bool PaintImageNoText(Graphics g, Color? color, Size font_size, Rectangle rect_read)
         {
             if (ExtraMouseHover)
             {
@@ -1225,8 +1225,8 @@ namespace AntdUI
                     using (var _bmp = SvgExtend.GetImgExtend(ImageHoverSvg, rect, color))
                     {
                         if (_bmp != null) g.DrawImage(_bmp, rect);
-                        return false;
                     }
+                    return false;
                 }
                 else if (ImageHover != null)
                 {
@@ -1257,17 +1257,17 @@ namespace AntdUI
         /// </summary>
         /// <param name="font_size">字体大小</param>
         /// <param name="rect_read">客户区域</param>
-        RectangleF GetImageRectCenter(SizeF font_size, RectangleF rect_read)
+        Rectangle GetImageRectCenter(Size font_size, Rectangle rect_read)
         {
             if (ImageSize.Width > 0 && ImageSize.Height > 0)
             {
                 int w = (int)(ImageSize.Width * Config.Dpi), h = (int)(ImageSize.Height * Config.Dpi);
-                return new RectangleF(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - h) / 2, w, h);
+                return new Rectangle(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - h) / 2, w, h);
             }
             else
             {
-                var w = font_size.Height * 0.8F;
-                return new RectangleF(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - w) / 2, w, w);
+                int w = (int)(font_size.Height * 0.8F);
+                return new Rectangle(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - w) / 2, w, w);
             }
         }
 
@@ -1287,8 +1287,8 @@ namespace AntdUI
                     using (var _bmp = SvgExtend.GetImgExtend(ImageHoverSvg, rect, color))
                     {
                         if (_bmp != null) g.DrawImage(_bmp, rect);
-                        return;
                     }
+                    return;
                 }
                 else if (ImageHover != null)
                 {
