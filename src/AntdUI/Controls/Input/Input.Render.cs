@@ -140,7 +140,6 @@ namespace AntdUI
             base.OnPaint(e);
         }
 
-
         #region 渲染帮助
 
         void PaintIcon(Graphics g, Color _fore)
@@ -225,14 +224,22 @@ namespace AntdUI
                             {
                                 foreach (var it in cache_font)
                                 {
-                                    if (it.emoji) g.DrawString(it.text, font, fore, it.rect, sf_font);
-                                    else g.DrawString(it.text, Font, fore, it.rect, sf_font);
+                                    it.show = it.rect.Y > ScrollY - it.rect.Height && it.rect.Bottom < ScrollY + h + it.rect.Height;
+                                    if (it.show)
+                                    {
+                                        if (it.emoji) g.DrawString(it.text, font, fore, it.rect, sf_font);
+                                        else g.DrawString(it.text, Font, fore, it.rect, sf_font);
+                                    }
                                 }
                             }
                         }
                         else
                         {
-                            foreach (var it in cache_font) g.DrawString(it.text, Font, fore, it.rect, sf_font);
+                            foreach (var it in cache_font)
+                            {
+                                it.show = it.rect.Y > ScrollY - it.rect.Height && it.rect.Bottom < ScrollY + h + it.rect.Height;
+                                if (it.show) g.DrawString(it.text, Font, fore, it.rect, sf_font);
+                            }
                         }
                     }
                 }

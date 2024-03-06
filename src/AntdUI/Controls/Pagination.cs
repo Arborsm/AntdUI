@@ -708,13 +708,10 @@ namespace AntdUI
         }
         private void Input_SizeChanger_KeyPress(object? sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 13 && sender is TextBox input)
+            if (e.KeyChar == 13 && sender is Input input)
             {
                 e.Handled = true;
-                if (int.TryParse(input.Text, out var num))
-                {
-                    PageSize = num;
-                }
+                if (int.TryParse(input.Text, out var num)) PageSize = num;
             }
         }
 

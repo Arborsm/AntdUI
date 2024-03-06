@@ -343,7 +343,6 @@ namespace AntdUI
             get => _text;
             set
             {
-                if (value != null && value.Length > MaxLength) value = value.Substring(0, MaxLength);
                 if (_text == value) return;
                 _text = value;
                 isempty = string.IsNullOrEmpty(_text);
@@ -541,7 +540,9 @@ namespace AntdUI
         /// <param name="text">追加的文本</param>
         public void AppendText(string text)
         {
-            EnterText(text);
+            var tmp = _text + text;
+            Text = tmp;
+            CurrentPosIndex = tmp.Length;
         }
 
         /// <summary>
@@ -590,7 +591,7 @@ namespace AntdUI
         {
             string strText = Clipboard.GetText();
             if (string.IsNullOrEmpty(strText)) return;
-            EnterText(strText);
+            EnterText(strText, false);
         }
 
         /// <summary>
@@ -670,7 +671,7 @@ namespace AntdUI
             }
         }
 
-        void EnterText(string text)
+        void EnterText(string text, bool ismax = true)
         {
             if (ReadOnly) return;
             AddHistoryRecord();
@@ -683,6 +684,7 @@ namespace AntdUI
             int len = (text.Length - countSurrogate) + countSurrogate / 2;
             if (cache_font == null)
             {
+                if (ismax && text.Length > MaxLength) text = text.Substring(0, MaxLength);
                 Text = text;
                 SelectionStart = selectionStart + len;
             }
@@ -700,7 +702,9 @@ namespace AntdUI
                             texts.Add(it.text);
                     }
                     texts.Insert(start, text);
-                    Text = string.Join("", texts);
+                    var tmp = string.Join("", texts);
+                    if (ismax && text.Length > MaxLength) tmp = text.Substring(0, MaxLength);
+                    Text = tmp;
                     SelectionLength = 0;
                     SelectionStart = start + len;
                 }
@@ -710,12 +714,13 @@ namespace AntdUI
                     var texts = new List<string>();
                     foreach (var it in cache_font) texts.Add(it.text);
                     texts.Insert(start + 1, text);
-                    Text = string.Join("", texts);
+                    var tmp = string.Join("", texts);
+                    if (ismax && text.Length > MaxLength) tmp = text.Substring(0, MaxLength);
+                    Text = tmp;
                     SelectionStart = start + 1 + len;
                 }
             }
         }
-
 
         string? GetSelectionText()
         {
@@ -737,6 +742,28 @@ namespace AntdUI
             }
         }
 
+        /// <summary>
+        /// 内容滚动到当前插入符号位置
+        /// </summary>
+        public void ScrollToCaret()
+        {
+            if (cache_font != null)
+            {
+                Rectangle r;
+                if (CurrentPosIndex >= cache_font.Length) r = cache_font[cache_font.Length - 1].rect;
+                else r = cache_font[CurrentPosIndex].rect;
+                ScrollY = r.Bottom;
+            }
+        }
+
+        /// <summary>
+        /// 内容滚动到最下面
+        /// </summary>
+        public void ScrollToEnd()
+        {
+            ScrollY = ScrollYMax;
+        }
+
         #endregion
 
         #region 重写
@@ -754,7 +781,7 @@ namespace AntdUI
         protected override void OnFontChanged(EventArgs e)
         {
             base.OnFontChanged(e);
-            FixFontWidth();
+            FixFontWidth(true);
         }
 
         #region 焦点
