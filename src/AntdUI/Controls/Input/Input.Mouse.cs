@@ -41,10 +41,11 @@ namespace AntdUI
 
                     var index = GetCaretPostion(e.Location.X + scrollx, e.Location.Y + scrolly);
 
-                    int start = 0, end = 1;
+                    int start = 0, end;
 
                     if (index > 0) start = FindStart(cache_font, index - 2);
-                    if (index < cache_font.Length) end = FindEnd(cache_font, index);
+                    if (index >= cache_font.Length) end = cache_font.Length;
+                    else end = FindEnd(cache_font, index);
 
                     SelectionStart = start;
                     SelectionLength = end - start;

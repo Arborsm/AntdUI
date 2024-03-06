@@ -218,7 +218,6 @@ namespace AntdUI
                 {
                     bool r = rightToLeft == RightToLeft.Yes;
                     input_SizeChanger.Dock = r ? DockStyle.Right : DockStyle.Left;
-                    input_SizeChanger.TextAlign = r ? HorizontalAlignment.Right : HorizontalAlignment.Left;
                 }
                 ButtonLayout();
                 Invalidate();
@@ -663,8 +662,8 @@ namespace AntdUI
                 {
                     Size = new Size(SizeChangerWidth, (int)rect.Height),
                     Dock = r ? DockStyle.Right : DockStyle.Left,
-                    TextAlign = r ? HorizontalAlignment.Right : HorizontalAlignment.Left,
                     Text = pageSize.ToString(),
+                    TextAlign = HorizontalAlignment.Center,
                     Font = Font,
                     BorderColor = fill,
                     BackColor = BackColor,
