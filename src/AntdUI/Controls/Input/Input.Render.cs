@@ -26,9 +26,9 @@ namespace AntdUI
     {
         #region 渲染
 
-        StringFormat sf_font = new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
-        StringFormat sf_center = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, FormatFlags = StringFormatFlags.NoWrap };
-        StringFormat sf_placeholder = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+        StringFormat sf_font = Helper.SF_MEASURE_FONT();
+        StringFormat sf_center = Helper.SF_NoWrap();
+        StringFormat sf_placeholder = Helper.SF_ALL(lr: StringAlignment.Near);
 
         protected override void OnPaint(PaintEventArgs e)
         {

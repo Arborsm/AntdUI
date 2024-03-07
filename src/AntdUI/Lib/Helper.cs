@@ -27,9 +27,58 @@ namespace AntdUI
 {
     public static class Helper
     {
-        internal readonly static StringFormat stringFormatCenter = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
-        internal readonly static StringFormat stringFormatCenter2 = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
-        internal readonly static StringFormat stringFormatLeft = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+        internal readonly static StringFormat stringFormatCenter = SF_ALL();
+        internal readonly static StringFormat stringFormatCenter2 = SF_NoWrap();
+        internal readonly static StringFormat stringFormatLeft = SF_ALL(lr: StringAlignment.Near);
+
+        #region 文本布局
+
+        /// <summary>
+        /// 文本布局
+        /// </summary>
+        /// <param name="tb">垂直（上下）</param>
+        /// <param name="lr">水平（前后）</param>
+        public static StringFormat SF(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
+        {
+            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr };
+        }
+
+        /// <summary>
+        /// 文本布局（不换行）
+        /// </summary>
+        /// <param name="tb">垂直（上下）</param>
+        /// <param name="lr">水平（前后）</param>
+        public static StringFormat SF_NoWrap(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
+        {
+            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, FormatFlags = StringFormatFlags.NoWrap };
+        }
+
+        /// <summary>
+        /// 文本布局（超出省略号）
+        /// </summary>
+        /// <param name="tb">垂直（上下）</param>
+        /// <param name="lr">水平（前后）</param>
+        public static StringFormat SF_Ellipsis(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
+        {
+            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter };
+        }
+
+        /// <summary>
+        /// 文本布局（超出省略号+不换行）
+        /// </summary>
+        /// <param name="tb">垂直（上下）</param>
+        /// <param name="lr">水平（前后）</param>
+        public static StringFormat SF_ALL(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
+        {
+            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+        }
+
+        public static StringFormat SF_MEASURE_FONT()
+        {
+            return new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+        }
+
+        #endregion
 
         #region 渲染帮助
 

@@ -340,7 +340,7 @@ namespace AntdUI
                 return false;
             };
         }
-        StringFormat stringFormatLeft = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near };
+        StringFormat stringFormatLeft = Helper.SF(lr: StringAlignment.Near);
 
         public void FocusItem(ObjectItem item)
         {

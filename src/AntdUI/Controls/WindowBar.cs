@@ -252,7 +252,7 @@ namespace AntdUI
             get => ClientRectangle.PaddingRect(Padding, 0, 0, hasr, 0);
         }
 
-        readonly StringFormat stringLeft = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Near, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+        readonly StringFormat stringLeft = Helper.SF_ALL(lr: StringAlignment.Near);
 
         #region 渲染
 
