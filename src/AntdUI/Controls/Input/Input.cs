@@ -704,7 +704,7 @@ namespace AntdUI
                     }
                     texts.Insert(start, text);
                     var tmp = string.Join("", texts);
-                    if (ismax && text.Length > MaxLength) tmp = text.Substring(0, MaxLength);
+                    if (ismax && tmp.Length > MaxLength) tmp = tmp.Substring(0, MaxLength);
                     Text = tmp;
                     SelectionLength = 0;
                     SelectionStart = start + len;
@@ -716,7 +716,7 @@ namespace AntdUI
                     foreach (var it in cache_font) texts.Add(it.text);
                     texts.Insert(start + 1, text);
                     var tmp = string.Join("", texts);
-                    if (ismax && text.Length > MaxLength) tmp = text.Substring(0, MaxLength);
+                    if (ismax && tmp.Length > MaxLength) tmp = tmp.Substring(0, MaxLength);
                     Text = tmp;
                     SelectionStart = start + 1 + len;
                 }
