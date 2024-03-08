@@ -38,6 +38,8 @@ namespace AntdUI
 
             bool enabled = Enabled;
 
+            if (backImage != null) g.PaintImg(rect_read, backImage, backFit, _radius, false);
+
             using (var path = Path(rect_read, _radius))
             {
                 Color _back = back.HasValue ? back.Value : Style.Db.BgContainer,
@@ -74,7 +76,6 @@ namespace AntdUI
                         g.FillPath(brush, path);
                     }
                     PaintOtherBor(g, rect_read, _radius, _border, _borderActive);
-                    //PaintOtherBor(g, rect_read, _radius, _border, _borderActive);
                     if (borderWidth > 0)
                     {
                         if (AnimationHover)

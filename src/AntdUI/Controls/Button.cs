@@ -460,7 +460,7 @@ namespace AntdUI
 
             float _radius = (shape == TShape.Round || shape == TShape.Circle) ? rect_read.Height : radius * Config.Dpi;
 
-            if (backImage != null) g.PaintImg(rect_read, backImage, backFit, radius, shape == TShape.Round);
+            if (backImage != null) g.PaintImg(rect_read, backImage, backFit, _radius, shape);
 
             if (type == TTypeMini.Default)
             {

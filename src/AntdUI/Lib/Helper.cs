@@ -110,6 +110,32 @@ namespace AntdUI
             }
             else PaintImg(g, rect, image, fit);
         }
+        public static void PaintImg(this Graphics g, RectangleF rect, Image image, TFit fit, float radius, TShape shape)
+        {
+            if (shape == TShape.Circle || shape == TShape.Round || radius > 0)
+            {
+                using (var bmp = new Bitmap((int)rect.Width, (int)rect.Height))
+                {
+                    using (var g2 = Graphics.FromImage(bmp).High())
+                    {
+                        PaintImg(g2, new RectangleF(0, 0, rect.Width, rect.Height), image, fit);
+                    }
+                    using (var brush = new TextureBrush(bmp, WrapMode.Clamp))
+                    {
+                        brush.TranslateTransform(rect.X, rect.Y);
+                        if (shape == TShape.Circle) g.FillEllipse(brush, rect);
+                        else
+                        {
+                            using (var path = rect.RoundPath(radius))
+                            {
+                                g.FillPath(brush, path);
+                            }
+                        }
+                    }
+                }
+            }
+            else PaintImg(g, rect, image, fit);
+        }
 
         internal static void PaintImg(this Graphics g, RectangleF rect, Image image, TFit fit)
         {

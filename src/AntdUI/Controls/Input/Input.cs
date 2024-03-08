@@ -78,6 +78,38 @@ namespace AntdUI
             }
         }
 
+        Image? backImage = null;
+        /// <summary>
+        /// 背景图片
+        /// </summary>
+        [Description("背景图片"), Category("外观"), DefaultValue(null)]
+        public new Image? BackgroundImage
+        {
+            get => backImage;
+            set
+            {
+                if (backImage == value) return;
+                backImage = value;
+                Invalidate();
+            }
+        }
+
+        TFit backFit = TFit.Fill;
+        /// <summary>
+        /// 背景图片布局
+        /// </summary>
+        [Description("背景图片布局"), Category("外观"), DefaultValue(TFit.Fill)]
+        public new TFit BackgroundImageLayout
+        {
+            get => backFit;
+            set
+            {
+                if (backFit == value) return;
+                backFit = value;
+                Invalidate();
+            }
+        }
+
         #endregion
 
         #region 边框
