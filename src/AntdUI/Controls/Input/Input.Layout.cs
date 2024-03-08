@@ -26,6 +26,12 @@ namespace AntdUI
 {
     partial class Input
     {
+        protected override void OnCreateControl()
+        {
+            FixFontWidth(true);
+            base.OnCreateControl();
+        }
+
         #region 确定字体宽度
 
         CacheFont[]? cache_font = null;

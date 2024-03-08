@@ -208,7 +208,7 @@ namespace AntdUI
                                 if (first.rect.Y != last.rect.Y || last.retun)
                                 {
                                     //先渲染上一行
-                                    g.FillRectangle(brush, new Rectangle(first.rect.X, first.rect.Y, cache_font[i - 1].rect.Right - first.rect.X, first.rect.Height));
+                                    if (i > 0) g.FillRectangle(brush, new Rectangle(first.rect.X, first.rect.Y, cache_font[i - 1].rect.Right - first.rect.X, first.rect.Height));
                                     if (i == end) g.FillRectangle(brush, last.rect);
                                     first = last;
                                 }

@@ -349,6 +349,7 @@ namespace AntdUI
                 FixFontWidth();
                 OnAllowClear();
                 Invalidate();
+                OnTextChanged(EventArgs.Empty);
             }
         }
 
