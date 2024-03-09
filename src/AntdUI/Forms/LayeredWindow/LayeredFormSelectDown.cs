@@ -655,7 +655,7 @@ namespace AntdUI
                     }
                 }
             }
-            else if (selectedValue == it.Val)
+            else if (selectedValue == it.Val || it.Val is SelectItem item && item.Tag == selectedValue)
             {
                 using (var brush_back = new SolidBrush(Style.Db.PrimaryBg))
                 {
