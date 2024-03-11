@@ -368,13 +368,14 @@ namespace AntdUI
         #region 文本
 
         bool isempty = true;
-        string? _text = null;
-        [Description("文本"), Category("外观"), DefaultValue(null)]
-        public new string? Text
+        string _text = "";
+        [Description("文本"), Category("外观"), DefaultValue("")]
+        public override string Text
         {
             get => _text;
             set
             {
+                if (value is null) value = "";
                 if (_text == value) return;
                 _text = value;
                 isempty = string.IsNullOrEmpty(_text);
@@ -583,7 +584,7 @@ namespace AntdUI
         /// </summary>
         public void Clear()
         {
-            Text = null;
+            Text = "";
         }
 
         /// <summary>

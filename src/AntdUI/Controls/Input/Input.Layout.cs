@@ -53,7 +53,6 @@ namespace AntdUI
                     }
                     else
                     {
-                        if (_text == null) return;
                         var font_widths = new List<CacheFont>();
                         if (IsPassWord)
                         {

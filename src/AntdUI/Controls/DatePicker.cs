@@ -67,7 +67,7 @@ namespace AntdUI
             {
                 _value = value;
                 ValueChanged?.Invoke(this, value);
-                Text = value.HasValue ? value.Value.ToString(Format) : null;
+                Text = value.HasValue ? value.Value.ToString(Format) : "";
             }
         }
 
