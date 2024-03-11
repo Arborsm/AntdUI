@@ -313,7 +313,7 @@ namespace AntdUI
 
         void Window_MouseDown(object? sender, MouseEventArgs e)
         {
-            ControlMouseDown(sender, e);
+            DraggableMouseDown();
         }
 
         RectangleF rectIcon, rectTitle, rectContent;
@@ -449,7 +449,7 @@ namespace AntdUI
                 base.OnMouseUp(e);
                 return;
             }
-            ControlMouseDown(this, e);
+            DraggableMouseDown();
             base.OnMouseDown(e);
         }
 
