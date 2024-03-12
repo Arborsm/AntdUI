@@ -667,7 +667,7 @@ namespace AntdUI
             {
                 RECT = _rect;
                 int gap = _gap / 2, gap2 = _gap;
-                if (value.Count == 1)
+                if (value.Count == 1 && value[0] is TemplateText)
                 {
                     var it = value[0];
                     var size = SIZES[0];

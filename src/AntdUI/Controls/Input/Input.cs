@@ -342,7 +342,7 @@ namespace AntdUI
         /// 支持清除
         /// </summary>
         [Description("支持清除"), Category("行为"), DefaultValue(false)]
-        public bool AllowClear
+        public virtual bool AllowClear
         {
             get => allowclear;
             set

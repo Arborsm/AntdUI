@@ -75,7 +75,12 @@ namespace AntdUI
                     {
                         g.FillPath(brush, path);
                     }
-                    PaintOtherBor(g, rect_read, _radius, _border, _borderActive);
+                    PaintIcon(g, _fore);
+                    using (var bmp = PaintText(_fore, rect_read.Right, rect_read.Bottom))
+                    {
+                        g.DrawImage(bmp, rect_text, rect_text, GraphicsUnit.Pixel);
+                    }
+                    PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                     if (borderWidth > 0)
                     {
                         if (AnimationHover)
@@ -110,11 +115,6 @@ namespace AntdUI
                                 g.DrawPath(brush, path);
                             }
                         }
-                    }
-                    PaintIcon(g, _fore);
-                    using (var bmp = PaintText(_fore, rect_read.Right, rect_read.Bottom))
-                    {
-                        g.DrawImage(bmp, rect_text, rect_text, GraphicsUnit.Pixel);
                     }
                 }
                 else
@@ -258,7 +258,7 @@ namespace AntdUI
         internal virtual void PaintR(Graphics g, Rectangle rect)
         {
         }
-        internal virtual void PaintOtherBor(Graphics g, RectangleF rect_read, float radius, Color borderColor, Color borderActive)
+        internal virtual void PaintOtherBor(Graphics g, RectangleF rect_read, float radius, Color back, Color borderColor, Color borderActive)
         {
         }
 
