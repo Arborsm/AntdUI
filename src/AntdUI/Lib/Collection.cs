@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace AntdUI
 {
@@ -136,7 +137,7 @@ namespace AntdUI
         public void CopyTo(Array array, int index)
         {
             if (list == null) return;
-            list.CopyTo(array, index);
+            Array.Copy(list, 0, array, index, count);
         }
 
         public IEnumerator GetEnumerator()
@@ -293,7 +294,7 @@ namespace AntdUI
         public void CopyTo(T[] array, int index)
         {
             if (list == null) return;
-            list.CopyTo(array, index);
+            Array.Copy(list, 0, array, index, count);
         }
 
         public int IndexOf(T item)
