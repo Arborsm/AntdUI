@@ -86,6 +86,7 @@ namespace AntdUI
 
         public void Binding<T>(AntList<T> list)
         {
+            if (list == null) return;
             dataSource = list;
             list.action = (code, obj) =>
             {
@@ -169,6 +170,9 @@ namespace AntdUI
                 }
             }
             data_temp = new TempTable(columns.ToArray(), rows.ToArray());
+
+            LoadLayout();
+            Invalidate();
         }
 
         TempiRow[] ChangeList(List<TempiRow> rows)
