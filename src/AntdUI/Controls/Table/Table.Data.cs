@@ -138,8 +138,7 @@ namespace AntdUI
                     {
                         if (obj is int i)
                         {
-                            var row = list[i];
-                            if (row != null)
+                            if (i >= 0 && i < data_temp.rows.Length)
                             {
                                 var rows = new List<TempiRow>(data_temp.rows.Length);
                                 rows.AddRange(data_temp.rows);
