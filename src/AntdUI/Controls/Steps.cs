@@ -468,7 +468,7 @@ namespace AntdUI
                 {
                     if (it.rect.Contains(e.Location))
                     {
-                        ItemClick(this,e, it);
+                        ItemClick(this, e, it);
                         return;
                     }
                 }
