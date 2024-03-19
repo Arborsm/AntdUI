@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -90,6 +91,14 @@ namespace AntdUI
                         Invalidate();
                     }
                     if (hover) { Cursor = Cursors.Hand; return; }
+                }
+                if (HasImage && rect_l.Contains(e.Location) && PrefixClick != null)
+                {
+                    Cursor = Cursors.Hand; return;
+                }
+                if (HasSuffix && rect_r.Contains(e.Location) && SuffixClick != null)
+                {
+                    Cursor = Cursors.Hand; return;
                 }
                 if (ReadShowCaret)
                 {
@@ -296,6 +305,41 @@ namespace AntdUI
 
         internal virtual void ChangeMouseHover(bool Hover, bool Focus) { }
 
+        #endregion
+
+        #region 事件
+
+        [Description("前缀 点击时发生"), Category("行为")]
+        public event MouseEventHandler? PrefixClick = null;
+
+        [Description("后缀 点击时发生"), Category("行为")]
+        public event MouseEventHandler? SuffixClick = null;
+
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            if (mouseDown && cache_font != null)
+            {
+                base.OnMouseClick(e);
+                return;
+            }
+            else
+            {
+                if (HasImage && rect_l.Contains(e.Location) && PrefixClick != null)
+                {
+                    PrefixClick(this, e);
+                    return;
+                }
+                if (HasSuffix && rect_r.Contains(e.Location) && SuffixClick != null)
+                {
+                    if (!is_clear)
+                    {
+                        SuffixClick(this, e);
+                        return;
+                    }
+                }
+                base.OnMouseClick(e);
+            }
+        }
         #endregion
     }
 }
