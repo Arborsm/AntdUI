@@ -338,6 +338,7 @@ namespace AntdUI
         public bool JoinRight { get; set; } = false;
 
         bool allowclear = false, is_clear = false, is_clear_down = false;
+        bool is_prefix_down = false, is_suffix_down = false;
         /// <summary>
         /// 支持清除
         /// </summary>

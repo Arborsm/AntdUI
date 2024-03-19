@@ -34,6 +34,7 @@ namespace AntdUI
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+            is_prefix_down = is_suffix_down = false;
             if (e.Button == MouseButtons.Left)
             {
                 if (cache_font != null && e.Clicks > 1)
@@ -55,6 +56,16 @@ namespace AntdUI
                 if (is_clear && rect_r.Contains(e.Location))
                 {
                     is_clear_down = true;
+                    return;
+                }
+                if (HasImage && rect_l.Contains(e.Location) && PrefixClick != null)
+                {
+                    is_prefix_down = true;
+                    return;
+                }
+                if (HasSuffix && rect_r.Contains(e.Location) && SuffixClick != null)
+                {
+                    is_suffix_down = true;
                     return;
                 }
                 mouseDownMove = false;
@@ -124,6 +135,18 @@ namespace AntdUI
             {
                 if (rect_r.Contains(e.Location)) OnClearValue();
                 is_clear_down = false;
+            }
+            if (is_prefix_down && PrefixClick != null)
+            {
+                PrefixClick(this, e);
+                is_prefix_down = is_suffix_down = false;
+                return;
+            }
+            if (is_suffix_down && SuffixClick != null)
+            {
+                SuffixClick(this, e);
+                is_prefix_down = is_suffix_down = false;
+                return;
             }
             if (mouseDown && mouseDownMove && cache_font != null)
             {
@@ -315,31 +338,6 @@ namespace AntdUI
         [Description("后缀 点击时发生"), Category("行为")]
         public event MouseEventHandler? SuffixClick = null;
 
-        protected override void OnMouseClick(MouseEventArgs e)
-        {
-            if (mouseDown && cache_font != null)
-            {
-                base.OnMouseClick(e);
-                return;
-            }
-            else
-            {
-                if (HasImage && rect_l.Contains(e.Location) && PrefixClick != null)
-                {
-                    PrefixClick(this, e);
-                    return;
-                }
-                if (HasSuffix && rect_r.Contains(e.Location) && SuffixClick != null)
-                {
-                    if (!is_clear)
-                    {
-                        SuffixClick(this, e);
-                        return;
-                    }
-                }
-                base.OnMouseClick(e);
-            }
-        }
         #endregion
     }
 }
