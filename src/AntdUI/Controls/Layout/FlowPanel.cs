@@ -158,13 +158,16 @@ namespace AntdUI
                     {
                         if (it.Visible) controls.Insert(0, it);
                     }
-                    int val = HandLayout(parent, controls);
-                    if (parent.scroll != null)
+                    if (controls.Count > 0)
                     {
-                        bool old_show = parent.scroll.Show;
-                        float old_vr = parent.scroll.VrValue;
-                        parent.scroll.SetVrSize(val);
-                        if (old_show != parent.scroll.Show || old_vr != parent.scroll.VrValue) parent.BeginInvoke(new Action(() => { parent.OSizeChanged(); }));
+                        int val = HandLayout(parent, controls);
+                        if (parent.scroll != null)
+                        {
+                            bool old_show = parent.scroll.Show;
+                            float old_vr = parent.scroll.VrValue;
+                            parent.scroll.SetVrSize(val);
+                            if (old_show != parent.scroll.Show || old_vr != parent.scroll.VrValue) parent.BeginInvoke(new Action(() => { parent.OSizeChanged(); }));
+                        }
                     }
                 }
                 return false;

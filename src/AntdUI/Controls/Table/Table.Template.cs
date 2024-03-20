@@ -39,6 +39,15 @@ namespace AntdUI
                 cells = cell;
                 RECORD = value;
             }
+
+            public RowTemplate(Table table, TCell[] cell, object value, bool check)
+            {
+                PARENT = table;
+                cells = cell;
+                RECORD = value;
+                checkState = CheckState.Checked;
+                _checked = check;
+            }
             public RowTemplate(Table table, TCell[] cell, object value, CheckState check)
             {
                 PARENT = table;
