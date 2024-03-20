@@ -1233,7 +1233,7 @@ namespace AntdUI
         }
         internal bool Select { get; set; }
         internal int Depth { get; set; }
-        internal float ArrowProg { get; set; } = -1F;
+        internal float ArrowProg { get; set; } = 1F;
         internal Menu? PARENT { get; set; }
         internal void SetRect(int depth, bool indent, RectangleF _rect, float icon_size, float gap)
         {
