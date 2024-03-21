@@ -722,8 +722,8 @@ namespace AntdUI
                         hoveindexold = hoveindex;
 
                         subForm?.Close();
-                        tooltipForm?.Close();
                         subForm = null;
+                        tooltipForm?.Close();
                         tooltipForm = null;
 
                         var _rect = RectangleToScreen(ClientRectangle);
@@ -732,12 +732,8 @@ namespace AntdUI
                         var rect = new Rectangle(_rect.X + (int)it.Rect.X / 2, _rect.Y + (int)it.Rect.Y, (int)it.Rect.Width, (int)it.Rect.Height);
                         if (it.Sub != null && it.Sub.Count > 0)
                         {
+                            select_x = 0;
                             subForm = new LayeredFormMenuDown(this, radius, rect, it.Sub);
-                            subForm.Disposed += (a, b) =>
-                            {
-                                select_x = 0;
-                                subForm = null;
-                            };
                             subForm.Show(this);
                         }
                         else
@@ -1119,8 +1115,9 @@ namespace AntdUI
                 }
                 else
                 {
+                    expand = false;
                     ExpandProg = 1F;
-                    ArrowProg = value ? 1F : -1F;
+                    ArrowProg = -1F;
                     Invalidates();
                 }
             }
