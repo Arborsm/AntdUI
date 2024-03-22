@@ -319,7 +319,7 @@ namespace AntdUI
                 int gapI = (int)(gap / 2);
                 ChangeList(g, rect, null, Items, ref x, ref y, height, icon_size, gap, gapI, 0, true);
             });
-            scrollX.SetVrSize(x, rect.Width);
+            scrollX.SetVrSize(x, rect.Width, scrollY);
             scrollY.SetVrSize(y, rect.Height);
             return rect;
         }

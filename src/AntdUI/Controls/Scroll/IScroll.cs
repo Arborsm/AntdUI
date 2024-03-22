@@ -41,7 +41,7 @@ namespace AntdUI
         void Leave();
 
         void SizeChange(Rectangle rect);
-        void SetVrSize(float len, int value);
+        void SetVrSize(float len, int value, ScrollY? scroll = null);
         void SetVrSize(float len);
         void Paint(Graphics g);
     }
