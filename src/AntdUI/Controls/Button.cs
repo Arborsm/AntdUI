@@ -357,7 +357,7 @@ namespace AntdUI
         /// </summary>
         public bool HasImage
         {
-            get => imageSvg != null || image != null;
+            get => imageSvg.IsNotNullAndWhiteSpace() || image != null;
         }
 
         /// <summary>
@@ -1220,7 +1220,7 @@ namespace AntdUI
                 }
             }
 
-            if (imageSvg != null)
+            if (imageSvg.IsNotNullAndWhiteSpace())
             {
                 var rect = GetImageRectCenter(font_size, rect_read);
                 using (var _bmp = SvgExtend.GetImgExtend(imageSvg, rect, color))
@@ -1282,7 +1282,7 @@ namespace AntdUI
                 }
             }
 
-            if (imageSvg != null)
+            if (imageSvg.IsNotNullAndWhiteSpace())
             {
                 var rect = GetImageRect(rectl);
                 using (var _bmp = SvgExtend.GetImgExtend(imageSvg, rect, color))
