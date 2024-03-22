@@ -627,7 +627,7 @@ namespace AntdUI
         bool IMouseDown(MouseEventArgs e, TreeItem item, TreeItem? fitem)
         {
             bool can = item.CanExpand;
-            int down = item.Contains(e.Location, scrollX.Value, scrollY.Value, checkable);
+            int down = item.Contains(e.Location, blockNode ? 0 : scrollX.Value, scrollY.Value, checkable);
             if (down > 0)
             {
                 if (e.Button == MouseButtons.Left)
@@ -712,7 +712,7 @@ namespace AntdUI
         {
             if (item.show)
             {
-                if (item.Contains(point, scrollX.Value, scrollY.Value, checkable) > 0) hand++;
+                if (item.Contains(point, blockNode ? 0 : scrollX.Value, scrollY.Value, checkable) > 0) hand++;
                 if (item.Sub != null)
                     foreach (TreeItem sub in item.Sub)
                     {
