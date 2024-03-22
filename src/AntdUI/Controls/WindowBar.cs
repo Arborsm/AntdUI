@@ -301,7 +301,7 @@ namespace AntdUI
             }
 
             int icon_size = (int)size.Height, iocn_xy = (rect.Height - icon_size) / 2;
-            if (loading || iconSvg != null || icon != null || showicon)
+            if (loading || iconSvg.IsNotNullAndWhiteSpace() || icon != null || showicon)
             {
                 var rect_icon = new Rectangle(rect.X + iocn_xy, rect.Y + iocn_xy, icon_size, icon_size);
                 if (loading)
@@ -313,7 +313,7 @@ namespace AntdUI
                     }
                     showLeft = true;
                 }
-                else if (iconSvg != null)
+                else if (iconSvg.IsNotNullAndWhiteSpace())
                 {
                     if (PrintLogo(g, iconSvg, fore, new Rectangle(rect.X + iocn_xy, rect.Y + iocn_xy, icon_size, icon_size))) showLeft = true;
                 }
