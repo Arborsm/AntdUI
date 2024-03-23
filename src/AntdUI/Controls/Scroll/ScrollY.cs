@@ -17,6 +17,7 @@
 // QQ: 17379620
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -149,6 +150,7 @@ namespace AntdUI
             Height = height;
             if (len > 0 && len > height)
             {
+                if (ShowX) len += SIZE;
                 VrValueI = len - height;
                 VrValue = len;
                 Show = VrValue > height;
@@ -176,6 +178,7 @@ namespace AntdUI
         #endregion
 
         public int SIZE { get; set; } = 20;
+        public bool ShowX { get; set; }
         public virtual void SizeChange(Rectangle rect)
         {
             Rect = new Rectangle(rect.Right - SIZE, rect.Y, SIZE, rect.Height);
@@ -197,19 +200,21 @@ namespace AntdUI
                 {
                     using (var brush = new SolidBrush(Color.FromArgb(10, baseColor)))
                     {
-                        g.FillRectangle(brush, Rect);
+                        if (ShowX) g.FillRectangle(brush, new Rectangle(Rect.X, Rect.Y, Rect.Width, Rect.Height - SIZE));
+                        else g.FillRectangle(brush, Rect);
+                        //g.FillRectangle(brush, Rect);
                     }
                 }
                 float height = (Rect.Height / VrValue) * Rect.Height;
                 if (height < SIZE) height = SIZE;
                 if (Gap) height -= 12;
-                float y = val == 0 ? 0 : (val / (VrValue - Rect.Height)) * (Rect.Height - height);
+                float y = val == 0 ? 0 : (val / (VrValue - Rect.Height)) * ((ShowX ? (Rect.Height - SIZE) : Rect.Height) - height);
                 if (Hover) Slider = new RectangleF(Rect.X + 6, Rect.Y + y, 8, height);
                 else Slider = new RectangleF(Rect.X + 7, Rect.Y + y, 6, height);
                 if (Gap)
                 {
                     if (Slider.Y < 6) Slider.Y = 6;
-                    else if (Slider.Y > Rect.Height - height - 6) Slider.Y = Rect.Height - height - 6;
+                    else if (Slider.Y > (ShowX ? (Rect.Height - SIZE) : Rect.Height) - height - 6) Slider.Y = (ShowX ? (Rect.Height - SIZE) : Rect.Height) - height - 6;
                 }
                 using (var brush = new SolidBrush(Color.FromArgb(141, baseColor)))
                 {
