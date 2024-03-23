@@ -49,6 +49,7 @@ namespace AntdUI
 
         public bool Back = true;
         public bool Gap = true;
+        public ScrollY? scroll = null;//配置关联Y滚动条
 
         #region 属性
 
@@ -61,6 +62,7 @@ namespace AntdUI
                 if (show == value) return;
                 show = value;
                 if (!value) val = 0;
+                if (scroll != null) scroll.ShowX = value;
             }
         }
         public Rectangle Rect;
@@ -105,6 +107,7 @@ namespace AntdUI
             Width = width;
             if (len > 0 && len > width)
             {
+                if (ShowY) len += SIZE;
                 VrValueI = len - width;
                 VrValue = len;
                 Show = VrValue > width;
@@ -118,6 +121,7 @@ namespace AntdUI
                 VrValue = VrValueI = 0F;
                 Show = false;
             }
+
         }
 
         /// <summary>
@@ -164,7 +168,7 @@ namespace AntdUI
                 if (Gap)
                 {
                     if (Slider.X < 6) Slider.X = 6;
-                    else if (Slider.X > Rect.Width - width - 6) Slider.X = Rect.Width - width - 6;
+                    else if (Slider.X > (ShowY ? (Rect.Width - SIZE) : Rect.Width) - width - 6) Slider.X = (ShowY ? (Rect.Width - SIZE) : Rect.Width) - width - 6;
                 }
                 using (var brush = new SolidBrush(Color.FromArgb(141, Style.Db.TextBase)))
                 {

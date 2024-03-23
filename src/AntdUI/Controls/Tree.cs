@@ -357,7 +357,7 @@ namespace AntdUI
         ScrollY scrollY;
         public Tree()
         {
-            scrollX = new ScrollX(this); scrollY = new ScrollY(this, scrollX);
+            scrollX = new ScrollX(this); scrollY = new ScrollY(this, scrollX); scrollX.scroll = scrollY;
         }
         protected override void OnPaint(PaintEventArgs e)
         {
