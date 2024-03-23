@@ -319,7 +319,7 @@ namespace AntdUI
                 int gapI = (int)(gap / 2);
                 ChangeList(g, rect, null, Items, ref x, ref y, height, icon_size, gap, gapI, 0, true);
             });
-            scrollX.SetVrSize(x, rect.Width, scrollY);
+            scrollX.SetVrSize(x, rect.Width);
             scrollY.SetVrSize(y, rect.Height);
             return rect;
         }
@@ -357,7 +357,7 @@ namespace AntdUI
         ScrollY scrollY;
         public Tree()
         {
-            scrollX = new ScrollX(this); scrollY = new ScrollY(this, scrollX);
+            scrollX = new ScrollX(this); scrollY = new ScrollY(this, scrollX); scrollX.scroll = scrollY;
         }
         protected override void OnPaint(PaintEventArgs e)
         {

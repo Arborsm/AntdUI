@@ -49,6 +49,7 @@ namespace AntdUI
 
         public bool Back = true;
         public bool Gap = true;
+        public ScrollY? scroll = null;//配置关联Y滚动条
 
         #region 属性
 
@@ -61,6 +62,7 @@ namespace AntdUI
                 if (show == value) return;
                 show = value;
                 if (!value) val = 0;
+                if (scroll != null) scroll.ShowX = value;
             }
         }
         public Rectangle Rect;
@@ -100,7 +102,7 @@ namespace AntdUI
         /// </summary>
         /// <param name="len">总X</param>
         /// <param name="width">容器宽度</param>
-        public void SetVrSize(float len, int width, ScrollY? scroll = null)
+        public void SetVrSize(float len, int width)
         {
             Width = width;
             if (len > 0 && len > width)
@@ -119,7 +121,7 @@ namespace AntdUI
                 VrValue = VrValueI = 0F;
                 Show = false;
             }
-            if (scroll != null) scroll.ShowX = Show;
+
         }
 
         /// <summary>

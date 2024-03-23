@@ -145,7 +145,7 @@ namespace AntdUI
         /// </summary>
         /// <param name="len">总Y</param>
         /// <param name="height">容器高度</param>
-        public void SetVrSize(float len, int height, ScrollY? scroll = null)
+        public void SetVrSize(float len, int height)
         {
             Height = height;
             if (len > 0 && len > height)
