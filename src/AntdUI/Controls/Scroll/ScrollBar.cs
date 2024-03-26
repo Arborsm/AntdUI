@@ -173,8 +173,11 @@ namespace AntdUI
             set
             {
                 if (value < 0) value = 0;
-                int valueI = maxY - RectY.Height;
-                if (value > valueI) value = valueI;
+                if (maxY > 0)
+                {
+                    int valueI = maxY - RectY.Height;
+                    if (value > valueI) value = valueI;
+                }
                 if (valueY == value) return;
                 valueY = value;
                 Invalidate(null);
@@ -248,8 +251,11 @@ namespace AntdUI
             set
             {
                 if (value < 0) value = 0;
-                int valueI = maxX - RectX.Width;
-                if (value > valueI) value = valueI;
+                if (maxX > 0)
+                {
+                    int valueI = maxX - RectX.Width;
+                    if (value > valueI) value = valueI;
+                }
                 if (valueX == value) return;
                 valueX = value;
                 Invalidate(null);
@@ -332,6 +338,11 @@ namespace AntdUI
             {
                 MaxY = 0;
                 ShowY = false;
+            }
+            if (showX && showY)
+            {
+                maxX += SIZE;
+                maxY += SIZE;
             }
         }
 
@@ -619,8 +630,8 @@ namespace AntdUI
             }
             set
             {
-                if (EnabledY) valueY = value;
-                else valueX = value;
+                if (EnabledY) ValueY = value;
+                else ValueX = value;
             }
         }
 
