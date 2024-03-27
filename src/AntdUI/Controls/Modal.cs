@@ -45,6 +45,17 @@ namespace AntdUI
         /// <param name="form">所属窗口</param>
         /// <param name="title">标题</param>
         /// <param name="content">内容</param>
+        public static DialogResult open(Form form, string title, object content)
+        {
+            return open(new Config(form, title, content));
+        }
+
+        /// <summary>
+        /// Model 对话框
+        /// </summary>
+        /// <param name="form">所属窗口</param>
+        /// <param name="title">标题</param>
+        /// <param name="content">内容</param>
         /// <param name="icon">图标</param>
         public static DialogResult open(Form form, string title, string content, TType icon)
         {
