@@ -284,7 +284,7 @@ namespace AntdUI
                     {
                         hoveindex--;
                         if (hoveindex < 0) hoveindex = Items.Count - 1;
-                        while (Items[hoveindex].ID == -1)
+                        while (Items[hoveindex].ShowAndID)
                         {
                             hoveindex--;
                             if (hoveindex < 0) hoveindex = Items.Count - 1;
@@ -300,7 +300,7 @@ namespace AntdUI
                         {
                             hoveindex++;
                             if (hoveindex > Items.Count - 1) hoveindex = 0;
-                            while (Items[hoveindex].ID == -1)
+                            while (Items[hoveindex].ShowAndID)
                             {
                                 hoveindex++;
                                 if (hoveindex > Items.Count - 1) hoveindex = 0;
@@ -387,13 +387,20 @@ namespace AntdUI
             {
                 val = val.ToLower();
                 int showcount = 0;
-                foreach (var it in Items)
+                for (int i = 0; i < Items.Count; i++)
                 {
+                    var it = Items[i];
                     if (it.ID > -1)
                     {
                         if (it.Contains(val))
                         {
                             showcount++;
+                            if (it.Text.ToLower() == val)
+                            {
+                                it.Hover = true;
+                                hoveindex = i;
+                                count++;
+                            }
                             if (!it.Show)
                             {
                                 it.Show = true;

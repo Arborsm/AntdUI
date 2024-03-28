@@ -46,7 +46,7 @@ namespace AntdUI
         /// 背景颜色
         /// </summary>
         [Description("背景颜色"), Category("外观"), DefaultValue(typeof(Color), "Transparent")]
-        public override Color BackColor
+        public new Color BackColor
         {
             get => back;
             set
