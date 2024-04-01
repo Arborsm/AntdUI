@@ -432,14 +432,16 @@ namespace AntdUI
                         int font_size = size.Height + gap_y * 2;
                         var y2 = gap_y * 2;
                         y += gap_y;
+
+                        int text_height = font_size - y2;
+                        float gap = (text_height - gap_y) / 2F;
                         foreach (var it in Items)
                         {
                             if (it.Show)
                             {
                                 list_count++;
                                 var rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size);
-                                it.Rect = rect_bg;
-                                it.RectText = new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2);
+                                it.SetRect(rect_bg, new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
                                 y += font_size;
                             }
                         }
@@ -595,47 +597,17 @@ namespace AntdUI
                         g.FillPath(brush, path);
                         if (ArrowAlign != TAlign.None) g.FillPolygon(brush, ArrowAlign.AlignLines(ArrowSize, rect, rect_read));
                     }
-                }
 
-                if (nodata)
-                {
-                    using (var brush = new SolidBrush(Color.FromArgb(180, Style.Db.Text)))
-                    { g.DrawString("暂无数据", Font, brush, rect_read, Helper.stringFormatCenter2); }
-                }
-                else
-                {
-                    if (scrollY.Show)
+
+                    if (nodata)
                     {
-                        using (var bmp = new Bitmap(rect.Width, rect.Height))
-                        {
-                            using (var g2 = Graphics.FromImage(bmp).High())
-                            {
-                                using (var brush_back2 = new SolidBrush(Style.Db.BgElevated))
-                                {
-                                    using (var path = rect_read.RoundPath(Radius))
-                                    {
-                                        g2.FillPath(brush_back2, path);
-                                    }
-                                }
-                                g2.TranslateTransform(0, -scrollY.Value);
-                                using (var brush = new SolidBrush(Style.Db.Text))
-                                {
-                                    foreach (var it in Items)
-                                    {
-                                        if (it.Show) DrawItem(g2, brush, it);
-                                    }
-                                }
-                                g2.ResetTransform();
-                                g2.CompositingMode = CompositingMode.SourceCopy;
-                                g2.FillRectangle(Brushes.Transparent, new Rectangle(0, 0, rect.Width, rect_read.Y));
-                                g2.FillRectangle(Brushes.Transparent, new Rectangle(0, rect.Bottom - rect_read.Y, rect.Width, rect_read.Y));
-                            }
-                            g.DrawImage(bmp, Point.Empty);
-                        }
-                        scrollY.Paint(g);
+                        using (var brush = new SolidBrush(Color.FromArgb(180, Style.Db.Text)))
+                        { g.DrawString("暂无数据", Font, brush, rect_read, Helper.stringFormatCenter2); }
                     }
                     else
                     {
+                        g.SetClip(path);
+                        g.TranslateTransform(0, -scrollY.Value);
                         using (var brush = new SolidBrush(Style.Db.Text))
                         {
                             foreach (var it in Items)
@@ -643,6 +615,9 @@ namespace AntdUI
                                 if (it.Show) DrawItem(g, brush, it);
                             }
                         }
+                        g.ResetTransform();
+                        g.ResetClip();
+                        scrollY.Paint(g);
                     }
                 }
             }

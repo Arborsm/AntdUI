@@ -408,7 +408,7 @@ namespace AntdUI
 
         #region 文本
 
-        bool isempty = true;
+        internal bool isempty = true;
         string _text = "";
         [Description("文本"), Category("外观"), DefaultValue("")]
         public override string Text
@@ -1006,7 +1006,12 @@ namespace AntdUI
             CurrentPosIndex = selectionStart;
             if (showCaret)
             {
-                if (cache_font == null) Win32.SetCaretPos(CurrentCaret.X - scrollx, CurrentCaret.Y - scrolly);
+                if (cache_font == null)
+                {
+                    if (textalign == HorizontalAlignment.Center) CurrentCaret.X = rect_text.X + rect_text.Width / 2;
+                    else if (textalign == HorizontalAlignment.Right) CurrentCaret.X = rect_text.Right;
+                    Win32.SetCaretPos(CurrentCaret.X - scrollx, CurrentCaret.Y - scrolly);
+                }
                 else
                 {
                     Rectangle r;
