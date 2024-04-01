@@ -110,7 +110,7 @@ namespace AntdUI
         {
             int y = 10, w = (int)rect_read.Width;
             r_w = w;
-            using (var g = Graphics.FromHwnd(Handle).High())
+            Helper.GDI(g =>
             {
                 var size = g.MeasureString(Config.NullText, Font).Size(2);
                 int gap_y = (int)Math.Ceiling(size.Height * 0.227F), gap_x = (int)Math.Ceiling(size.Height * 0.54F);
@@ -195,8 +195,7 @@ namespace AntdUI
                     if (selY > -1) scrollY.val = scrollY.SetValue(selY - 10 - gap_y);
                 }
                 else y = 10 + gap_y * 2 + vr;
-            }
-
+            });
             SetSizeW(w + 20);
             EndHeight = y + 10;
             var point = control.PointToScreen(Point.Empty);
@@ -426,7 +425,7 @@ namespace AntdUI
                 {
                     scrollY.val = 0;
                     int y = 10, w = r_w, list_count = 0;
-                    using (var g = Graphics.FromHwnd(Handle).High())
+                    Helper.GDI(g =>
                     {
                         var size = g.MeasureString(Config.NullText, Font).Size(2);
                         int gap_y = (int)Math.Ceiling(size.Height * 0.227F), gap_x = (int)Math.Ceiling(size.Height * 0.54F);
@@ -459,7 +458,7 @@ namespace AntdUI
                             scrollY.Show = false;
                         }
                         SetSizeH(y + 10);
-                    }
+                    });
                 }
                 Print();
             }
