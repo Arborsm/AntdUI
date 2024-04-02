@@ -32,7 +32,7 @@ namespace AntdUI
     /// <remarks>下拉多选器。</remarks>
     [Description("Select 多选器")]
     [ToolboxItem(true)]
-    [DefaultEvent("SelectedIndexChanged")]
+    [DefaultEvent("SelectedValueChanged")]
     public class SelectMultiple : Input, SubLayeredForm
     {
         #region 属性
@@ -71,6 +71,12 @@ namespace AntdUI
         /// </summary>
         [Description("列表最多显示条数"), Category("行为"), DefaultValue(4)]
         public int MaxCount { get; set; } = 4;
+
+        /// <summary>
+        /// 最大选中数量
+        /// </summary>
+        [Description("最大选中数量"), Category("行为"), DefaultValue(0)]
+        public int MaxChoiceCount { get; set; }
 
         /// <summary>
         /// 下拉箭头是否显示
@@ -114,8 +120,15 @@ namespace AntdUI
                 if (value == null || items == null || items.Count == 0) ChangeValueNULL();
                 CalculateRect();
                 Invalidate();
+                SelectedValueChanged?.Invoke(this, selectedValue);
             }
         }
+
+        /// <summary>
+        /// SelectedValue 属性值更改时发生
+        /// </summary>
+        [Description("SelectedValue 属性值更改时发生"), Category("行为")]
+        public event ObjectsEventHandler? SelectedValueChanged = null;
 
         object[] selectedValue = new object[0];
         void ChangeValueNULL()

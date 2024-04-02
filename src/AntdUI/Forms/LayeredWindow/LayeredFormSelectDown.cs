@@ -628,10 +628,7 @@ namespace AntdUI
             {
                 using (var brush_back = new SolidBrush(Style.Db.Split))
                 {
-                    using (var path = it.Rect.RoundPath(Radius))
-                    {
-                        g.FillPath(brush_back, path);
-                    }
+                    g.FillRectangle(brush_back, it.Rect);
                 }
             }
             else if (selectedValue == it.Val || it.Val is SelectItem item && item.Tag == selectedValue)

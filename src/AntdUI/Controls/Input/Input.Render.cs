@@ -77,9 +77,10 @@ namespace AntdUI
                         {
                             g.FillPath(brush, path);
                         }
-                        PaintText(g, path, _fore, rect_read.Right, rect_read.Bottom);
                         PaintIcon(g, _fore);
+                        PaintText(g, path, _fore, rect_read.Right, rect_read.Bottom);
                         PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
+                        g.ResetClip();
                         if (borderWidth > 0)
                         {
                             if (AnimationHover)
@@ -122,7 +123,10 @@ namespace AntdUI
                         {
                             g.FillPath(brush, path);
                         }
+                        PaintIcon(g, Style.Db.TextQuaternary);
                         PaintText(g, path, Style.Db.TextQuaternary, rect_read.Right, rect_read.Bottom);
+                        PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
+                        g.ResetClip();
                         if (borderWidth > 0)
                         {
                             using (var brush = new Pen(_border, borderWidth))
@@ -130,7 +134,6 @@ namespace AntdUI
                                 g.DrawPath(brush, path);
                             }
                         }
-                        PaintIcon(g, Style.Db.TextQuaternary);
                     }
                 }
 
@@ -251,7 +254,6 @@ namespace AntdUI
                     g.DrawString(placeholderText, Font, fore, rect_text, sf_placeholder);
                 }
             }
-            g.ResetClip();
         }
 
         internal virtual void PaintRIcon(Graphics g, Rectangle rect) { }

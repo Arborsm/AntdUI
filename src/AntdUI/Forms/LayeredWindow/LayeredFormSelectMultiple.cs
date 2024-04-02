@@ -28,7 +28,7 @@ namespace AntdUI
     internal class LayeredFormSelectMultiple : ILayeredFormOpacityDown
     {
         Control textBox;
-        int MaxCount = 4;
+        int MaxCount = 4, MaxChoiceCount = 4;
         internal float Radius = 0;
         internal List<object> selectedValue;
         int r_w = 0;
@@ -41,6 +41,7 @@ namespace AntdUI
             scrollY = new ScrollY(this);
             textBox = control;
             MaxCount = control.MaxCount;
+            MaxChoiceCount = control.MaxChoiceCount;
             Font = control.Font;
             selectedValue = new List<object>(control.SelectedValue.Length);
             selectedValue.AddRange(control.SelectedValue);
@@ -406,11 +407,12 @@ namespace AntdUI
         void OnClick(ObjectItem it)
         {
             if (selectedValue.Contains(it.Val)) selectedValue.Remove(it.Val);
-            else selectedValue.Add(it.Val);
-            if (PARENT is SelectMultiple select)
+            else
             {
-                select.SelectedValue = selectedValue.ToArray();
+                if (MaxChoiceCount > 0 && selectedValue.Count >= MaxChoiceCount) return;
+                selectedValue.Add(it.Val);
             }
+            if (PARENT is SelectMultiple select) select.SelectedValue = selectedValue.ToArray();
             down = false;
             Print();
         }
@@ -477,19 +479,19 @@ namespace AntdUI
                                                 if (isn)
                                                 {
                                                     oldsel = i;
-                                                    DrawItem(g, brush, it, true, true, false, false);
+                                                    DrawItemSelect(g, it, true, true, false, false);
                                                 }
-                                                else DrawItem(g, brush, it, true, true, true, true);
+                                                else DrawItemSelect(g, it, true, true, true, true);
                                             }
                                             else
                                             {
-                                                if (isn) DrawItem(g, brush, it, false, false, false, false);
-                                                else DrawItem(g, brush, it, false, false, true, true);
+                                                if (isn) DrawItemSelect(g, it, false, false, false, false);
+                                                else DrawItemSelect(g, it, false, false, true, true);
                                             }
                                         }
                                         else
                                         {
-                                            DrawItem(g, brush, it, true, true, true, true);
+                                            DrawItem(g, brush, it);
                                             oldsel = -1;
                                         }
                                     }
@@ -524,19 +526,16 @@ namespace AntdUI
             }
             return false;
         }
-        void DrawItem(Graphics g, SolidBrush brush, ObjectItem it, bool TL, bool TR, bool BR, bool BL)
+        void DrawItemSelect(Graphics g, ObjectItem it, bool TL, bool TR, bool BR, bool BL)
         {
             if (it.ID == -1)
             {
                 using (var brush_back = new SolidBrush(Style.Db.Split))
                 {
-                    using (var path = it.Rect.RoundPath(Radius, TL, TR, BR, BL))
-                    {
-                        g.FillPath(brush_back, path);
-                    }
+                    g.FillRectangle(brush_back, it.Rect);
                 }
             }
-            else if (selectedValue.Contains(it.Val) || it.Val is SelectItem item && selectedValue.Contains(item.Tag))
+            else
             {
                 using (var brush_back = new SolidBrush(Style.Db.PrimaryBg))
                 {
@@ -550,30 +549,61 @@ namespace AntdUI
                     g.DrawString(it.Text, Font, brush_select, it.RectText, stringFormatLeft);
                 }
                 g.PaintIconComplete(new RectangleF(it.Rect.Right - it.Rect.Height, it.Rect.Y, it.Rect.Height, it.Rect.Height), Style.Db.Primary);
+
+                if (it.Online.HasValue)
+                {
+                    using (var brush_online = new SolidBrush(it.Online == 1 ? Style.Db.Success : Style.Db.Error))
+                    {
+                        g.FillEllipse(brush_online, it.RectOnline);
+                    }
+                }
+                if (it.Icon != null) g.DrawImage(it.Icon, it.RectIcon);
+                if (it.has_sub) PanintArrow(g, it, Style.Db.TextBase);
+            }
+        }
+
+        void DrawItem(Graphics g, SolidBrush brush, ObjectItem it)
+        {
+            if (it.ID == -1)
+            {
+                using (var brush_back = new SolidBrush(Style.Db.Split))
+                {
+                    g.FillRectangle(brush_back, it.Rect);
+                }
             }
             else
             {
-                if (it.Hover)
+                if (MaxChoiceCount > 0 && selectedValue.Count >= MaxChoiceCount)
                 {
-                    using (var brush_back = new SolidBrush(Style.Db.FillTertiary))
+                    using (var brush_fore = new SolidBrush(Style.Db.TextQuaternary))
                     {
-                        using (var path = it.Rect.RoundPath(Radius, TL, TR, BR, BL))
-                        {
-                            g.FillPath(brush_back, path);
-                        }
+                        g.DrawString(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
                     }
                 }
-                g.DrawString(it.Text, Font, brush, it.RectText, stringFormatLeft);
-            }
-            if (it.Online.HasValue)
-            {
-                using (var brush_online = new SolidBrush(it.Online == 1 ? Style.Db.Success : Style.Db.Error))
+                else
                 {
-                    g.FillEllipse(brush_online, it.RectOnline);
+                    if (it.Hover)
+                    {
+                        using (var brush_back = new SolidBrush(Style.Db.FillTertiary))
+                        {
+                            using (var path = it.Rect.RoundPath(Radius))
+                            {
+                                g.FillPath(brush_back, path);
+                            }
+                        }
+                    }
+                    g.DrawString(it.Text, Font, brush, it.RectText, stringFormatLeft);
                 }
+                if (it.Online.HasValue)
+                {
+                    using (var brush_online = new SolidBrush(it.Online == 1 ? Style.Db.Success : Style.Db.Error))
+                    {
+                        g.FillEllipse(brush_online, it.RectOnline);
+                    }
+                }
+                if (it.Icon != null) g.DrawImage(it.Icon, it.RectIcon);
+                if (it.has_sub) PanintArrow(g, it, Style.Db.TextBase);
             }
-            if (it.Icon != null) g.DrawImage(it.Icon, it.RectIcon);
-            if (it.has_sub) PanintArrow(g, it, Style.Db.TextBase);
         }
         void DrawItemR(Graphics g, SolidBrush brush, ObjectItem it)
         {
