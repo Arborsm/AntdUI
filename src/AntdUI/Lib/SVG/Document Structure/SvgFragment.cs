@@ -178,9 +178,7 @@ namespace AntdUI.Svg
                     try
                     {
                         var size = (Parent == null ? renderer.GetBoundable().Bounds.Size : GetDimensions());
-                        var clip = new RectangleF(X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, this),
-                                                  Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, this),
-                                                  size.Width, size.Height);
+                        var clip = new RectangleF(X.ToDeviceValue(renderer, UnitRenderingType.Horizontal, this), Y.ToDeviceValue(renderer, UnitRenderingType.Vertical, this), size.Width, size.Height);
                         renderer.SetClip(new Region(clip), CombineMode.Intersect);
                         base.Render(renderer);
                     }

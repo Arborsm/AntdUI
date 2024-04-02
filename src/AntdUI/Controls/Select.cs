@@ -261,7 +261,7 @@ namespace AntdUI
             get => showicon;
         }
 
-        internal override void PaintR(Graphics g, Rectangle rect_r)
+        internal override void PaintRIcon(Graphics g, Rectangle rect_r)
         {
             if (showicon)
             {

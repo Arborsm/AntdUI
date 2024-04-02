@@ -27,7 +27,7 @@ namespace AntdUI
         #region 渲染
 
         StringFormat sf_font = Helper.SF_MEASURE_FONT();
-        StringFormat sf_center = Helper.SF_NoWrap();
+        internal StringFormat sf_center = Helper.SF_NoWrap();
         StringFormat sf_placeholder = Helper.SF_ALL(lr: StringAlignment.Near);
 
         protected override void OnPaint(PaintEventArgs e)
@@ -181,7 +181,7 @@ namespace AntdUI
                 }
             }
             else if (suffix != null) g.DrawImage(suffix, rect_r);
-            else PaintR(g, rect_r);
+            else PaintRIcon(g, rect_r);
         }
 
         void PaintText(Graphics g, GraphicsPath path, Color _fore, int w, int h)
@@ -254,12 +254,9 @@ namespace AntdUI
             g.ResetClip();
         }
 
-        internal virtual void PaintR(Graphics g, Rectangle rect)
-        {
-        }
-        internal virtual void PaintOtherBor(Graphics g, RectangleF rect_read, float radius, Color back, Color borderColor, Color borderActive)
-        {
-        }
+        internal virtual void PaintRIcon(Graphics g, Rectangle rect) { }
+
+        internal virtual void PaintOtherBor(Graphics g, RectangleF rect_read, float radius, Color back, Color borderColor, Color borderActive) { }
 
         #region 点击动画
 

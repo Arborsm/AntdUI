@@ -146,8 +146,7 @@ namespace AntdUI.Svg
                     if (Renderable)
                     {
                         var opacity = Math.Min(Math.Max(Opacity, 0), 1);
-                        if (opacity == 1f)
-                            RenderFillAndStroke(renderer);
+                        if (opacity == 1f) RenderFillAndStroke(renderer);
                         else
                         {
                             IsPathDirty = true;

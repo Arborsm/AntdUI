@@ -394,9 +394,10 @@ namespace AntdUI
             }
         }
 
+        internal virtual bool HasValue { get => false; }
         void OnAllowClear()
         {
-            bool _is_clear = allowclear && _mouseHover && !isempty;
+            bool _is_clear = allowclear && _mouseHover && (!isempty || HasValue);
             if (is_clear == _is_clear) return;
             is_clear = _is_clear;
             CalculateRect();

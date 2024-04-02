@@ -232,9 +232,7 @@ namespace AntdUI.Svg
                         iRenderer.SetBoundable((_patternContentUnits == SvgCoordinateUnits.ObjectBoundingBox) ? new GenericBoundable(0, 0, width, height) : renderer.GetBoundable());
                         iRenderer.Transform = patternMatrix;
                         iRenderer.SmoothingMode = SmoothingMode.AntiAlias;
-                        iRenderer.SetClip(new Region(new RectangleF(0, 0,
-                            viewBox.Width > 0 ? viewBox.Width : width,
-                            viewBox.Height > 0 ? viewBox.Height : height)));
+                        iRenderer.SetClip(new Region(new RectangleF(0, 0, viewBox.Width > 0 ? viewBox.Width : width, viewBox.Height > 0 ? viewBox.Height : height)));
 
                         foreach (SvgElement child in childElem.Children)
                         {

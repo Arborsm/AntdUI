@@ -264,7 +264,6 @@ namespace AntdUI.Svg
                         {
                             canvasRenderer.SetBoundable(renderer.GetBoundable());
                             canvasRenderer.TranslateTransform(-bounds.X, -bounds.Y);
-
                             RenderFillAndStroke(canvasRenderer);
                             RenderChildren(canvasRenderer);
                         }
