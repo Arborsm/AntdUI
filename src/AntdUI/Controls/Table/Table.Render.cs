@@ -136,8 +136,8 @@ namespace AntdUI
 
                 if (fixedColumnL != null || fixedColumnR != null)
                 {
-                    PaintFixedColumnL(g, rows, shows, fore, brush_split, sx, sy);
-                    PaintFixedColumnR(g, rows, shows, fore, brush_split, sx, sy);
+                    PaintFixedColumnL(g, rect, rows, shows, fore, brush_split, sx, sy);
+                    PaintFixedColumnR(g, rect, rows, shows, fore, brush_split, sx, sy);
                 }
                 else showFixedColumnL = showFixedColumnR = false;
 
@@ -215,12 +215,11 @@ namespace AntdUI
             else if (it is TCellText text) g.DrawString(text.value, Font, fore, text.rect, StringF(text.align));
         }
 
-        void PaintFixedColumnL(Graphics g, RowTemplate[] rows, List<RowTemplate> shows, SolidBrush fore, SolidBrush brush_split, int sx, int sy)
+        void PaintFixedColumnL(Graphics g, Rectangle rect, RowTemplate[] rows, List<RowTemplate> shows, SolidBrush fore, SolidBrush brush_split, int sx, int sy)
         {
             if (fixedColumnL != null && sx > 0)
             {
                 showFixedColumnL = true;
-                var rect = ClientRectangle;
                 var last = shows[shows.Count - 1].cells[fixedColumnL[fixedColumnL.Length - 1]];
                 var rect_Fixed = new Rectangle(rect.X, rect.Y, last.RECT.Right, last.RECT.Bottom);
 
@@ -269,11 +268,10 @@ namespace AntdUI
             }
             else showFixedColumnL = false;
         }
-        void PaintFixedColumnR(Graphics g, RowTemplate[] rows, List<RowTemplate> shows, SolidBrush fore, SolidBrush brush_split, int sx, int sy)
+        void PaintFixedColumnR(Graphics g, Rectangle rect, RowTemplate[] rows, List<RowTemplate> shows, SolidBrush fore, SolidBrush brush_split, int sx, int sy)
         {
             if (fixedColumnR != null && scrollBar.ShowX)
             {
-                var rect = ClientRectangle;
                 var lastrow = shows[shows.Count - 1];
                 TCell first = lastrow.cells[fixedColumnR[fixedColumnR.Length - 1]], last = lastrow.cells[fixedColumnR[0]];
                 if (sx + rect.Width < last.RECT.Right)

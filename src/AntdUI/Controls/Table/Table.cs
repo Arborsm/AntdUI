@@ -29,6 +29,7 @@ namespace AntdUI
     /// </summary>
     /// <remarks>展示行列数据。</remarks>
     [Description("Table 表格")]
+    [DefaultEvent("CellClick")]
     [ToolboxItem(true)]
     public partial class Table : IControl
     {
