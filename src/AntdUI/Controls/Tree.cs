@@ -1169,12 +1169,14 @@ namespace AntdUI
                 else Invalidate();
             }
         }
-        internal bool Select { get; set; }
+
+        [Description("激活状态"), Category("行为"), DefaultValue(false)]
+        public bool Select { get; set; }
 
         public int Depth { get; private set; }
         internal float ArrowProg { get; set; } = 0F;
         internal Tree? PARENT { get; set; }
-        internal TreeItem? PARENTITEM { get; set; }
+        public TreeItem? PARENTITEM { get; set; }
 
         internal void SetRect(Graphics g, Font font, int depth, bool checkable, bool blockNode, Rectangle _rect, int icon_size, int gap)
         {
