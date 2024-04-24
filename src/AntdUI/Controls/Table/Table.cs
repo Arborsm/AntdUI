@@ -224,6 +224,20 @@ namespace AntdUI
         }
 
         #endregion
+
+        #region 方法
+
+        /// <summary>
+        /// 滚动到指定行
+        /// </summary>
+        /// <param name="i"></param>
+        public void ScrollLine(int i)
+        {
+            if (rows == null || !scrollBar.ShowY) return;
+            scrollBar.ValueY = rows[i].RECT.Y;
+        }
+
+        #endregion
     }
 
     #region 表头
