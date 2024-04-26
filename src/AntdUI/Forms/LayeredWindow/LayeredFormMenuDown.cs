@@ -35,8 +35,7 @@ namespace AntdUI
         {
             isauto = control.Mode == TAMode.Auto;
             isdark = Config.IsDark || control.Mode == TAMode.Dark;
-            var form = control.Parent.FindPARENT();
-            if (form != null) TopMost = form.TopMost;
+            control.Parent.SetTopMost(Handle);
             PARENT = control;
             select_x = 0;
             Font = control.Font;
@@ -48,8 +47,7 @@ namespace AntdUI
         {
             isauto = parent.Mode == TAMode.Auto;
             isdark = Config.IsDark || parent.Mode == TAMode.Dark;
-            var form = parent.Parent.FindPARENT();
-            if (form != null) TopMost = form.TopMost;
+            control.Parent.SetTopMost(Handle);
             select_x = sx;
             PARENT = parent;
             Font = control.Font;
