@@ -405,6 +405,19 @@ namespace AntdUI
             CalculateRect();
         }
 
+        bool autoscroll = false;
+        [Description("是否显示滚动条"), Category("外观"), DefaultValue(false)]
+        public bool AutoScroll
+        {
+            get => autoscroll;
+            set
+            {
+                if (autoscroll == value) return;
+                autoscroll = value;
+                Invalidate();
+            }
+        }
+
         #endregion
 
         #region 原生属性
@@ -508,6 +521,20 @@ namespace AntdUI
                 if (multiline == value) return;
                 multiline = value;
                 sf_placeholder.LineAlignment = multiline ? StringAlignment.Near : StringAlignment.Center;
+                CalculateRect();
+                Invalidate();
+            }
+        }
+
+        int lineheight = 0;
+        [Description("多行行高"), Category("行为"), DefaultValue(0)]
+        public int LineHeight
+        {
+            get => lineheight;
+            set
+            {
+                if (lineheight == value) return;
+                lineheight = value;
                 CalculateRect();
                 Invalidate();
             }
@@ -983,16 +1010,57 @@ namespace AntdUI
         /// </summary>
         CacheFont? FindNearestFont(int x, int y, CacheFont[] cache_font)
         {
-            double minDistance = int.MaxValue;
+            var findy = FindNearestFontY(y, cache_font);
+            CacheFont? result = null;
+            if (findy == null)
+            {
+                double minDistance = int.MaxValue;
+                for (int i = 0; i < cache_font.Length; i++)
+                {
+                    var it = cache_font[i];
+                    // 计算点到矩形四个边的最近距离，取最小值作为当前矩形的最近距离
+                    int distanceToLeft = Math.Abs(x - (it.rect.X + it.rect.Width / 2)),
+                        distanceToTop = Math.Abs(y - (it.rect.Y + it.rect.Height / 2));
+                    double currentMinDistance = new int[] { distanceToLeft, distanceToTop }.Average();
+
+                    // 如果当前矩形的最近距离比之前找到的最近距离小，更新最近距离和最近矩形信息
+                    if (currentMinDistance < minDistance)
+                    {
+                        minDistance = currentMinDistance;
+                        result = it;
+                    }
+                }
+            }
+            else
+            {
+                int minDistance = int.MaxValue;
+                for (int i = 0; i < cache_font.Length; i++)
+                {
+                    var it = cache_font[i];
+                    if (it.rect.Y == findy.rect.Y)
+                    {
+                        // 计算点到矩形四个边的最近距离，取最小值作为当前矩形的最近距离
+                        int currentMinDistance = Math.Abs(x - (it.rect.X + it.rect.Width / 2));
+                        // 如果当前矩形的最近距离比之前找到的最近距离小，更新最近距离和最近矩形信息
+                        if (currentMinDistance < minDistance)
+                        {
+                            minDistance = currentMinDistance;
+                            result = it;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        CacheFont? FindNearestFontY(int y, CacheFont[] cache_font)
+        {
+            int minDistance = int.MaxValue;
             CacheFont? result = null;
             for (int i = 0; i < cache_font.Length; i++)
             {
                 var it = cache_font[i];
                 // 计算点到矩形四个边的最近距离，取最小值作为当前矩形的最近距离
-                int distanceToLeft = Math.Abs(x - (it.rect.Left + it.rect.Width / 2)),
-                    distanceToTop = Math.Abs(y - (it.rect.Top + it.rect.Height / 2));
-                double currentMinDistance = new int[] { distanceToLeft, distanceToTop }.Average();
-
+                int currentMinDistance = Math.Abs(y - (it.rect.Y + it.rect.Height / 2));
                 // 如果当前矩形的最近距离比之前找到的最近距离小，更新最近距离和最近矩形信息
                 if (currentMinDistance < minDistance)
                 {
