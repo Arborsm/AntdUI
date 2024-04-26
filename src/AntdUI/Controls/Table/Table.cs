@@ -188,6 +188,12 @@ namespace AntdUI
         [Description("数据为空显示图片"), Category("外观"), DefaultValue(null)]
         public Image? EmptyImage { get; set; }
 
+        /// <summary>
+        /// 空是否显示表头
+        /// </summary>
+        [Description("空是否显示表头"), Category("外观"), DefaultValue(false)]
+        public bool EmptyHeader { get; set; }
+
         #endregion
 
         #region 主题

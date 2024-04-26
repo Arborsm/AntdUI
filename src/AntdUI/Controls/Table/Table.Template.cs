@@ -48,7 +48,7 @@ namespace AntdUI
                 checkState = CheckState.Checked;
                 _checked = check;
             }
-            public RowTemplate(Table table, TCell[] cell, object value, CheckState check)
+            public RowTemplate(Table table, TCell[] cell, object? value, CheckState check)
             {
                 PARENT = table;
                 cells = cell;
@@ -71,7 +71,7 @@ namespace AntdUI
             /// <summary>
             /// 原始行数据
             /// </summary>
-            public object RECORD { get; set; }
+            public object? RECORD { get; set; }
             public int INDEX { get; set; }
 
             /// <summary>

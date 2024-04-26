@@ -78,7 +78,7 @@ namespace AntdUI
                             g.FillPath(brush, path);
                         }
                         PaintIcon(g, _fore);
-                        PaintText(g, path, _fore, rect_read.Right, rect_read.Bottom);
+                        PaintText(g, _fore, rect_read.Right, rect_read.Bottom);
                         PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                         g.ResetClip();
                         PaintScroll(g, rect_read, _radius);
@@ -125,7 +125,7 @@ namespace AntdUI
                             g.FillPath(brush, path);
                         }
                         PaintIcon(g, Style.Db.TextQuaternary);
-                        PaintText(g, path, Style.Db.TextQuaternary, rect_read.Right, rect_read.Bottom);
+                        PaintText(g, Style.Db.TextQuaternary, rect_read.Right, rect_read.Bottom);
                         PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                         g.ResetClip();
                         PaintScroll(g, rect_read, _radius);
@@ -226,9 +226,9 @@ namespace AntdUI
             else PaintRIcon(g, rect_r);
         }
 
-        void PaintText(Graphics g, GraphicsPath path, Color _fore, int w, int h)
+        void PaintText(Graphics g, Color _fore, int w, int h)
         {
-            g.SetClip(path);
+            g.SetClip(rect_text);
             if (cache_font != null)
             {
                 g.TranslateTransform(-ScrollX, -ScrollY);

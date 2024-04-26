@@ -617,6 +617,12 @@ namespace AntdUI
             }
         }
 
+        /// <summary>
+        /// 密码可以复制
+        /// </summary>
+        [Description("密码可以复制"), Category("行为"), DefaultValue(false)]
+        public bool PasswordCopy { get; set; }
+
         void SetPassWord()
         {
             if (passwordChar != '\0')
@@ -630,7 +636,7 @@ namespace AntdUI
                 IsPassWord = true;
             }
             else IsPassWord = false;
-            FixFontWidth();
+            FixFontWidth(true);
             Invalidate();
         }
 
@@ -672,7 +678,7 @@ namespace AntdUI
         /// </summary>
         public void Copy()
         {
-            if (IsPassWord) return;
+            if (IsPassWord && !PasswordCopy) return;
             var text = GetSelectionText();
             if (text == null) return;
             Clipboard.SetText(text);
@@ -683,7 +689,7 @@ namespace AntdUI
         /// </summary>
         public void Cut()
         {
-            if (IsPassWord) return;
+            if (IsPassWord && !PasswordCopy) return;
             var text = GetSelectionText();
             if (text == null) return;
             Clipboard.SetText(text);
@@ -695,7 +701,7 @@ namespace AntdUI
         /// </summary>
         public void Paste()
         {
-            if (IsPassWord) return;
+            if (IsPassWord && !PasswordCopy) return;
             string strText = Clipboard.GetText();
             if (string.IsNullOrEmpty(strText)) return;
             var chars = new List<char>(strText.Length);
@@ -719,7 +725,7 @@ namespace AntdUI
         /// </summary>
         public void Undo()
         {
-            if (IsPassWord) return;
+            if (IsPassWord && !PasswordCopy) return;
             if (history_Log.Count > 0)
             {
                 int index;
@@ -745,7 +751,7 @@ namespace AntdUI
         /// </summary>
         public void Redo()
         {
-            if (IsPassWord) return;
+            if (IsPassWord && !PasswordCopy) return;
             if (history_Log.Count > 0 && history_I > -1)
             {
                 int index = history_I + 1;
