@@ -374,6 +374,8 @@ namespace AntdUI
                     {
                         int y_item = y;
                         ChangeList(g, rect, it, it.Sub, ref x, ref y, height, icon_size, gap, gapI, depth + 1, expand ? it.Expand : false);
+                        it.SubY = y_item - gapI / 2;
+                        it.SubHeight = y - y_item;
                         if ((it.Expand || it.ExpandThread) && it.ExpandProg > 0)
                         {
                             it.ExpandHeight = y - y_item;
@@ -415,7 +417,7 @@ namespace AntdUI
         {
             foreach (TreeItem it in items)
             {
-                it.show = it.Show && it.Visible && it.rect.Y > sy - it.rect.Height - (it.Expand ? it.ExpandHeight : 0) && it.rect.Bottom < scrollBar.ValueY + rect.Height + it.rect.Height;
+                it.show = it.Show && it.Visible && it.rect.Y > sy - rect.Height - (it.Expand ? it.SubHeight : 0) && it.rect.Bottom < sy + rect.Height + it.rect.Height;
                 if (it.show)
                 {
                     PaintItem(g, it, fore, fore_active, hover, radius, sx, sy);
@@ -1183,6 +1185,8 @@ namespace AntdUI
             }
         }
 
+        internal float SubY { get; set; }
+        internal float SubHeight { get; set; }
         internal float ExpandHeight { get; set; }
         internal float ExpandProg { get; set; }
         internal bool ExpandThread { get; set; }
