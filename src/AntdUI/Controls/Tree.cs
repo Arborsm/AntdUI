@@ -587,7 +587,15 @@ namespace AntdUI
                 }
             }
             if (item.Icon != null) g.DrawImage(item.Icon, item.ico_rect);
+            else if (item.IconSvg != null)
+            {
+                using (var _bmp = SvgExtend.GetImgExtend(item.IconSvg, item.ico_rect, fore))
+                {
+                    if (_bmp != null) g.DrawImage(_bmp, item.ico_rect);
+                }
+            }
         }
+
         internal RectangleF PaintBlock(RectangleF rect)
         {
             float size = rect.Height * 0.2F, size2 = size * 2F;
@@ -849,7 +857,7 @@ namespace AntdUI
         }
     }
 
-    public class TreeItem
+    public class TreeItem : NotifyProperty
     {
         public TreeItem() { }
         public TreeItem(string text)
@@ -862,11 +870,45 @@ namespace AntdUI
             Icon = icon;
         }
 
+        Image? icon = null;
         /// <summary>
         /// 图标
         /// </summary>
         [Description("图标"), Category("外观"), DefaultValue(null)]
-        public Image? Icon { get; set; }
+        public Image? Icon
+        {
+            get => icon;
+            set
+            {
+                if (icon == value) return;
+                icon = value;
+                OnPropertyChanged("Icon");
+            }
+        }
+
+        string? iconSvg = null;
+        /// <summary>
+        /// 图标
+        /// </summary>
+        [Description("图标SVG"), Category("外观"), DefaultValue(null)]
+        public string? IconSvg
+        {
+            get => iconSvg;
+            set
+            {
+                if (iconSvg == value) return;
+                iconSvg = value;
+                OnPropertyChanged("IconSvg");
+            }
+        }
+
+        /// <summary>
+        /// 是否包含图片
+        /// </summary>
+        internal bool HasIcon
+        {
+            get => iconSvg != null || Icon != null;
+        }
 
         /// <summary>
         /// 名称
@@ -874,12 +916,21 @@ namespace AntdUI
         [Description("名称"), Category("数据"), DefaultValue(null)]
         public string? Name { get; set; }
 
+        string? text = null;
         /// <summary>
         /// 文本
         /// </summary>
         [Description("文本"), Category("外观"), DefaultValue(null)]
-        public string? Text { get; set; }
-
+        public string? Text
+        {
+            get => text;
+            set
+            {
+                if (text == value) return;
+                text = value;
+                OnPropertyChanged("Text");
+            }
+        }
 
         bool visible = true;
         /// <summary>
@@ -1211,7 +1262,7 @@ namespace AntdUI
                 x += icon_size + gap;
             }
 
-            if (Icon != null)
+            if (HasIcon)
             {
                 ico_rect = new Rectangle(x, arr_rect.Y, arr_rect.Width, arr_rect.Height);
                 x += icon_size + gap;
