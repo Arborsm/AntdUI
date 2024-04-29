@@ -79,8 +79,9 @@ namespace AntdUI
                         }
                         PaintIcon(g, _fore);
                         PaintText(g, _fore, rect_read.Right, rect_read.Bottom);
-                        PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                         g.ResetClip();
+                        g.SetClip(path);
+                        PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                         PaintScroll(g, rect_read, _radius);
                         if (borderWidth > 0)
                         {
@@ -126,6 +127,8 @@ namespace AntdUI
                         }
                         PaintIcon(g, Style.Db.TextQuaternary);
                         PaintText(g, Style.Db.TextQuaternary, rect_read.Right, rect_read.Bottom);
+                        g.ResetClip();
+                        g.SetClip(path);
                         PaintOtherBor(g, rect_read, _radius, _back, _border, _borderActive);
                         g.ResetClip();
                         PaintScroll(g, rect_read, _radius);

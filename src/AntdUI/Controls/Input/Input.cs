@@ -399,7 +399,7 @@ namespace AntdUI
         internal virtual bool HasValue { get => false; }
         void OnAllowClear()
         {
-            bool _is_clear = allowclear && _mouseHover && (!isempty || HasValue);
+            bool _is_clear = !ReadOnly && allowclear && _mouseHover && (!isempty || HasValue);
             if (is_clear == _is_clear) return;
             is_clear = _is_clear;
             CalculateRect();
@@ -506,7 +506,7 @@ namespace AntdUI
         /// 只读
         /// </summary>
         [Description("只读"), Category("行为"), DefaultValue(false)]
-        public bool ReadOnly { get; set; } = false;
+        public bool ReadOnly { get; set; }
 
         bool multiline = false;
         /// <summary>

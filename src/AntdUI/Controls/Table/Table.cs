@@ -46,7 +46,7 @@ namespace AntdUI
             set
             {
                 if (columns == value) return;
-                if (dataSource == null)
+                if (!EmptyHeader && dataSource == null)
                 {
                     columns = value;
                     ExtractHeader();
