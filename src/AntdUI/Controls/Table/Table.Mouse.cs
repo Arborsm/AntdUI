@@ -144,7 +144,6 @@ namespace AntdUI
 
         #region 鼠标按下
 
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (ClipboardCopy) Focus();
@@ -163,6 +162,18 @@ namespace AntdUI
                             if (it.CONTAINS(e.X, e.Y))
                             {
                                 SelectedIndex = -1;
+                                if (moveheaders.Length > 0)
+                                {
+                                    foreach (var item in moveheaders)
+                                    {
+                                        if (item.rect.Contains(e.Location))
+                                        {
+                                            item.x = e.X;
+                                            item.MouseDown = true;
+                                            return;
+                                        }
+                                    }
+                                }
                                 if (has_check)
                                 {
                                     if (showFixedColumnL && fixedColumnL != null)
@@ -190,6 +201,18 @@ namespace AntdUI
                         else if (it.CONTAINS(e.X, py))
                         {
                             SelectedIndex = -1;
+                            if (moveheaders.Length > 0)
+                            {
+                                foreach (var item in moveheaders)
+                                {
+                                    if (item.rect.Contains(e.Location))
+                                    {
+                                        item.x = e.X;
+                                        item.MouseDown = true;
+                                        return;
+                                    }
+                                }
+                            }
                             if (has_check)
                             {
                                 if (showFixedColumnL && fixedColumnL != null)
@@ -280,6 +303,23 @@ namespace AntdUI
             if (scrollBar.MouseUpY() && scrollBar.MouseUpX())
             {
                 if (rows == null) return;
+                if (moveheaders.Length > 0)
+                {
+                    foreach (var item in moveheaders)
+                    {
+                        if (item.MouseDown)
+                        {
+                            int width = item.width + e.X - item.x;
+                            if (width < item.min_width) width = item.min_width;
+                            if (tmpcol_width.ContainsKey(item.i)) tmpcol_width[item.i] = width;
+                            else tmpcol_width.Add(item.i, width);
+                            item.MouseDown = false;
+                            LoadLayout();
+                            Invalidate();
+                            return;
+                        }
+                    }
+                }
                 int sx = scrollBar.ValueX, sy = scrollBar.ValueY;
                 int px = e.X + sx, py = e.Y + sy;
                 for (int i_row = 0; i_row < rows.Length; i_row++)
@@ -630,7 +670,7 @@ namespace AntdUI
 
         protected override void OnLostFocus(EventArgs e)
         {
-            SelectedIndex = -1;
+            if (LostFocusClearSelection) SelectedIndex = -1;
             CloseTip(true);
             base.OnLostFocus(e);
         }
@@ -643,6 +683,23 @@ namespace AntdUI
             if (scrollBar.MouseMoveY(e.Location) && scrollBar.MouseMoveX(e.Location))
             {
                 if (rows == null || inEditMode) return;
+
+                if (moveheaders.Length > 0)
+                {
+                    foreach (var item in moveheaders)
+                    {
+                        if (item.MouseDown)
+                        {
+                            int width = item.width + e.X - item.x;
+                            if (width < item.min_width) return;
+                            if (tmpcol_width.ContainsKey(item.i)) tmpcol_width[item.i] = width;
+                            else tmpcol_width.Add(item.i, width);
+                            LoadLayout();
+                            Invalidate();
+                            return;
+                        }
+                    }
+                }
                 int hand = 0;
                 int px = e.X + scrollBar.ValueX, py = e.Y + scrollBar.ValueY;
                 foreach (RowTemplate it in rows)
@@ -653,6 +710,17 @@ namespace AntdUI
                         {
                             if (it.CONTAINS(e.X, e.Y))
                             {
+                                if (moveheaders.Length > 0)
+                                {
+                                    foreach (var item in moveheaders)
+                                    {
+                                        if (item.rect.Contains(e.Location))
+                                        {
+                                            Cursor = Cursors.VSplit;
+                                            return;
+                                        }
+                                    }
+                                }
                                 if (has_check)
                                 {
                                     if (showFixedColumnL && fixedColumnL != null)
@@ -672,6 +740,17 @@ namespace AntdUI
                         }
                         else if (it.CONTAINS(e.X, py))
                         {
+                            if (moveheaders.Length > 0)
+                            {
+                                foreach (var item in moveheaders)
+                                {
+                                    if (item.rect.Contains(e.Location))
+                                    {
+                                        Cursor = Cursors.VSplit;
+                                        return;
+                                    }
+                                }
+                            }
                             if (has_check)
                             {
                                 if (showFixedColumnL && fixedColumnL != null)

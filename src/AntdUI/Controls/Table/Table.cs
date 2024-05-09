@@ -129,6 +129,18 @@ namespace AntdUI
             }
         }
 
+        /// <summary>
+        /// 手动调整列头宽度
+        /// </summary>
+        [Description("手动调整列头宽度"), Category("行为"), DefaultValue(false)]
+        public bool EnableHeaderResizing { get; set; }
+
+        /// <summary>
+        /// 焦点离开清空选中
+        /// </summary>
+        [Description("焦点离开清空选中"), Category("行为"), DefaultValue(false)]
+        public bool LostFocusClearSelection { get; set; }
+
         bool bordered = false;
         /// <summary>
         /// 显示列边框
@@ -235,7 +247,7 @@ namespace AntdUI
         /// <summary>
         /// 省略文字提示
         /// </summary>
-        [Description("省略文字提示"), Category("外观"), DefaultValue(true)]
+        [Description("省略文字提示"), Category("行为"), DefaultValue(true)]
         public bool ShowTip { get; set; } = true;
 
         #endregion

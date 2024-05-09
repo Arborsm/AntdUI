@@ -334,10 +334,7 @@ namespace AntdUI
             {
                 var size = g.MeasureString(Config.NullText, Font);
                 int icon_size = (int)Math.Ceiling(size.Height * 1.2F), gap = icon_size / 2, gapI = gap / 2, height = (int)Math.Ceiling(size.Height + gap * 2);
-                if (mode == TMenuMode.Horizontal)
-                {
-                    ChangeListHorizontal(rect, g, Items, 0, icon_size, gap, gapI);
-                }
+                if (mode == TMenuMode.Horizontal) ChangeListHorizontal(rect, g, Items, 0, icon_size, gap, gapI);
                 else
                 {
                     CollapseWidth = icon_size * 2 + gap + gapI + Padding.Horizontal;
@@ -416,10 +413,7 @@ namespace AntdUI
             foreach (MenuItem it in items)
             {
                 it.ico_rect = new RectangleF(it.Rect.X + (it.Rect.Width - it.ico_rect.Width) / 2F, it.ico_rect.Y, it.ico_rect.Width, it.ico_rect.Height);
-                if (it.Visible)
-                {
-                    if (it.CanExpand) ChangeUTitle(it.Sub);
-                }
+                if (it.Visible && it.CanExpand) ChangeUTitle(it.Sub);
             }
         }
 
@@ -1372,7 +1366,7 @@ namespace AntdUI
             {
                 if (indent || depth > 1) txt_rect = new RectangleF(_rect.X + (gap * (depth + 1)), _rect.Y, _rect.Width - (gap * 2), _rect.Height);
                 else txt_rect = new RectangleF(_rect.X + gap, _rect.Y, _rect.Width - (gap * 2), _rect.Height);
-                arr_rect = new RectangleF(_rect.Right - ico_rect.Height - (ico_rect.Height * 0.9F), _rect.Y + (_rect.Height - ico_rect.Height) / 2, ico_rect.Height, ico_rect.Height);
+                arr_rect = new RectangleF(_rect.Right - icon_size - (icon_size * 0.9F), _rect.Y + (_rect.Height - icon_size) / 2, icon_size, icon_size);
             }
             Show = true;
         }

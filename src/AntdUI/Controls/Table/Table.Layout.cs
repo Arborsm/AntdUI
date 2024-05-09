@@ -41,6 +41,32 @@ namespace AntdUI
 
         internal RowTemplate[]? rows = null;
         Rectangle[] dividers = new Rectangle[0], dividerHs = new Rectangle[0];
+        MoveHeader[] moveheaders = new MoveHeader[0];
+
+        internal class MoveHeader
+        {
+            public MoveHeader(Dictionary<int, MoveHeader> dir, Rectangle r, int index, int w, int min)
+            {
+                rect = r;
+                i = index;
+                min_width = min;
+                if (dir.TryGetValue(index, out var find) && find.MouseDown)
+                {
+                    x = find.x;
+                    MouseDown = find.MouseDown;
+                    width = find.width;
+                }
+                else width = w;
+            }
+
+            public Rectangle rect { get; set; }
+
+            public bool MouseDown { get; set; }
+            public int x { get; set; }
+            public int i { get; set; }
+            public int width { get; set; }
+            public int min_width { get; set; }
+        }
 
         void LoadLayout()
         {
@@ -172,7 +198,8 @@ namespace AntdUI
                 check_radius = _checksize * 0.25F * dpi;
                 check_border = _checksize * 0.125F * dpi;
                 int check_size = (int)(_checksize * dpi), gap = (int)(_gap * dpi), gap2 = gap * 2,
-                split = (int)(1F * dpi), split2 = split / 2;
+                split = (int)(1F * dpi), split2 = split / 2,
+                split_move = (int)(6F * dpi), split_move2 = split_move / 2;
 
                 #region 布局高宽
 
@@ -275,6 +302,7 @@ namespace AntdUI
                 #endregion
 
                 List<Rectangle> _dividerHs = new List<Rectangle>(), _dividers = new List<Rectangle>();
+                var MoveHeaders = new List<MoveHeader>();
 
                 var last_row = _rows[_rows.Count - 1];
                 var last = last_row.cells[last_row.cells.Length - 1];
@@ -284,16 +312,27 @@ namespace AntdUI
 
                 int sp2 = split * 2;
                 rect_divider = new Rectangle(rect_read.X + split, rect_read.Y + split, rect_read.Width - sp2, rect_read.Height - sp2);
+
+                var moveheaders_dir = new Dictionary<int, MoveHeader>(moveheaders.Length);
+                foreach (var item in moveheaders) moveheaders_dir.Add(item.i, item);
                 foreach (var row in _rows)
                 {
                     if (row.IsColumn)
                     {
+                        if (EnableHeaderResizing)
+                        {
+                            for (int i = 0; i < row.cells.Length; i++)
+                            {
+                                var it = (TCellColumn)row.cells[i];
+                                MoveHeaders.Add(new MoveHeader(moveheaders_dir, new Rectangle(it.RECT.Right - split_move2, rect.Y, split_move, it.RECT.Height), i, it.RECT.Width, it.MinWidth));
+                            }
+                        }
                         if (bordered)
                         {
                             for (int i = 0; i < row.cells.Length - 1; i++)
                             {
                                 var it = (TCellColumn)row.cells[i];
-                                _dividerHs.Add(new Rectangle(it.rect.Right + gap - split2, rect.Y, split, rect_read.Height));
+                                _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, rect_read.Height));
                             }
                             _dividers.Add(new Rectangle(rect.X, row.RECT.Bottom - split2, rect_read.Width, split));
                         }
@@ -302,7 +341,7 @@ namespace AntdUI
                             for (int i = 0; i < row.cells.Length - 1; i++)
                             {
                                 var it = (TCellColumn)row.cells[i];
-                                _dividerHs.Add(new Rectangle(it.rect.Right + gap - split2, it.rect.Y, split, it.rect.Height));
+                                _dividerHs.Add(new Rectangle(it.RECT.Right - split2, it.rect.Y, split, it.rect.Height));
                             }
                         }
                     }
@@ -315,6 +354,7 @@ namespace AntdUI
                 if (bordered && !iseg) _dividers.RemoveAt(_dividers.Count - 1);
                 dividerHs = _dividerHs.ToArray();
                 dividers = _dividers.ToArray();
+                moveheaders = MoveHeaders.ToArray();
             });
 
             #endregion
@@ -325,15 +365,16 @@ namespace AntdUI
             return _rows.ToArray();
         }
 
+        Dictionary<int, int> tmpcol_width = new Dictionary<int, int>(0);
         Dictionary<int, int> CalculateWidth(Rectangle rect, Dictionary<int, object> col_width, Dictionary<int, AutoWidth> read_width, int check_size, ref bool is_exceed)
         {
             int use_width = rect.Width;
             float max_width = 0;
             foreach (var it in read_width)
             {
-                if (col_width.ContainsKey(it.Key))
+                if (tmpcol_width.TryGetValue(it.Key, out var tw)) max_width += tw;
+                else if (col_width.TryGetValue(it.Key, out var value))
                 {
-                    var value = col_width[it.Key];
                     if (value is int val_int)
                     {
                         if (val_int == -1) max_width += it.Value.value;
@@ -357,9 +398,9 @@ namespace AntdUI
                 is_exceed = true;
                 foreach (var it in read_width)
                 {
-                    if (col_width.ContainsKey(it.Key))
+                    if (tmpcol_width.TryGetValue(it.Key, out var tw)) width_cell.Add(it.Key, tw);
+                    else if (col_width.TryGetValue(it.Key, out var value))
                     {
-                        var value = col_width[it.Key];
                         if (value is int val_int)
                         {
                             if (val_int == -1) width_cell.Add(it.Key, it.Value.value);
@@ -381,9 +422,9 @@ namespace AntdUI
                 var fill_count = new List<int>();
                 foreach (var it in read_width)
                 {
-                    if (col_width.ContainsKey(it.Key))
+                    if (tmpcol_width.TryGetValue(it.Key, out var tw)) width_cell.Add(it.Key, tw);
+                    else if (col_width.TryGetValue(it.Key, out var value))
                     {
-                        var value = col_width[it.Key];
                         if (value is int val_int)
                         {
                             if (val_int == -1) width_cell.Add(it.Key, it.Value.value);
@@ -397,11 +438,7 @@ namespace AntdUI
                         int _check_size = check_size * 2;
                         width_cell.Add(it.Key, _check_size);
                     }
-                    else
-                    {
-                        int value = (int)Math.Ceiling(use_width * (it.Value.value / max_width));
-                        width_cell.Add(it.Key, value);
-                    }
+                    else width_cell.Add(it.Key, (int)Math.Ceiling(use_width * (it.Value.value / max_width)));
                 }
                 int sum_wi = 0;
                 foreach (var it in width_cell) sum_wi += it.Value;
@@ -413,7 +450,6 @@ namespace AntdUI
                 }
                 if (rect_read.Width > sum_wi) rect_read.Width = sum_wi;
             }
-
             return width_cell;
         }
 
