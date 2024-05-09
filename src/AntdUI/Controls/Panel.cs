@@ -189,6 +189,21 @@ namespace AntdUI
             }
         }
 
+        TAlignMini shadowAlign = TAlignMini.None;
+        [Description("阴影方向"), Category("阴影"), DefaultValue(TAlignMini.None)]
+        public TAlignMini ShadowAlign
+        {
+            get => shadowAlign;
+            set
+            {
+                if (shadowAlign == value) return;
+                shadowAlign = value;
+                shadow_temp?.Dispose();
+                shadow_temp = null;
+                OnSizeChanged(EventArgs.Empty);
+            }
+        }
+
         #endregion
 
         #region 背景
@@ -310,7 +325,7 @@ namespace AntdUI
 
         public override Rectangle DisplayRectangle
         {
-            get => ClientRectangle.DeflateRect(Padding, this, borderWidth * Config.Dpi);
+            get => ClientRectangle.DeflateRect(Padding, this, shadowAlign, borderWidth);
         }
 
         #region 渲染
@@ -378,7 +393,7 @@ namespace AntdUI
 
         public override Rectangle ReadRectangle
         {
-            get => ClientRectangle.PaddingRect(this, borderWidth * Config.Dpi);
+            get => ClientRectangle.PaddingRect(this, shadowAlign, borderWidth);
         }
 
         public override GraphicsPath RenderRegion
