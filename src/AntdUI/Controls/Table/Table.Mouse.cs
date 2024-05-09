@@ -144,11 +144,10 @@ namespace AntdUI
 
         #region 鼠标按下
 
-        internal int SelectIndex = -1;
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (ClipboardCopy) Focus();
-            SelectIndex = -1;
             if (scrollBar.MouseDownY(e.Location) && scrollBar.MouseDownX(e.Location))
             {
                 base.OnMouseDown(e);
@@ -163,6 +162,7 @@ namespace AntdUI
                         {
                             if (it.CONTAINS(e.X, e.Y))
                             {
+                                SelectedIndex = -1;
                                 if (has_check)
                                 {
                                     if (showFixedColumnL && fixedColumnL != null)
@@ -189,6 +189,7 @@ namespace AntdUI
                         }
                         else if (it.CONTAINS(e.X, py))
                         {
+                            SelectedIndex = -1;
                             if (has_check)
                             {
                                 if (showFixedColumnL && fixedColumnL != null)
@@ -236,7 +237,6 @@ namespace AntdUI
             {
                 if (e.Button == MouseButtons.Left && cell.Contains(x, y))
                 {
-                    SelectIndex = it.INDEX;
                     ChangeCheckOverall(rows, it, columnCheck, !columnCheck.Checked);
                     return true;
                 }
@@ -247,7 +247,6 @@ namespace AntdUI
         {
             if (cell.CONTAINS(x, y))
             {
-                SelectIndex = cell.ROW.INDEX;
                 cell.MouseDown = true;
                 if (cell is Template template && template.HasBtn && e.Button == MouseButtons.Left)
                 {
@@ -308,6 +307,7 @@ namespace AntdUI
         {
             if (cell.MouseDown)
             {
+                SelectedIndex = i_row;
                 if (e.Button == MouseButtons.Left)
                 {
                     if (cell is TCellCheck checkCell)
@@ -334,12 +334,14 @@ namespace AntdUI
                                         if (cell2 is TCellRadio radioCell2 && radioCell2.Checked)
                                         {
                                             radioCell2.Checked = false;
+                                            rows[i].Checked = false;
                                             cell2.PROPERTY?.SetValue(cell2.VALUE, radioCell2.Checked);
                                         }
                                     }
                                 }
                             }
                             radioCell.Checked = true;
+                            it.Checked = true;
                             cell.PROPERTY?.SetValue(cell.VALUE, radioCell.Checked);
                             CheckedChanged?.Invoke(this, radioCell.Checked, it.RECORD, i_row, i_col);
                         }
@@ -626,6 +628,13 @@ namespace AntdUI
 
         #endregion
 
+        protected override void OnLostFocus(EventArgs e)
+        {
+            SelectedIndex = -1;
+            CloseTip(true);
+            base.OnLostFocus(e);
+        }
+
         #region 鼠标移动
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -766,6 +775,42 @@ namespace AntdUI
                     }
                 }
             }
+            else if (ShowTip && cel.CONTAINS(x, y))
+            {
+                var moveid = cel.INDEX + "_" + cel.ROW.INDEX;
+                if (oldmove != moveid)
+                {
+                    CloseTip();
+                    oldmove = moveid;
+                    if (cel.MinWidth > cel.RECT.Width)
+                    {
+                        var text = cel.ToString();
+                        if (text != null)
+                        {
+                            var _rect = RectangleToScreen(ClientRectangle);
+                            var rect = new Rectangle(_rect.X + cel.RECT.X, _rect.Y + cel.RECT.Y, cel.RECT.Width, cel.RECT.Height);
+                            if (tooltipForm == null)
+                            {
+                                tooltipForm = new TooltipForm(rect, text, new TooltipConfig
+                                {
+                                    Font = Font,
+                                    ArrowAlign = TAlign.Top,
+                                });
+                                tooltipForm.Show(this);
+                            }
+                            else tooltipForm.SetText(rect, text);
+                        }
+                    }
+                }
+            }
+        }
+        string? oldmove = null;
+        TooltipForm? tooltipForm = null;
+        void CloseTip(bool clear = false)
+        {
+            tooltipForm?.IClose();
+            tooltipForm = null;
+            if (clear) oldmove = null;
         }
 
         #endregion
@@ -801,12 +846,14 @@ namespace AntdUI
             base.OnMouseLeave(e);
             scrollBar.Leave();
             ILeave();
+            CloseTip(true);
         }
         protected override void OnLeave(EventArgs e)
         {
             base.OnLeave(e);
             scrollBar.Leave();
             ILeave();
+            CloseTip(true);
         }
 
         void ILeave()

@@ -27,7 +27,7 @@ namespace AntdUI
             switch (keyData)
             {
                 case Keys.Control | Keys.C:
-                    if (ClipboardCopy && rows != null && SelectIndex > -1) return CopyData(SelectIndex);
+                    if (ClipboardCopy && rows != null && selectedIndex > -1) return CopyData(selectedIndex);
                     return base.ProcessCmdKey(ref msg, keyData);
             }
             return base.ProcessCmdKey(ref msg, keyData);
