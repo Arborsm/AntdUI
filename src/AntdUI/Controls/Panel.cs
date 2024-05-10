@@ -369,7 +369,7 @@ namespace AntdUI
         /// <param name="rect_read">真实区域</param>
         GraphicsPath DrawShadow(Graphics g, float radius, Rectangle rect_client, RectangleF rect_read)
         {
-            var path = rect_read.RoundPath(radius);
+            var path = rect_read.RoundPath(radius, shadowAlign);
             if (shadow > 0)
             {
                 int shadow = (int)(Shadow * Config.Dpi), shadowOffsetX = (int)(ShadowOffsetX * Config.Dpi), shadowOffsetY = (int)(ShadowOffsetY * Config.Dpi);

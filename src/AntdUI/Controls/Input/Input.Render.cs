@@ -162,9 +162,8 @@ namespace AntdUI
                 }
 
                 float val = scrolly, VrValue = ScrollYMax + ScrollRect.Height;
-                float height = (ScrollRect.Height / VrValue) * ScrollRect.Height;
+                float height = ((ScrollRect.Height / VrValue) * ScrollRect.Height) - 20;
                 if (height < SIZE) height = SIZE;
-                height -= 20;
                 float y = val == 0 ? 0 : (val / (VrValue - ScrollRect.Height)) * (ScrollRect.Height - height);
                 if (ScrollHover) ScrollSlider = new RectangleF(ScrollRect.X + 6, ScrollRect.Y + y, 8, height);
                 else ScrollSlider = new RectangleF(ScrollRect.X + 7, ScrollRect.Y + y, 6, height);

@@ -1027,6 +1027,19 @@ namespace AntdUI
             return RoundPathCore(rect, radius);
         }
 
+        internal static GraphicsPath RoundPath(this RectangleF rect, float radius, TAlignMini shadowAlign)
+        {
+            switch (shadowAlign)
+            {
+                case TAlignMini.Top: return RoundPath(rect, radius, true, true, false, false);
+                case TAlignMini.Bottom: return RoundPath(rect, radius, false, false, true, true);
+                case TAlignMini.Left: return RoundPath(rect, radius, true, false, false, true);
+                case TAlignMini.Right: return RoundPath(rect, radius, false, true, true, false);
+                case TAlignMini.None:
+                default: return RoundPathCore(rect, radius);
+            }
+        }
+
         /// <summary>
         /// 自定义圆角
         /// </summary>
