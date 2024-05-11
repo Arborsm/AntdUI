@@ -227,7 +227,8 @@ namespace AntdUI
 
         void PaintText(Graphics g, Color _fore, int w, int h)
         {
-            g.SetClip(rect_text);
+            if (multiline) g.SetClip(rect_text);
+            else g.SetClip(new Rectangle(rect_text.X, 0, rect_text.Width, Height));
             if (cache_font != null)
             {
                 g.TranslateTransform(-ScrollX, -ScrollY);
@@ -241,7 +242,7 @@ namespace AntdUI
                         for (int i = selectionStartTemp; i <= end; i++)
                         {
                             var last = cache_font[i];
-                            if (first.rect.Y != last.rect.Y || last.retun)
+                            if (first.rect.Y != last.rect.Y || last.retun > 0)
                             {
                                 //先渲染上一行
                                 if (i > 0) g.FillRectangle(brush, new Rectangle(first.rect.X, first.rect.Y, cache_font[i - 1].rect.Right - first.rect.X, first.rect.Height));

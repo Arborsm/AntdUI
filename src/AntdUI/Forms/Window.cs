@@ -17,8 +17,10 @@
 // QQ: 17379620
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Vanara.PInvoke;
@@ -134,10 +136,10 @@ namespace AntdUI
                     DwmExtendFrameIntoClientArea(handle, new MARGINS(0, 0, 1, 0));
                     break;
                 case WindowMessage.WM_NCCALCSIZE when m.WParam != IntPtr.Zero:
-                    if (WmNCCalcSize(ref m)) return;
+                        if (WmNCCalcSize(ref m)) return;
                     break;
                 case WindowMessage.WM_NCACTIVATE:
-                    if (WmNCActivate(ref m)) return;
+                        if (WmNCActivate(ref m)) return;
                     break;
                 case WindowMessage.WM_SIZE:
                     WmSize(ref m);
@@ -506,7 +508,11 @@ namespace AntdUI
         void WmSize(ref System.Windows.Forms.Message m)
         {
             if (m.WParam == SIZE_MINIMIZED) WinState = WState.Minimize;
-            else if (m.WParam == SIZE_MAXIMIZED) WinState = WState.Maximize;
+            else if (m.WParam == SIZE_MAXIMIZED)
+            {
+                WinState = WState.Maximize;
+                _shouldPerformMaximiazedState = true;
+            }
             else if (m.WParam == SIZE_RESTORED) WinState = WState.Restore;
         }
 
@@ -546,7 +552,6 @@ namespace AntdUI
         bool WmNCActivate(ref System.Windows.Forms.Message m)
         {
             if (m.HWnd == IntPtr.Zero) return false;
-            //IsWindowActivated = m.WParam != IntPtr.Zero;
             if (IsIconic(m.HWnd)) return false;
             m.Result = DefWindowProc(m.HWnd, (uint)m.Msg, m.WParam, new IntPtr(-1));
             return true;
@@ -580,6 +585,65 @@ namespace AntdUI
                 Bottom = rect.bottom - screenRect.Bottom,
                 Right = rect.right - screenRect.Right
             };
+        }
+
+        protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+        {
+            if (_shouldPerformMaximiazedState && base.WindowState != FormWindowState.Minimized)
+            {
+                if (y != Top) y = Top;
+                if (x != Left) x = Left;
+                _shouldPerformMaximiazedState = false;
+            }
+            var size = PatchWindowSizeInRestoreWindowBoundsIfNecessary(width, height);
+            base.SetBoundsCore(x, y, size.Width, size.Height, specified);
+        }
+
+        protected override Rectangle GetScaledBounds(Rectangle bounds, SizeF factor, BoundsSpecified specified)
+        {
+            var rect = base.GetScaledBounds(bounds, factor, specified);
+            if (!GetStyle(ControlStyles.FixedWidth) && (specified & BoundsSpecified.Width) != BoundsSpecified.None)
+            {
+                var clientWidth = bounds.Width;// - sz.Width;
+                rect.Width = (int)Math.Round((double)(clientWidth * factor.Width));// + sz.Width;
+            }
+            if (!GetStyle(ControlStyles.FixedHeight) && (specified & BoundsSpecified.Height) != BoundsSpecified.None)
+            {
+                var clientHeight = bounds.Height;// - sz.Height;
+                rect.Height = (int)Math.Round((double)(clientHeight * factor.Height));// + sz.Height;
+            }
+            return rect;
+        }
+
+        bool _shouldPerformMaximiazedState = false;
+
+        Size PatchWindowSizeInRestoreWindowBoundsIfNecessary(int width, int height)
+        {
+            if (WindowState == FormWindowState.Normal)
+            {
+                var restoredWindowBoundsSpecified = typeof(Form).GetField("restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance);
+                var restoredSpecified = (BoundsSpecified)restoredWindowBoundsSpecified!.GetValue(this)!;
+
+                if ((restoredSpecified & BoundsSpecified.Size) != BoundsSpecified.None)
+                {
+                    var formStateExWindowBoundsFieldInfo = typeof(Form).GetField("FormStateExWindowBoundsWidthIsClientSize", BindingFlags.NonPublic | BindingFlags.Static);
+                    var formStateExFieldInfo = typeof(Form).GetField("formStateEx", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_formStateEx", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var restoredBoundsFieldInfo = typeof(Form).GetField("restoredWindowBounds", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_restoredWindowBounds", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (formStateExWindowBoundsFieldInfo != null && formStateExFieldInfo != null && restoredBoundsFieldInfo != null)
+                    {
+                        var restoredWindowBounds = (Rectangle)restoredBoundsFieldInfo.GetValue(this)!;
+                        var section = (BitVector32.Section)formStateExWindowBoundsFieldInfo.GetValue(this)!;
+                        var vector = (BitVector32)formStateExFieldInfo.GetValue(this)!;
+                        if (vector[section] == 1)
+                        {
+                            width = restoredWindowBounds.Width;// + borders.Horizontal;
+                            height = restoredWindowBounds.Height;
+                        }
+                    }
+                }
+            }
+            return new Size(width, height);
         }
 
         #endregion

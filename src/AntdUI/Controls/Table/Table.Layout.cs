@@ -329,10 +329,21 @@ namespace AntdUI
                         }
                         if (bordered)
                         {
-                            for (int i = 0; i < row.cells.Length - 1; i++)
+                            if (iseg)
                             {
-                                var it = (TCellColumn)row.cells[i];
-                                _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, rect_read.Height));
+                                for (int i = 0; i < row.cells.Length - 1; i++)
+                                {
+                                    var it = (TCellColumn)row.cells[i];
+                                    _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, it.RECT.Height));
+                                }
+                            }
+                            else
+                            {
+                                for (int i = 0; i < row.cells.Length - 1; i++)
+                                {
+                                    var it = (TCellColumn)row.cells[i];
+                                    _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, rect_read.Height));
+                                }
                             }
                             _dividers.Add(new Rectangle(rect.X, row.RECT.Bottom - split2, rect_read.Width, split));
                         }

@@ -35,23 +35,7 @@ namespace AntdUI
             var rect = ClientRectangle;
             if (rows == null)
             {
-                if (Empty)
-                {
-                    using (var fore = new SolidBrush(Style.Db.Text))
-                    {
-                        string emptytext = EmptyText ?? Localization.Provider?.GetLocalizedString("NoData") ?? "暂无数据";
-                        if (EmptyImage == null) g.DrawString(emptytext, Font, fore, rect, stringCenter);
-                        else
-                        {
-                            int gap = (int)(_gap * Config.Dpi);
-                            var size = g.MeasureString(emptytext, Font);
-                            RectangleF rect_img = new RectangleF(rect.X + (rect.Width - EmptyImage.Width) / 2F, rect.Y + (rect.Height - EmptyImage.Height) / 2F - size.Height, EmptyImage.Width, EmptyImage.Height),
-                                rect_font = new RectangleF(rect.X, rect_img.Bottom + gap, rect.Width, size.Height);
-                            g.DrawImage(EmptyImage, rect_img);
-                            g.DrawString(emptytext, Font, fore, rect_font, stringCenter);
-                        }
-                    }
-                }
+                if (Empty) PaintEmpty(g, rect);
                 base.OnPaint(e);
                 return;
             }
@@ -152,7 +136,7 @@ namespace AntdUI
                     }
                 }
             }
-
+            if (EmptyHeader && Empty && rows.Length == 1) PaintEmpty(g, rect);
             scrollBar.Paint(g);
             base.OnPaint(e);
         }
@@ -1107,6 +1091,24 @@ namespace AntdUI
         }
 
         #endregion
+
+        void PaintEmpty(Graphics g, Rectangle rect)
+        {
+            using (var fore = new SolidBrush(Style.Db.Text))
+            {
+                string emptytext = EmptyText ?? Localization.Provider?.GetLocalizedString("NoData") ?? "暂无数据";
+                if (EmptyImage == null) g.DrawString(emptytext, Font, fore, rect, stringCenter);
+                else
+                {
+                    int gap = (int)(_gap * Config.Dpi);
+                    var size = g.MeasureString(emptytext, Font);
+                    RectangleF rect_img = new RectangleF(rect.X + (rect.Width - EmptyImage.Width) / 2F, rect.Y + (rect.Height - EmptyImage.Height) / 2F - size.Height, EmptyImage.Width, EmptyImage.Height),
+                        rect_font = new RectangleF(rect.X, rect_img.Bottom + gap, rect.Width, size.Height);
+                    g.DrawImage(EmptyImage, rect_img);
+                    g.DrawString(emptytext, Font, fore, rect_font, stringCenter);
+                }
+            }
+        }
 
         static StringFormat StringF(Column column)
         {
