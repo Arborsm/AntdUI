@@ -1345,7 +1345,7 @@ namespace AntdUI
 
         public static void PaintBadge(this IControl control, RectangleF rect, Graphics g)
         {
-            var color = control.BadgeBack.HasValue ? control.BadgeBack.Value : Style.Db.Error;
+            var color = control.BadgeBack ?? Style.Db.Error;
             if (control.Badge != null)
             {
                 using (var brush_fore = new SolidBrush(Style.Db.ErrorColor))
@@ -1406,7 +1406,7 @@ namespace AntdUI
 
         public static void PaintBadge(this IControl control, DateBadge badge, Font font, RectangleF rect, Graphics g)
         {
-            var color = badge.Fill.HasValue ? badge.Fill.Value : control.BadgeBack.HasValue ? control.BadgeBack.Value : Style.Db.Error;
+            var color = badge.Fill ?? control.BadgeBack ?? Style.Db.Error;
             using (var brush_fore = new SolidBrush(Style.Db.ErrorColor))
             {
                 if (badge.Count == 0)
@@ -1466,7 +1466,7 @@ namespace AntdUI
         }
         public static void PaintBadge(this Tabs control, TabsBadge badge, RectangleF rect, Font font, Graphics g)
         {
-            var color = badge.Fill.HasValue ? badge.Fill.Value : control.BadgeBack.HasValue ? control.BadgeBack.Value : Style.Db.Error;
+            var color = badge.Fill ?? control.BadgeBack ?? Style.Db.Error;
             using (var brush_fore = new SolidBrush(Style.Db.ErrorColor))
             {
                 if (badge.Count == 0)

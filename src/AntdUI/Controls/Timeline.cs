@@ -199,7 +199,7 @@ namespace AntdUI
             if (rect.Width == 0 || rect.Height == 0) return;
             var g = e.Graphics.High();
             g.TranslateTransform(0, -scroll.Value);
-            Color color_fore = fore.HasValue ? fore.Value : Style.Db.Text;
+            Color color_fore = fore ?? Style.Db.Text;
             using (var brush_split = new SolidBrush(Style.Db.Split))
             {
                 foreach (var it in splits)

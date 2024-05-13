@@ -44,11 +44,11 @@ namespace AntdUI
 
                 using (var path = Path(rect_read, _radius))
                 {
-                    Color _back = back.HasValue ? back.Value : Style.Db.BgContainer,
-                        _fore = fore.HasValue ? fore.Value : Style.Db.Text,
-                       _border = borderColor.HasValue ? borderColor.Value : Style.Db.BorderColor,
-                       _borderHover = BorderHover.HasValue ? BorderHover.Value : Style.Db.PrimaryHover,
-                   _borderActive = BorderActive.HasValue ? BorderActive.Value : Style.Db.Primary;
+                    Color _back = back ?? Style.Db.BgContainer,
+                        _fore = fore ?? Style.Db.Text,
+                       _border = borderColor ?? Style.Db.BorderColor,
+                       _borderHover = BorderHover ?? Style.Db.PrimaryHover,
+                   _borderActive = BorderActive ?? Style.Db.Primary;
 
                     switch (status)
                     {
@@ -190,14 +190,14 @@ namespace AntdUI
                     g.DrawString(prefixText, Font, fore, rect_l, sf_center);
                 }
             }
-            else if (imageSvg != null)
+            else if (prefixSvg != null)
             {
-                using (var _bmp = SvgExtend.GetImgExtend(imageSvg, rect_l, fore.HasValue ? fore.Value : Style.Db.Text))
+                using (var _bmp = SvgExtend.GetImgExtend(prefixSvg, rect_l, fore ?? Style.Db.Text))
                 {
                     if (_bmp != null) g.DrawImage(_bmp, rect_l);
                 }
             }
-            else if (image != null) g.DrawImage(image, rect_l);
+            else if (prefix != null) g.DrawImage(prefix, rect_l);
 
             if (is_clear)
             {
@@ -216,7 +216,7 @@ namespace AntdUI
             }
             else if (suffixSvg != null)
             {
-                using (var _bmp = SvgExtend.GetImgExtend(suffixSvg, rect_r, fore.HasValue ? fore.Value : Style.Db.Text))
+                using (var _bmp = SvgExtend.GetImgExtend(suffixSvg, rect_r, fore ?? Style.Db.Text))
                 {
                     if (_bmp != null) g.DrawImage(_bmp, rect_r);
                 }

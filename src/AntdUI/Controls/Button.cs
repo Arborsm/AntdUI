@@ -371,6 +371,22 @@ namespace AntdUI
 
         #region 图片
 
+        float iconratio = .7F;
+        /// <summary>
+        /// 图标比例
+        /// </summary>
+        [Description("图标比例"), Category("外观"), DefaultValue(.7F)]
+        public float IconRatio
+        {
+            get => iconratio;
+            set
+            {
+                if (iconratio == value) return;
+                iconratio = value;
+                if (BeforeAutoSize()) Invalidate();
+            }
+        }
+
         Image? image = null;
         /// <summary>
         /// 图像
@@ -853,11 +869,14 @@ namespace AntdUI
                 if (loading)
                 {
                     float loading_size = rect_read.Height * 0.06F;
-                    float size = rect_read.Height * 0.6F;
-                    using (var brush = new Pen(color, loading_size))
+                    if (loading_size > 0)
                     {
-                        brush.StartCap = brush.EndCap = LineCap.Round;
-                        g.DrawArc(brush, new RectangleF(rect_read.X + (rect_read.Width - size) / 2F, rect_read.Y + (rect_read.Height - size) / 2F, size, size), AnimationLoadingValue, 100);
+                        float size = rect_read.Height * 0.6F;
+                        using (var brush = new Pen(color, loading_size))
+                        {
+                            brush.StartCap = brush.EndCap = LineCap.Round;
+                            g.DrawArc(brush, new RectangleF(rect_read.X + (rect_read.Width - size) / 2F, rect_read.Y + (rect_read.Height - size) / 2F, size, size), AnimationLoadingValue, 100);
+                        }
                     }
                 }
                 else
@@ -893,7 +912,7 @@ namespace AntdUI
                 if (has_left || has_rigth)
                 {
                     int font_width = font_size.Width;
-                    int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
+                    int icon_size = (int)(font_size.Height * iconratio), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
 
                     if (has_left && has_rigth)
                     {
@@ -1080,7 +1099,7 @@ namespace AntdUI
                 if (has_left || has_rigth)
                 {
                     int font_width = font_size.Width;
-                    int icon_size = (int)(font_size.Height * .7F), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
+                    int icon_size = (int)(font_size.Height * iconratio), sps = (int)(font_size.Height * .4F), sps2 = sps * 2, sp = (int)(font_size.Height * .25F);
 
                     if (has_left && has_rigth)
                     {

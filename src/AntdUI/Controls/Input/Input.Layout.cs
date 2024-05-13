@@ -417,11 +417,11 @@ namespace AntdUI
         void RectAuto(Rectangle rect, int sps, int sps2)
         {
             int read_height = CurrentCaret.Height;
-            bool has_prefixText = prefixText != null, has_suffixText = suffixText != null, has_image = HasImage, has_suffix = HasSuffix;
+            bool has_prefixText = prefixText != null, has_suffixText = suffixText != null, has_prefix = HasPrefix, has_suffix = HasSuffix;
 
             if (is_clear)
             {
-                int icon_size = (int)(read_height * .7F);
+                int icon_size = (int)(read_height * iconratio);
                 if (has_prefixText)
                 {
                     Helper.GDI(g =>
@@ -430,12 +430,12 @@ namespace AntdUI
                         RectLR(rect, read_height, sps, sps2, size_L.Width, size_L.Height, icon_size, icon_size);
                     });
                 }
-                else if (has_image) RectLR(rect, read_height, sps, sps2, icon_size, icon_size, icon_size, icon_size);
+                else if (has_prefix) RectLR(rect, read_height, sps, sps2, icon_size, icon_size, icon_size, icon_size);
                 else RectR(rect, read_height, sps, sps2, icon_size, icon_size);
             }
             else
             {
-                if (has_prefixText || has_suffixText || has_image || has_suffix)
+                if (has_prefixText || has_suffixText || has_prefix || has_suffix)
                 {
                     if (has_prefixText || has_suffixText)
                     {
@@ -448,14 +448,14 @@ namespace AntdUI
                             }
                             else
                             {
-                                if (has_image || has_suffix)
+                                if (has_prefix || has_suffix)
                                 {
                                     if (has_prefixText)
                                     {
                                         Size size_L = g.MeasureString(prefixText, Font).Size();
                                         if (has_suffix)
                                         {
-                                            int icon_size = (int)(read_height * .7F);
+                                            int icon_size = (int)(read_height * iconratio);
                                             RectLR(rect, read_height, sps, sps2, size_L.Width, size_L.Height, icon_size, icon_size);
                                         }
                                         else RectL(rect, read_height, sps, sps2, size_L.Width, size_L.Height);
@@ -463,9 +463,9 @@ namespace AntdUI
                                     else
                                     {
                                         Size size_R = g.MeasureString(suffixText, Font).Size();
-                                        if (has_image)
+                                        if (has_prefix)
                                         {
-                                            int icon_size = (int)(read_height * .7F);
+                                            int icon_size = (int)(read_height * iconratio);
                                             RectLR(rect, read_height, sps, sps2, icon_size, icon_size, size_R.Width, size_R.Height);
                                         }
                                         else RectR(rect, read_height, sps, sps2, size_R.Width, size_R.Height);
@@ -489,11 +489,11 @@ namespace AntdUI
                     }
                     else
                     {
-                        if (has_image || has_suffix)
+                        if (has_prefix || has_suffix)
                         {
-                            int icon_size = (int)(read_height * .7F);
-                            if (has_image && has_suffix) RectLR(rect, read_height, sps, sps2, icon_size, icon_size, icon_size, icon_size);
-                            else if (has_image) RectL(rect, read_height, sps, sps2, icon_size, icon_size);
+                            int icon_size = (int)(read_height * iconratio);
+                            if (has_prefix && has_suffix) RectLR(rect, read_height, sps, sps2, icon_size, icon_size, icon_size, icon_size);
+                            else if (has_prefix) RectL(rect, read_height, sps, sps2, icon_size, icon_size);
                             else RectR(rect, read_height, sps, sps2, icon_size, icon_size);
                         }
                     }

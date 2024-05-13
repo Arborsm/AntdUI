@@ -1636,7 +1636,7 @@ namespace AntdUI
 
             public void Paint(Graphics g, TCell it, Font font, SolidBrush fore)
             {
-                Color _color = Value.Fill.HasValue ? Value.Fill.Value : Style.Db.Primary, _back = Value.Back.HasValue ? Value.Back.Value : Style.Db.FillSecondary;
+                Color _color = Value.Fill ?? Style.Db.Primary, _back = Value.Back ?? Style.Db.FillSecondary;
                 if (Value.Shape == TShape.Circle)
                 {
                     float w = Value.Radius * Config.Dpi;

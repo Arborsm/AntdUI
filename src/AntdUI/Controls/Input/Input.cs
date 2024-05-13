@@ -259,43 +259,98 @@ namespace AntdUI
 
         #region 图标
 
-        Image? image = null;
+        float iconratio = .7F;
+        /// <summary>
+        /// 图标比例
+        /// </summary>
+        [Description("图标比例"), Category("外观"), DefaultValue(.7F)]
+        public float IconRatio
+        {
+            get => iconratio;
+            set
+            {
+                if (iconratio == value) return;
+                iconratio = value;
+                CalculateRect();
+                Invalidate();
+            }
+        }
+
+        Image? prefix = null;
+        /// <summary>
+        /// 前缀
+        /// </summary>
+        [Description("前缀"), Category("外观"), DefaultValue(null)]
+        public Image? Prefix
+        {
+            get => prefix;
+            set
+            {
+                if (prefix == value) return;
+                prefix = value;
+                CalculateRect();
+                Invalidate();
+            }
+        }
+
+        string? prefixSvg = null;
+        /// <summary>
+        /// 前缀SVG
+        /// </summary>
+        [Description("前缀SVG"), Category("外观"), DefaultValue(null)]
+        public string? PrefixSvg
+        {
+            get => prefixSvg;
+            set
+            {
+                if (prefixSvg == value) return;
+                prefixSvg = value;
+                CalculateRect();
+                Invalidate();
+            }
+        }
+
+        #region 旧的
+
         /// <summary>
         /// 图标
         /// </summary>
         [Description("图标"), Category("外观"), DefaultValue(null)]
+        [Obsolete("使用 Prefix 属性替代"), Browsable(false)]
         public Image? Image
         {
-            get => image;
+            get => prefix;
             set
             {
-                if (image == value) return;
-                image = value;
+                if (prefix == value) return;
+                prefix = value;
                 CalculateRect();
                 Invalidate();
             }
         }
 
-        string? imageSvg = null;
         [Description("图标SVG"), Category("外观"), DefaultValue(null)]
+        [Obsolete("使用 PrefixSvg 属性替代"), Browsable(false)]
         public string? ImageSvg
         {
-            get => imageSvg;
+            get => prefixSvg;
             set
             {
-                if (imageSvg == value) return;
-                imageSvg = value;
+                if (prefixSvg == value) return;
+                prefixSvg = value;
                 CalculateRect();
                 Invalidate();
             }
         }
 
+        #endregion
+
         /// <summary>
-        /// 是否包含图片
+        /// 是否包含前缀
         /// </summary>
-        public bool HasImage
+        public bool HasPrefix
         {
-            get => imageSvg != null || image != null;
+            get => prefixSvg != null || prefix != null;
         }
 
         Image? suffix = null;
@@ -316,6 +371,9 @@ namespace AntdUI
         }
 
         string? suffixSvg = null;
+        /// <summary>
+        /// 后缀SVG
+        /// </summary>
         [Description("后缀SVG"), Category("外观"), DefaultValue(null)]
         public string? SuffixSvg
         {
