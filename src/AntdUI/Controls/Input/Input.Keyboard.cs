@@ -193,7 +193,6 @@ namespace AntdUI
             SelectionStart++;
         }
 
-        bool handkey = false;
         void ProcessUpKey()
         {
             SelectionLength = 0;
@@ -203,11 +202,9 @@ namespace AntdUI
                 int end = SelectionStart;
                 if (end > cache_font.Length - 1) end = cache_font.Length - 1;
                 var it = cache_font[end];
-                handkey = true;
                 var nearest = FindNearestFont(it.rect.X + it.rect.Width / 2, it.rect.Y - it.rect.Height / 2, cache_font, out _);
                 if (nearest == null || nearest.i == selectionStart) SelectionStart--;
                 else SelectionStart = nearest.i;
-                handkey = false;
             }
         }
 
@@ -220,11 +217,18 @@ namespace AntdUI
                 int end = SelectionStart;
                 if (end > cache_font.Length - 1) return;
                 var it = cache_font[end];
-                handkey = true;
-                var nearest = FindNearestFont(it.rect.X + it.rect.Width / 2, it.rect.Bottom + it.rect.Height / 2, cache_font, out _);
-                if (nearest == null || nearest.i == selectionStart) SelectionStart++;
-                else SelectionStart = nearest.i;
-                handkey = false;
+                if (it.retun == 1)
+                {
+                    var nearest = FindNearestFont(it.rect_old.Right, it.rect_old.Bottom + it.rect_old.Height / 2, cache_font, out _);
+                    if (nearest == null || nearest.i == selectionStart) SelectionStart++;
+                    else SelectionStart = nearest.i;
+                }
+                else
+                {
+                    var nearest = FindNearestFont(it.rect.X + it.rect.Width / 2, it.rect.Bottom + it.rect.Height / 2, cache_font, out _);
+                    if (nearest == null || nearest.i == selectionStart) SelectionStart++;
+                    else SelectionStart = nearest.i;
+                }
             }
         }
 

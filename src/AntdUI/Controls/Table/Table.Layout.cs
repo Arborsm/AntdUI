@@ -552,7 +552,8 @@ namespace AntdUI
                     {
                         tag.Value.Changed = key =>
                         {
-                            Invalidate();
+                            if (key == "Text") LoadLayout();
+                            else Invalidate();
                         };
                     }
                     else if (it is TemplateImage image)
@@ -566,14 +567,16 @@ namespace AntdUI
                     {
                         link.Value.Changed = key =>
                         {
-                            Invalidate();
+                            if (key == "Text") LoadLayout();
+                            else Invalidate();
                         };
                     }
                     else if (it is TemplateText text)
                     {
                         text.Value.Changed = key =>
                         {
-                            Invalidate();
+                            if (key == "IconRatio" || key == "Prefix" || key == "PrefixSvg" || key == "Suffix" || key == "SuffixSvg") LoadLayout();
+                            else Invalidate();
                         };
                     }
                 }
@@ -686,8 +689,12 @@ namespace AntdUI
                 else if (temp is TCellText text)
                 {
                     var value = temp.PROPERTY.GetValue(data);
-                    text.value = value?.ToString();
-                    Invalidate();
+                    if (value is IList<ICell> || value is ICell) LoadLayout();
+                    else
+                    {
+                        text.value = value?.ToString();
+                        Invalidate();
+                    }
                 }
                 else LoadLayout();
             }

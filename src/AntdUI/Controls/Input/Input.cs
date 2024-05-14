@@ -1181,7 +1181,7 @@ namespace AntdUI
                     else
                     {
                         var it = cache_font[PosIndex];
-                        if (it.retun == 1 && !handkey)
+                        if (it.retun == 1)
                         {
                             if (PosIndex > 0)
                             {

@@ -134,7 +134,7 @@ namespace AntdUI
                 y += gap_x;
                 var _splits = new List<RectangleF>(Items.Count);
                 int i = 0;
-                var font_Description = FontDescription == null ? Font : FontDescription;
+                var font_Description = FontDescription ?? Font;
                 float gap2 = gap * 2F;
                 foreach (TimelineItem it in Items)
                 {
@@ -207,7 +207,7 @@ namespace AntdUI
                     g.FillRectangle(brush_split, it);
                 }
             }
-            var font_Description = FontDescription == null ? Font : FontDescription;
+            var font_Description = FontDescription ?? Font;
             using (var brush_fore = new SolidBrush(color_fore))
             using (var brush_fore2 = new SolidBrush(Style.Db.TextTertiary))
             using (var brush_dotback = new SolidBrush(Style.Db.BgBase))
