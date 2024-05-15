@@ -521,6 +521,9 @@ namespace AntdUI
                             EditModeClose();
                         }
                     });
+                    if (cellText.column.Align == ColumnAlign.Center) edit_input.TextAlign = HorizontalAlignment.Center;
+                    else if (cellText.column.Align == ColumnAlign.Right) edit_input.TextAlign = HorizontalAlignment.Right;
+                    CellBeginEditInputStyle?.Invoke(this, value, it.RECORD, i_row, i_col, ref edit_input);
                     Controls.Add(edit_input);
                     edit_input.Focus();
                 }));
@@ -600,6 +603,12 @@ namespace AntdUI
                                     EditModeClose();
                                 }
                             });
+                            CellBeginEditInputStyle?.Invoke(this, value, it.RECORD, i_row, i_col, ref edit_input);
+                            if (template.PARENT != null)
+                            {
+                                if (template.PARENT.column.Align == ColumnAlign.Center) edit_input.TextAlign = HorizontalAlignment.Center;
+                                else if (template.PARENT.column.Align == ColumnAlign.Right) edit_input.TextAlign = HorizontalAlignment.Right;
+                            }
                             Controls.Add(edit_input);
                             edit_input.Focus();
                         }));

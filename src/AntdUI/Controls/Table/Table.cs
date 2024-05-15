@@ -749,7 +749,6 @@ namespace AntdUI
         /// <summary>
         /// 颜色
         /// </summary>
-        [Description("颜色"), Category("外观"), DefaultValue(null)]
         public Color? Fill
         {
             get => fill;
@@ -1376,7 +1375,6 @@ namespace AntdUI
         /// <summary>
         /// 进度条
         /// </summary>
-        [Description("进度条 0.0-1.0"), Category("数据"), DefaultValue(0F)]
         public float Value
         {
             get => _value;
