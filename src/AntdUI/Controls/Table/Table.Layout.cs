@@ -287,13 +287,15 @@ namespace AntdUI
                             it.SetSize(g, Font, _rect, gap, gap2);
                             if (column.column is ColumnCheck columnCheck)
                             {
+                                column.column.SortOrder = false;
                                 columnCheck.PARENT = this;
                                 //全选
                                 column.rect = new Rectangle(_rect.X + (_rect.Width - check_size) / 2, _rect.Y + (_rect.Height - check_size) / 2, check_size, check_size);
                             }
                             else
                             {
-                                column.rect = new Rectangle(_rect.X + gap, _rect.Y + gap, _rect.Width - gap2, _rect.Height - gap2);
+                                if (column.column.SortOrder) column.rect = new Rectangle(_rect.X + gap, _rect.Y + gap, _rect.Width - gap2 - column.SortWidth, _rect.Height - gap2);
+                                else column.rect = new Rectangle(_rect.X + gap, _rect.Y + gap, _rect.Width - gap2, _rect.Height - gap2);
                                 if (x < column.rect.Right) x = column.rect.Right;
                             }
                         }

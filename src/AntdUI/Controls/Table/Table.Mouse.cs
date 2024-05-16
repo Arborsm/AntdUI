@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -899,7 +900,9 @@ namespace AntdUI
                         if (text != null)
                         {
                             var _rect = RectangleToScreen(ClientRectangle);
-                            var rect = new Rectangle(_rect.X + cel.RECT.X, _rect.Y + cel.RECT.Y, cel.RECT.Width, cel.RECT.Height);
+                            var rect = new Rectangle(_rect.X + cel.RECT.X, _rect.Y + cel.RECT.Y - scrollBar.ValueY, cel.RECT.Width, cel.RECT.Height);
+                            if (showFixedColumnR && fixedColumnR != null && fixedColumnR.Contains(cel.INDEX)) rect.X -= sFixedR;
+
                             if (tooltipForm == null)
                             {
                                 tooltipForm = new TooltipForm(rect, text, new TooltipConfig

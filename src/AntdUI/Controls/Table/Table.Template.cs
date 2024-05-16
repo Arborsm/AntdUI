@@ -832,9 +832,17 @@ namespace AntdUI
             /// </summary>
             public Rectangle rect { get; set; }
 
+            public Rectangle rect_up { get; set; }
+            public Rectangle rect_down { get; set; }
             public void SetSize(Graphics g, Font font, Rectangle _rect, int gap, int gap2)
             {
                 RECT = _rect;
+                if (column.SortOrder)
+                {
+                    int icon_sp = (int)(gap * 0.34F), y = _rect.Y + (_rect.Height - (gap * 2) + icon_sp) / 2;
+                    rect_up = new Rectangle(_rect.Right - gap2, y, gap, gap);
+                    rect_down = new Rectangle(rect_up.X, rect_up.Bottom - icon_sp, gap, gap);
+                }
             }
 
             public Column column { get; set; }
@@ -850,10 +858,12 @@ namespace AntdUI
                 return rect.Contains(x, y);
             }
 
+            internal int SortWidth = 0;
             public SizeF GetSize(Graphics g, Font font, int width, int gap, int gap2)
             {
                 var size = g.MeasureString(value, font);
-                return new SizeF(size.Width + gap2, size.Height);
+                SortWidth = column.SortOrder ? (int)(size.Height * 0.8F) : 0;
+                return new SizeF(size.Width + gap2 + SortWidth, size.Height);
             }
 
             public bool MouseDown { get; set; }

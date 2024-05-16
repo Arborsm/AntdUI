@@ -523,6 +523,11 @@ namespace AntdUI
         /// 列是否固定
         /// </summary>
         public bool Fixed { get; set; }
+
+        /// <summary>
+        /// 头部排序
+        /// </summary>
+        public bool SortOrder { get; set; }
     }
 
     #endregion
