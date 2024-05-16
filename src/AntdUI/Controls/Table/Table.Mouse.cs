@@ -453,12 +453,8 @@ namespace AntdUI
             if (rows == null) return;
             if (it.AnimationHover)
             {
-                ITask.Run(() =>
-                {
-                    System.Threading.Thread.Sleep(100);
-                    OnEditMode(it, cell, i_row, i_col, sx, sy);
-                });
-                return;
+                it.ThreadHover?.Dispose();
+                it.ThreadHover = null;
             }
             if (cell is TCellText cellText)
             {

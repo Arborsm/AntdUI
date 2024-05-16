@@ -1153,11 +1153,11 @@ namespace AntdUI
         #endregion
 
         int CurrentPosIndex = 0;
-        void SetCaretPostion()
+        internal void SetCaretPostion()
         {
             SetCaretPostion(CurrentPosIndex);
         }
-        void SetCaretPostion(int PosIndex)
+        internal void SetCaretPostion(int PosIndex)
         {
             CurrentPosIndex = PosIndex;
             if (showCaret)

@@ -160,7 +160,7 @@ namespace AntdUI
 
             internal float AnimationHoverValue = 0;
             internal bool AnimationHover = false;
-            ITask? ThreadHover = null;
+            internal ITask? ThreadHover = null;
 
             #endregion
 
