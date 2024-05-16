@@ -166,9 +166,10 @@ namespace AntdUI
                                 {
                                     foreach (var item in moveheaders)
                                     {
-                                        if (item.rect.Contains(e.Location))
+                                        if (item.rect.Contains(px, e.Y))
                                         {
                                             item.x = e.X;
+                                            Window.CanHandMessage = false;
                                             item.MouseDown = true;
                                             return;
                                         }
@@ -205,9 +206,10 @@ namespace AntdUI
                             {
                                 foreach (var item in moveheaders)
                                 {
-                                    if (item.rect.Contains(e.Location))
+                                    if (item.rect.Contains(px, py))
                                     {
                                         item.x = e.X;
+                                        Window.CanHandMessage = false;
                                         item.MouseDown = true;
                                         return;
                                     }
@@ -256,7 +258,7 @@ namespace AntdUI
 
         bool MouseDownRowColumn(MouseEventArgs e, RowTemplate it, TCellColumn cell, RowTemplate[] rows, int x, int y)
         {
-            if (cell.tag is ColumnCheck columnCheck)
+            if (cell.column is ColumnCheck columnCheck)
             {
                 if (e.Button == MouseButtons.Left && cell.Contains(x, y))
                 {
@@ -314,6 +316,7 @@ namespace AntdUI
                             if (tmpcol_width.ContainsKey(item.i)) tmpcol_width[item.i] = width;
                             else tmpcol_width.Add(item.i, width);
                             item.MouseDown = false;
+                            Window.CanHandMessage = true;
                             LoadLayout();
                             Invalidate();
                             return;
@@ -713,26 +716,26 @@ namespace AntdUI
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
+            if (moveheaders.Length > 0)
+            {
+                foreach (var item in moveheaders)
+                {
+                    if (item.MouseDown)
+                    {
+                        int width = item.width + e.X - item.x;
+                        if (width < item.min_width) return;
+                        if (tmpcol_width.ContainsKey(item.i)) tmpcol_width[item.i] = width;
+                        else tmpcol_width.Add(item.i, width);
+                        LoadLayout();
+                        Invalidate();
+                        Cursor = Cursors.VSplit;
+                        return;
+                    }
+                }
+            }
             if (scrollBar.MouseMoveY(e.Location) && scrollBar.MouseMoveX(e.Location))
             {
                 if (rows == null || inEditMode) return;
-
-                if (moveheaders.Length > 0)
-                {
-                    foreach (var item in moveheaders)
-                    {
-                        if (item.MouseDown)
-                        {
-                            int width = item.width + e.X - item.x;
-                            if (width < item.min_width) return;
-                            if (tmpcol_width.ContainsKey(item.i)) tmpcol_width[item.i] = width;
-                            else tmpcol_width.Add(item.i, width);
-                            LoadLayout();
-                            Invalidate();
-                            return;
-                        }
-                    }
-                }
                 int hand = 0;
                 int px = e.X + scrollBar.ValueX, py = e.Y + scrollBar.ValueY;
                 foreach (RowTemplate it in rows)
@@ -747,7 +750,7 @@ namespace AntdUI
                                 {
                                     foreach (var item in moveheaders)
                                     {
-                                        if (item.rect.Contains(e.Location))
+                                        if (item.rect.Contains(px, e.Y))
                                         {
                                             Cursor = Cursors.VSplit;
                                             return;
@@ -777,7 +780,7 @@ namespace AntdUI
                             {
                                 foreach (var item in moveheaders)
                                 {
-                                    if (item.rect.Contains(e.Location))
+                                    if (item.rect.Contains(px, py))
                                     {
                                         Cursor = Cursors.VSplit;
                                         return;
@@ -847,7 +850,7 @@ namespace AntdUI
 
         void MouseMoveRowColumn(TCellColumn cel, ref int hand, int x, int y)
         {
-            if (cel.tag is ColumnCheck)
+            if (cel.column is ColumnCheck)
             {
                 if (cel.Contains(x, y)) hand++;
             }

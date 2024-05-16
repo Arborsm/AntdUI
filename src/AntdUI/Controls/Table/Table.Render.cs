@@ -161,8 +161,8 @@ namespace AntdUI
             {
                 foreach (TCellColumn column in row.cells)
                 {
-                    if (column.tag is ColumnCheck) PaintCheck(g, row, column);
-                    else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.align));
+                    if (column.column is ColumnCheck) PaintCheck(g, row, column);
+                    else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
                 }
             }
         }

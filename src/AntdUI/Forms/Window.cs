@@ -17,8 +17,10 @@
 // QQ: 17379620
 
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Vanara.PInvoke;
@@ -141,17 +143,6 @@ namespace AntdUI
                     break;
                 case WindowMessage.WM_SIZE:
                     WmSize(ref m);
-                    break;
-                case WindowMessage.WM_NCHITTEST:
-                    m.Result = TRUE;
-                    return;
-                case WindowMessage.WM_MOUSEMOVE:
-                case WindowMessage.WM_NCMOUSEMOVE:
-                    if (ReadMessage) ResizableMouseMove(PointToClient(MousePosition));
-                    break;
-                case WindowMessage.WM_LBUTTONDOWN:
-                case WindowMessage.WM_NCLBUTTONDOWN:
-                    if (ReadMessage) ResizableMouseDownInternal();
                     break;
             }
             base.WndProc(ref m);
@@ -303,7 +294,6 @@ namespace AntdUI
                 var mode = retval;
                 if (mode != HitTestValues.HTCLIENT && winState == WState.Restore)
                 {
-                    down = true;
                     SetCursorHit(mode);
                     return true;
                 }
@@ -321,9 +311,8 @@ namespace AntdUI
             if (retval != HitTestValues.HTNOWHERE)
             {
                 var mode = retval;
-                if (mode != HitTestValues.HTCLIENT && base.WindowState == FormWindowState.Normal)
+                if (mode != HitTestValues.HTCLIENT && winState == WState.Restore)
                 {
-                    down = true;
                     SetCursorHit(mode);
                     return true;
                 }
@@ -331,7 +320,7 @@ namespace AntdUI
             return false;
         }
 
-        bool down = true;
+        bool is_resizable;
         /// <summary>
         /// 整窗口大小（鼠标按下）
         /// </summary>
@@ -342,33 +331,12 @@ namespace AntdUI
             var mode = HitTest(PointToClient(pointScreen));
             if (mode != HitTestValues.HTCLIENT)
             {
+                is_resizable = true;
                 SetCursorHit(mode);
                 ReleaseCapture();
-                PostMessage(handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
+                SendMessage(handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
+                is_resizable = false;
                 return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 整窗口大小（鼠标按下）
-        /// </summary>
-        /// <returns>可以调整</returns>
-        internal bool ResizableMouseDownInternal()
-        {
-            Point pointScreen = MousePosition;
-            var mode = HitTest(PointToClient(pointScreen));
-            if (mode != HitTestValues.HTCLIENT)
-            {
-                SetCursorHit(mode);
-                ReleaseCapture();
-                PostMessage(handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
-                if (down)
-                {
-                    down = false;
-                    return true;
-                }
-                return false;
             }
             return false;
         }
@@ -454,9 +422,11 @@ namespace AntdUI
             oldCursor.Close();
         }
 
+        public static bool CanHandMessage = true;
         public bool PreFilterMessage(ref System.Windows.Forms.Message m)
         {
-            if (ReadMessage)
+            if (is_resizable) return OnPreFilterMessage(m);
+            if (CanHandMessage && ReadMessage)
             {
                 switch (m.Msg)
                 {
@@ -471,7 +441,7 @@ namespace AntdUI
                     case 0x201:
                         if (isMe(m.HWnd))
                         {
-                            if (ResizableMouseDownInternal()) return true;
+                            if (ResizableMouseDown()) return true;
                         }
                         break;
                 }
@@ -587,6 +557,65 @@ namespace AntdUI
                 Bottom = rect.bottom - screenRect.Bottom,
                 Right = rect.right - screenRect.Right
             };
+        }
+
+        protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+        {
+            if (_shouldPerformMaximiazedState && winState != WState.Maximize)
+            {
+                if (y != Top) y = Top;
+                if (x != Left) x = Left;
+                _shouldPerformMaximiazedState = false;
+            }
+            var size = PatchWindowSizeInRestoreWindowBoundsIfNecessary(width, height);
+            base.SetBoundsCore(x, y, size.Width, size.Height, specified);
+        }
+
+        protected override Rectangle GetScaledBounds(Rectangle bounds, SizeF factor, BoundsSpecified specified)
+        {
+            var rect = base.GetScaledBounds(bounds, factor, specified);
+            if (!GetStyle(ControlStyles.FixedWidth) && (specified & BoundsSpecified.Width) != BoundsSpecified.None)
+            {
+                var clientWidth = bounds.Width;// - sz.Width;
+                rect.Width = (int)Math.Round((double)(clientWidth * factor.Width));// + sz.Width;
+            }
+            if (!GetStyle(ControlStyles.FixedHeight) && (specified & BoundsSpecified.Height) != BoundsSpecified.None)
+            {
+                var clientHeight = bounds.Height;// - sz.Height;
+                rect.Height = (int)Math.Round((double)(clientHeight * factor.Height));// + sz.Height;
+            }
+            return rect;
+        }
+
+        bool _shouldPerformMaximiazedState = false;
+
+        Size PatchWindowSizeInRestoreWindowBoundsIfNecessary(int width, int height)
+        {
+            if (winState == WState.Restore)
+            {
+                var restoredWindowBoundsSpecified = typeof(Form).GetField("restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance);
+                var restoredSpecified = (BoundsSpecified)restoredWindowBoundsSpecified!.GetValue(this)!;
+
+                if ((restoredSpecified & BoundsSpecified.Size) != BoundsSpecified.None)
+                {
+                    var formStateExWindowBoundsFieldInfo = typeof(Form).GetField("FormStateExWindowBoundsWidthIsClientSize", BindingFlags.NonPublic | BindingFlags.Static);
+                    var formStateExFieldInfo = typeof(Form).GetField("formStateEx", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_formStateEx", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var restoredBoundsFieldInfo = typeof(Form).GetField("restoredWindowBounds", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_restoredWindowBounds", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                    if (formStateExWindowBoundsFieldInfo != null && formStateExFieldInfo != null && restoredBoundsFieldInfo != null)
+                    {
+                        var restoredWindowBounds = (Rectangle)restoredBoundsFieldInfo.GetValue(this)!;
+                        var section = (BitVector32.Section)formStateExWindowBoundsFieldInfo.GetValue(this)!;
+                        var vector = (BitVector32)formStateExFieldInfo.GetValue(this)!;
+                        if (vector[section] == 1)
+                        {
+                            width = restoredWindowBounds.Width;// + borders.Horizontal;
+                            height = restoredWindowBounds.Height;
+                        }
+                    }
+                }
+            }
+            return new Size(width, height);
         }
 
         #endregion

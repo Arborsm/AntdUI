@@ -397,7 +397,7 @@ namespace AntdUI
                     {
                         foreach (Table.TCellColumn item in PARENT.rows[0].cells)
                         {
-                            if (item.tag is ColumnCheck columnCheck)
+                            if (item.column is ColumnCheck columnCheck)
                             {
                                 PARENT?.ChangeCheckOverall(PARENT.rows, it, columnCheck, value);
                                 return;
@@ -498,6 +498,11 @@ namespace AntdUI
         /// 对齐方式
         /// </summary>
         public ColumnAlign Align { get; set; } = ColumnAlign.Left;
+
+        /// <summary>
+        /// 表头对齐方式
+        /// </summary>
+        public ColumnAlign? ColAlign { get; set; }
 
         /// <summary>
         /// 列宽度

@@ -69,11 +69,11 @@ namespace AntdUI
             }
         }
 
-        Color shadowColor = Color.Black;
+        Color shadowColor = Color.FromArgb(100, 0, 0, 0);
         /// <summary>
         /// 阴影颜色
         /// </summary>
-        [Description("阴影颜色"), Category("外观"), DefaultValue(typeof(Color), "Black")]
+        [Description("阴影颜色"), Category("外观"), DefaultValue(typeof(Color), "100, 0, 0, 0")]
         public Color ShadowColor
         {
             get => shadowColor;
@@ -203,16 +203,29 @@ namespace AntdUI
                 case WindowMessage.WM_NCHITTEST:
                     m.Result = TRUE;
                     return;
+                case WindowMessage.WM_SIZE:
+                    WmSize(ref m);
+                    break;
                 case WindowMessage.WM_MOUSEMOVE:
                 case WindowMessage.WM_NCMOUSEMOVE:
-                    if (ReadMessage) ResizableMouseMove(PointToClient(MousePosition));
+                    if (!is_resizable && ReadMessage) ResizableMouseMove(PointToClient(MousePosition));
                     break;
                 case WindowMessage.WM_LBUTTONDOWN:
                 case WindowMessage.WM_NCLBUTTONDOWN:
-                    if (ReadMessage) ResizableMouseDownInternal();
+                    if (!is_resizable && ReadMessage) ResizableMouseDown();
                     break;
             }
             base.WndProc(ref m);
+        }
+
+        const nint SIZE_RESTORED = 0;
+        const nint SIZE_MINIMIZED = 1;
+        const nint SIZE_MAXIMIZED = 2;
+        void WmSize(ref System.Windows.Forms.Message m)
+        {
+            if (m.WParam == SIZE_MINIMIZED) WinState = WState.Minimize;
+            else if (m.WParam == SIZE_MAXIMIZED) WinState = WState.Maximize;
+            else if (m.WParam == SIZE_RESTORED) WinState = WState.Restore;
         }
 
         #endregion
@@ -224,7 +237,7 @@ namespace AntdUI
         {
             if (Region != null) Region.Dispose();
             var rect = ClientRectangle;
-            if (rect.Width > 0 && rect.Height > 0)
+            if ((rect.Width > 0 && rect.Height > 0) && winState == WState.Restore)
             {
                 using (var path = rect.RoundPath(radius * Config.Dpi))
                 {
@@ -294,7 +307,7 @@ namespace AntdUI
             {
                 if (winState == value) return;
                 winState = value;
-                if (IsHandleCreated) HandMessage();
+                if (IsHandleCreated) { HandMessage(); SetReion(); }
             }
         }
 
@@ -355,9 +368,8 @@ namespace AntdUI
             if (retval != HitTestValues.HTNOWHERE)
             {
                 var mode = retval;
-                if (mode != HitTestValues.HTCLIENT && base.WindowState == FormWindowState.Normal)
+                if (mode != HitTestValues.HTCLIENT && winState == WState.Restore)
                 {
-                    down = true;
                     SetCursorHit(mode);
                     return true;
                 }
@@ -375,9 +387,8 @@ namespace AntdUI
             if (retval != HitTestValues.HTNOWHERE)
             {
                 var mode = retval;
-                if (mode != HitTestValues.HTCLIENT && base.WindowState == FormWindowState.Normal)
+                if (mode != HitTestValues.HTCLIENT && winState == WState.Restore)
                 {
-                    down = true;
                     SetCursorHit(mode);
                     return true;
                 }
@@ -385,7 +396,7 @@ namespace AntdUI
             return false;
         }
 
-        bool down = true;
+        internal bool is_resizable;
         /// <summary>
         /// 整窗口大小（鼠标按下）
         /// </summary>
@@ -396,33 +407,12 @@ namespace AntdUI
             var mode = HitTest(PointToClient(pointScreen));
             if (mode != HitTestValues.HTCLIENT)
             {
+                is_resizable = true;
                 SetCursorHit(mode);
                 ReleaseCapture();
-                PostMessage(Handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
+                SendMessage(handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
+                is_resizable = false;
                 return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// 整窗口大小（鼠标按下）
-        /// </summary>
-        /// <returns>可以调整</returns>
-        internal bool ResizableMouseDownInternal()
-        {
-            Point pointScreen = MousePosition;
-            var mode = HitTest(PointToClient(pointScreen));
-            if (mode != HitTestValues.HTCLIENT)
-            {
-                SetCursorHit(mode);
-                ReleaseCapture();
-                PostMessage(Handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
-                if (down)
-                {
-                    down = false;
-                    return true;
-                }
-                return false;
             }
             return false;
         }
@@ -510,7 +500,8 @@ namespace AntdUI
 
         public bool PreFilterMessage(ref System.Windows.Forms.Message m)
         {
-            if (ReadMessage)
+            if (is_resizable) return OnPreFilterMessage(m);
+            if (Window.CanHandMessage && ReadMessage)
             {
                 switch (m.Msg)
                 {
@@ -525,7 +516,7 @@ namespace AntdUI
                     case 0x201:
                         if (isMe(m.HWnd))
                         {
-                            if (ResizableMouseDownInternal()) return true;
+                            if (ResizableMouseDown()) return true;
                         }
                         break;
                 }

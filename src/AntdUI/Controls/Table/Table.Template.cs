@@ -816,12 +816,11 @@ namespace AntdUI
         /// </summary>
         internal class TCellColumn : TCell
         {
-            public TCellColumn(Table table, Column column)
+            public TCellColumn(Table table, Column _column)
             {
                 PARENT = table;
-                align = column.Align;
-                tag = column;
-                value = column.Title;
+                column = _column;
+                value = _column.Title;
             }
 
             /// <summary>
@@ -833,13 +832,12 @@ namespace AntdUI
             /// </summary>
             public Rectangle rect { get; set; }
 
-            public ColumnAlign align { get; set; }
             public void SetSize(Graphics g, Font font, Rectangle _rect, int gap, int gap2)
             {
                 RECT = _rect;
             }
 
-            public Column tag { get; set; }
+            public Column column { get; set; }
             public Table PARENT { get; set; }
             public RowTemplate ROW { get; set; }
             public PropertyDescriptor? PROPERTY { get; set; }
