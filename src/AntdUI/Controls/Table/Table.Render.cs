@@ -165,12 +165,12 @@ namespace AntdUI
                 {
                     if (column.column.SortOrder)
                     {
-                        using (var bmp = SvgExtend.GetImgExtend(arrow_up_svg, column.rect_up, Style.Db.TextQuaternary))
+                        using (var bmp = SvgExtend.GetImgExtend(arrow_up_svg, column.rect_up, column.column.SortMode == 1 ? Style.Db.Primary : Style.Db.TextQuaternary))
                         {
                             if (bmp != null)
                                 g.DrawImage(bmp, column.rect_up);
                         }
-                        using (var bmp = SvgExtend.GetImgExtend(arrow_down_svg, column.rect_down, Style.Db.TextQuaternary))
+                        using (var bmp = SvgExtend.GetImgExtend(arrow_down_svg, column.rect_down, column.column.SortMode == 2 ? Style.Db.Primary : Style.Db.TextQuaternary))
                         {
                             if (bmp != null)
                                 g.DrawImage(bmp, column.rect_down);
@@ -247,7 +247,7 @@ namespace AntdUI
             if (fixedColumnL != null && sx > 0)
             {
                 showFixedColumnL = true;
-                var last = shows[shows.Count - 1].cells[fixedColumnL[fixedColumnL.Length - 1]];
+                var last = shows[shows.Count - 1].cells[fixedColumnL[fixedColumnL.Count - 1]];
                 var rect_Fixed = new Rectangle(rect.X, rect.Y, last.RECT.Right, last.RECT.Bottom);
 
                 #region 绘制阴影
@@ -301,7 +301,7 @@ namespace AntdUI
             if (fixedColumnR != null && scrollBar.ShowX)
             {
                 var lastrow = shows[shows.Count - 1];
-                TCell first = lastrow.cells[fixedColumnR[fixedColumnR.Length - 1]], last = lastrow.cells[fixedColumnR[0]];
+                TCell first = lastrow.cells[fixedColumnR[fixedColumnR.Count - 1]], last = lastrow.cells[fixedColumnR[0]];
                 if (sx + rect.Width < last.RECT.Right)
                 {
                     sFixedR = last.RECT.Right - rect.Width;

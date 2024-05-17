@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -453,7 +452,7 @@ namespace AntdUI
         /// <param name="align">对齐方式</param>
         public ColumnSwitch(string key, string title, ColumnAlign align) : base(key, title, align) { }
 
-        public Func<bool, object, int, int, bool>? Call { get; set; }
+        public Func<bool, object?, int, int, bool>? Call { get; set; }
     }
 
     /// <summary>
@@ -528,6 +527,8 @@ namespace AntdUI
         /// 头部排序
         /// </summary>
         public bool SortOrder { get; set; }
+
+        internal int SortMode { get; set; }
     }
 
     #endregion
@@ -710,6 +711,11 @@ namespace AntdUI
         }
 
         #endregion
+
+        public override string? ToString()
+        {
+            return _text;
+        }
     }
 
     /// <summary>
@@ -799,6 +805,11 @@ namespace AntdUI
                 _text = value;
                 OnPropertyChanged("Text");
             }
+        }
+
+        public override string? ToString()
+        {
+            return _text;
         }
     }
 
@@ -897,6 +908,11 @@ namespace AntdUI
                 _text = value;
                 OnPropertyChanged("Text");
             }
+        }
+
+        public override string ToString()
+        {
+            return _text;
         }
     }
 
@@ -1305,6 +1321,11 @@ namespace AntdUI
                 OnPropertyChanged("Enabled");
             }
         }
+
+        public override string? ToString()
+        {
+            return _text;
+        }
     }
 
     /// <summary>
@@ -1396,6 +1417,11 @@ namespace AntdUI
                 _value = value;
                 OnPropertyChanged("Icon");
             }
+        }
+
+        public override string ToString()
+        {
+            return (_value * 100F) + "%";
         }
     }
 
