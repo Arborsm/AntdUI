@@ -22,8 +22,7 @@ using System.Windows.Forms;
 
 namespace AntdUI
 {
-    //绘图层
-    public partial class BorderlessFormShadow : Form
+    internal class BorderlessFormShadow : Form
     {
         BorderlessForm form;
         //带参构造

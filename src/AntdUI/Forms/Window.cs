@@ -254,39 +254,13 @@ namespace AntdUI
 
         #region 交互
 
-        #region 拖动窗口
-
-        /// <summary>
-        /// 拖动窗口（鼠标按下）
-        /// </summary>
-        public void DraggableMouseDown()
-        {
-            ReleaseCapture();
-            SendMessage(handle, 0x0112, 61456 | 2, IntPtr.Zero);
-        }
-
-        [Obsolete("请使用 DraggableMouseDown 来替代")]
-        public void ControlMouseDown(object? sender, MouseEventArgs e)
-        {
-            DraggableMouseDown();
-        }
-
-        [Obsolete("请使用 DraggableMouseDown 来替代")]
-        public void ControlMouseDown()
-        {
-            ReleaseCapture();
-            SendMessage(handle, 0x0112, 61456 | 2, IntPtr.Zero);
-        }
-
-        #endregion
-
         #region 调整窗口大小
 
         /// <summary>
         /// 调整窗口大小（鼠标移动）
         /// </summary>
         /// <returns>可以调整</returns>
-        public bool ResizableMouseMove()
+        public override bool ResizableMouseMove()
         {
             var retval = HitTest(PointToClient(MousePosition));
             if (retval != HitTestValues.HTNOWHERE)
@@ -305,7 +279,7 @@ namespace AntdUI
         /// </summary>
         /// <param name="point">客户端坐标</param>
         /// <returns>可以调整</returns>
-        public bool ResizableMouseMove(Point point)
+        public override bool ResizableMouseMove(Point point)
         {
             var retval = HitTest(point);
             if (retval != HitTestValues.HTNOWHERE)
@@ -320,107 +294,9 @@ namespace AntdUI
             return false;
         }
 
-        bool is_resizable;
-        /// <summary>
-        /// 整窗口大小（鼠标按下）
-        /// </summary>
-        /// <returns>可以调整</returns>
-        public bool ResizableMouseDown()
-        {
-            Point pointScreen = MousePosition;
-            var mode = HitTest(PointToClient(pointScreen));
-            if (mode != HitTestValues.HTCLIENT)
-            {
-                is_resizable = true;
-                SetCursorHit(mode);
-                ReleaseCapture();
-                SendMessage(handle, (uint)WindowMessage.WM_NCLBUTTONDOWN, (IntPtr)mode, Macros.MAKELPARAM(pointScreen.X, pointScreen.Y));
-                is_resizable = false;
-                return true;
-            }
-            return false;
-        }
-
         #endregion
 
         #region 鼠标
-
-        HitTestValues HitTest(Point point)
-        {
-            float htSize = 8F * Config.Dpi, htSize2 = htSize * 2;
-            GetWindowRect(handle, out var lpRect);
-
-            var rect = new Rectangle(Point.Empty, lpRect.Size);
-
-            var hitTestValue = HitTestValues.HTCLIENT;
-            var x = point.X;
-            var y = point.Y;
-
-            if (x < rect.Left + htSize2 && y < rect.Top + htSize2)
-            {
-                hitTestValue = HitTestValues.HTTOPLEFT;
-            }
-            else if (x >= rect.Left + htSize2 && x <= rect.Right - htSize2 && y <= rect.Top + htSize)
-            {
-                hitTestValue = HitTestValues.HTTOP;
-            }
-            else if (x > rect.Right - htSize2 && y <= rect.Top + htSize2)
-            {
-                hitTestValue = HitTestValues.HTTOPRIGHT;
-            }
-            else if (x <= rect.Left + htSize && y >= rect.Top + htSize2 && y <= rect.Bottom - htSize2)
-            {
-                hitTestValue = HitTestValues.HTLEFT;
-            }
-            else if (x >= rect.Right - htSize && y >= rect.Top * 2 + htSize && y <= rect.Bottom - htSize2)
-            {
-                hitTestValue = HitTestValues.HTRIGHT;
-            }
-            else if (x <= rect.Left + htSize2 && y >= rect.Bottom - htSize2)
-            {
-                hitTestValue = HitTestValues.HTBOTTOMLEFT;
-            }
-            else if (x > rect.Left + htSize2 && x < rect.Right - htSize2 && y >= rect.Bottom - htSize)
-            {
-                hitTestValue = HitTestValues.HTBOTTOM;
-            }
-            else if (x >= rect.Right - htSize2 && y >= rect.Bottom - htSize2)
-            {
-                hitTestValue = HitTestValues.HTBOTTOMRIGHT;
-            }
-
-            return hitTestValue;
-        }
-
-        void SetCursorHit(HitTestValues mode)
-        {
-            switch (mode)
-            {
-                case HitTestValues.HTTOP:
-                case HitTestValues.HTBOTTOM:
-                    LoadCursors(32645);
-                    break;
-                case HitTestValues.HTLEFT:
-                case HitTestValues.HTRIGHT:
-                    LoadCursors(32644);
-                    break;
-                case HitTestValues.HTTOPLEFT:
-                case HitTestValues.HTBOTTOMRIGHT:
-                    LoadCursors(32642);
-                    break;
-                case HitTestValues.HTTOPRIGHT:
-                case HitTestValues.HTBOTTOMLEFT:
-                    LoadCursors(32643);
-                    break;
-            }
-        }
-
-        void LoadCursors(int id)
-        {
-            var handle = LoadCursor(lpCursorName: Macros.MAKEINTRESOURCE(id));
-            var oldCursor = User32.SetCursor(handle);
-            oldCursor.Close();
-        }
 
         public static bool CanHandMessage = true;
         public bool PreFilterMessage(ref System.Windows.Forms.Message m)
