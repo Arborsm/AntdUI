@@ -33,7 +33,7 @@ namespace Overview.Controls
                     return value;
                 } },
                 new AntdUI.Column("age","年龄",AntdUI.ColumnAlign.Center),
-                new AntdUI.Column("address","住址"),
+                new AntdUI.Column("address","住址"){ Width="120", LineBreak=true},
                 new AntdUI.Column("tag","Tag"),
                 new AntdUI.Column("imgs","图片"),
                 new AntdUI.Column("btns","操作"){ Fixed=true,Width="auto"},
