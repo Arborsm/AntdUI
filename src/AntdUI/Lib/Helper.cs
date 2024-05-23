@@ -419,14 +419,14 @@ namespace AntdUI
             return rect.IconRect((int)Math.Round(text_height), icon_l, icon_r, right, muit, gap_ratio, sp_ratio, icon_ratio);
         }
 
-        internal static void IconRectL(this Rectangle rect, SizeF font_size, out RectangleF icon_rect, out RectangleF text_rect, float size = 0.8F)
+        internal static void IconRectL(this Rectangle rect, SizeF font_size, out Rectangle icon_rect, out Rectangle text_rect, float size = 0.8F)
         {
-            float h = font_size.Height * size;
-            float dot_size_ = h / 2;
-            float dot_txt_left = h * 2;
+            int h = (int)(font_size.Height * size);
+            int dot_size_ = h / 2;
+            int dot_txt_left = h * 2;
 
-            icon_rect = new RectangleF(rect.X + dot_size_, rect.Y + (rect.Height - h) / 2, h, h);
-            text_rect = new RectangleF(rect.X + dot_txt_left, rect.Y, rect.Width - dot_txt_left, rect.Height);
+            icon_rect = new Rectangle(rect.X + dot_size_, rect.Y + (rect.Height - h) / 2, h, h);
+            text_rect = new Rectangle(rect.X + dot_txt_left, rect.Y, rect.Width - dot_txt_left, rect.Height);
         }
 
         #region 三角

@@ -1717,7 +1717,7 @@ namespace AntdUI
                     }
                     if (Value.Value > 0)
                     {
-                        float max = 360F * Value.Value;
+                        int max = (int)(360 * Value.Value);
                         using (var brush = new Pen(_color, w))
                         {
                             brush.StartCap = brush.EndCap = LineCap.Round;
