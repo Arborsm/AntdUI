@@ -75,6 +75,7 @@ namespace AntdUI
             {
                 dataSource = value;
                 SortData = null;
+                scrollBar.Clear();
                 ExtractData();
                 LoadLayout();
                 Invalidate();
@@ -515,6 +516,11 @@ namespace AntdUI
         /// 列宽度
         /// </summary>
         public string? Width { get; set; }
+
+        /// <summary>
+        /// 列最大宽度
+        /// </summary>
+        public string? MaxWidth { get; set; }
 
         /// <summary>
         /// 超过宽度将自动省略
