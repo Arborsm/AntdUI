@@ -1701,6 +1701,60 @@ namespace AntdUI
             }
             else return new SolidBrush(enabled_color);
         }
+
+        #region 获取OS版本
+
+#if NET40 || NET46 || NET48
+        public static Version OSVersion
+        {
+            get
+            {
+                try
+                {
+                    var osVersionInfo = new OSVERSIONINFOEX { OSVersionInfoSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(OSVERSIONINFOEX)) };
+                    if (RtlGetVersion(ref osVersionInfo) == 0) return new Version(osVersionInfo.MajorVersion, osVersionInfo.MinorVersion, osVersionInfo.BuildNumber);
+                }
+                catch { }
+                return Environment.OSVersion.Version;
+            }
+        }
+
+        [System.Runtime.InteropServices.DllImport("ntdll.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        internal static extern int RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
+
+        internal struct OSVERSIONINFOEX
+        {
+            internal int OSVersionInfoSize;
+            internal int MajorVersion;
+            internal int MinorVersion;
+            internal int BuildNumber;
+            internal int PlatformId;
+            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 128)]
+            internal string CSDVersion;
+            internal ushort ServicePackMajor;
+            internal ushort ServicePackMinor;
+            internal short SuiteMask;
+            internal byte ProductType;
+            internal byte Reserved;
+        }
+#else
+        public static Version OSVersion
+        {
+            get => Environment.OSVersion.Version;
+        }
+#endif
+
+        public static bool OSVersionWin11
+        {
+            get
+            {
+                var version = OSVersion;
+                if (version.Major >= 10 && version.Build > 22000) return true;
+                return false;
+            }
+        }
+
+        #endregion
     }
 
     public class RectTextLR

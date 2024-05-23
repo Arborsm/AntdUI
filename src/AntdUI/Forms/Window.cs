@@ -46,12 +46,6 @@ namespace AntdUI
             }
         }
 
-        /// <summary>
-        /// 边框
-        /// </summary>
-        [Description("边框"), Category("外观"), DefaultValue(false)]
-        public bool Bordered { get; set; } = false;
-
         bool dark = false;
         /// <summary>
         /// 深色模式
@@ -391,20 +385,10 @@ namespace AntdUI
             }
             else
             {
-                if (Bordered)
-                {
-                    nccsp.rgrc0.top -= borders.Top - 1;
-                    nccsp.rgrc0.left -= borders.Left - 1;
-                    nccsp.rgrc0.right += borders.Right + 2;
-                    nccsp.rgrc0.bottom += borders.Bottom + 2;
-                }
-                else
-                {
-                    nccsp.rgrc0.top -= borders.Top;
-                    nccsp.rgrc0.left -= borders.Left;
-                    nccsp.rgrc0.right += borders.Right;
-                    nccsp.rgrc0.bottom += borders.Bottom;
-                }
+                nccsp.rgrc0.top -= borders.Top;
+                nccsp.rgrc0.left -= borders.Left - 1;
+                nccsp.rgrc0.right += borders.Right - 1;
+                nccsp.rgrc0.bottom += borders.Bottom - 1;
                 Marshal.StructureToPtr(nccsp, m.LParam, false);
             }
             m.Result = RNCCalc;

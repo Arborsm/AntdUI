@@ -34,7 +34,7 @@ namespace AntdUI
             if (form.WindowState != FormWindowState.Maximized)
             {
                 if (form is BorderlessForm borderless) Radius = (int)(borderless.Radius * Config.Dpi);
-                else if (isWin11) Radius = (int)(8 * Config.Dpi); //Win11
+                else if (Helper.OSVersionWin11) Radius = (int)(8 * Config.Dpi); //Win11
                 if (form is Window || form is FormNoBar)
                 {
                     //无边框处理
@@ -137,54 +137,6 @@ namespace AntdUI
             }
             return (Bitmap)temp.Clone();
         }
-
-#if NET40 || NET46 || NET48
-        [System.Runtime.InteropServices.DllImport("ntdll.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-        internal static extern int RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
-
-        internal struct OSVERSIONINFOEX
-        {
-            internal int OSVersionInfoSize;
-            internal int MajorVersion;
-            internal int MinorVersion;
-            internal int BuildNumber;
-            internal int PlatformId;
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst = 128)]
-            internal string CSDVersion;
-            internal ushort ServicePackMajor;
-            internal ushort ServicePackMinor;
-            internal short SuiteMask;
-            internal byte ProductType;
-            internal byte Reserved;
-        }
-        bool isWin11
-        {
-            get
-            {
-                try
-                {
-                    var osVersionInfo = new OSVERSIONINFOEX { OSVersionInfoSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(OSVERSIONINFOEX)) };
-                    if (RtlGetVersion(ref osVersionInfo) == 0)
-                    {
-                        if (osVersionInfo.MajorVersion >= 10 && osVersionInfo.BuildNumber > 22000) return true;
-                    }
-                }
-                catch { }
-                return false;
-            }
-        }
-#else
-        bool isWin11
-        {
-            get
-            {
-                var version = Environment.OSVersion.Version;
-                if (version.Major >= 10 && version.Build > 22000) return true;
-                return false;
-            }
-        }
-#endif
-
     }
 
     public interface FormNoBar
