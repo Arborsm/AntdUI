@@ -31,10 +31,12 @@ namespace AntdUI
         ContextMenuStrip.Config config;
         bool uf = false;
         public override bool UFocus => uf;
+        public override bool MessageClose => true;
         Font FontSub;
         float radius = 0;
         public LayeredFormContextMenuStrip(ContextMenuStrip.Config _config)
         {
+            uf = _config.UFocus;
             TopMost = _config.TopMost;
             if (!_config.TopMost) _config.Control.SetTopMost(Handle);
             var point = MousePosition;

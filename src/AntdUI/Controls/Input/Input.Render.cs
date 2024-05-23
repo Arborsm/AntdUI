@@ -237,7 +237,7 @@ namespace AntdUI
                     int end = selectionStartTemp + selectionLength - 1;
                     if (end > cache_font.Length - 1) end = cache_font.Length - 1;
                     var first = cache_font[selectionStartTemp];
-                    using (var brush = new SolidBrush(Color.FromArgb(173, 214, 255)))
+                    using (var brush = new SolidBrush(selection))
                     {
                         for (int i = selectionStartTemp; i <= end; i++)
                         {

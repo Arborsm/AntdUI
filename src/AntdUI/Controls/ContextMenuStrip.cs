@@ -114,6 +114,11 @@ namespace AntdUI
             public int CallSleep { get; set; }
 
             /// <summary>
+            /// 是否抢占焦点
+            /// </summary>
+            public bool UFocus { get; set; }
+
+            /// <summary>
             /// 点击回调
             /// </summary>
             public Action<ContextMenuStripItem> Call { get; set; }
