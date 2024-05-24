@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -55,6 +56,7 @@ namespace AntdUI
             }
         }
 
+        bool setvalue = true;
         DateTime? _value = null;
         /// <summary>
         /// 控件当前日期
@@ -67,7 +69,9 @@ namespace AntdUI
             {
                 _value = value;
                 ValueChanged?.Invoke(this, value);
+                setvalue = false;
                 Text = value.HasValue ? value.Value.ToString(Format) : "";
+                setvalue = true;
             }
         }
 
@@ -107,7 +111,12 @@ namespace AntdUI
 
         protected override void CreateHandle()
         {
-            if (_value.HasValue) Text = _value.Value.ToString(Format);
+            if (_value.HasValue)
+            {
+                setvalue = false;
+                Text = _value.Value.ToString(Format);
+                setvalue = true;
+            }
             base.CreateHandle();
         }
 
@@ -165,7 +174,7 @@ namespace AntdUI
 
         #region 动画
 
-        ILayeredForm? subForm = null;
+        LayeredFormCalendar? subForm = null;
         public ILayeredForm? SubForm() { return subForm; }
 
         bool textFocus = false;
@@ -243,13 +252,27 @@ namespace AntdUI
             else if (keyData == Keys.Enter && DateTime.TryParse(Text, out var _d))
             {
                 Value = _d;
-                if (subForm is LayeredFormCalendar _SubForm)
+                if (subForm != null)
                 {
-                    _SubForm.SelDate = _SubForm.Date = _d;
-                    _SubForm.Print();
+                    subForm.SelDate = subForm.Date = _d;
+                    subForm.Print();
                 }
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (IsHandleCreated && setvalue && DateTime.TryParseExact(Text, dateFormat.Replace("MM", "M").Replace("dd", "d"), DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out var _d))
+            {
+                Value = _d;
+                if (subForm != null)
+                {
+                    subForm.SelDate = subForm.Date = _d;
+                    subForm.Print();
+                }
+            }
+            base.OnTextChanged(e);
         }
 
         #endregion

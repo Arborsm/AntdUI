@@ -242,7 +242,7 @@ namespace AntdUI
         {
             if (value > -1)
             {
-                if (old > -1)
+                if (old > -1 && TabPages.Count > old)
                 {
                     ThreadBar?.Dispose();
                     Helper.GDI(g =>
