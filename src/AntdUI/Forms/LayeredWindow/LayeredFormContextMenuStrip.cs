@@ -39,13 +39,54 @@ namespace AntdUI
             uf = _config.UFocus;
             TopMost = _config.TopMost;
             if (!_config.TopMost) _config.Control.SetTopMost(Handle);
-            var point = MousePosition;
-            point.Offset(-10, -10);
+            var point = _config.Location ?? MousePosition;
             maxalpha = 250;
             config = _config;
             Font = config.Font ?? config.Control.Font;
             FontSub = Font;
             rectsContent = Init(config.Items);
+            switch (config.Align)
+            {
+                case TAlign.BL:
+                case TAlign.LB:
+                    point.X -= TargetRect.Width;
+                    point.Offset(10, -10);
+                    break;
+                case TAlign.TL:
+                case TAlign.LT:
+                    point.X -= TargetRect.Width;
+                    point.Y -= TargetRect.Height;
+                    point.Offset(10, 10);
+                    break;
+                case TAlign.Left:
+                    point.X -= TargetRect.Width;
+                    point.Y -= TargetRect.Height / 2;
+                    point.Offset(10, 0);
+                    break;
+                case TAlign.Right:
+                    point.Y -= TargetRect.Height / 2;
+                    point.Offset(-10, 0);
+                    break;
+                case TAlign.Top:
+                    point.X -= TargetRect.Width / 2;
+                    point.Y -= TargetRect.Height;
+                    point.Offset(0, 10);
+                    break;
+                case TAlign.Bottom:
+                    point.X -= TargetRect.Width / 2;
+                    point.Offset(0, -10);
+                    break;
+                case TAlign.TR:
+                case TAlign.RT:
+                    point.Y -= TargetRect.Height;
+                    point.Offset(-10, 10);
+                    break;
+                case TAlign.BR:
+                case TAlign.RB:
+                default:
+                    point.Offset(-10, -10);
+                    break;
+            }
             var screen = Screen.FromPoint(point).WorkingArea;
             if (point.X < screen.X) point.X = screen.X;
             else if (point.X > (screen.X + screen.Width) - TargetRect.Width) point.X = screen.X + screen.Width - TargetRect.Width;
