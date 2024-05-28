@@ -646,7 +646,7 @@ namespace AntdUI
         /// 水印文本
         /// </summary>
         [Description("水印文本"), Category("行为"), DefaultValue(null)]
-        public string? PlaceholderText
+        public virtual string? PlaceholderText
         {
             get => placeholderText;
             set
@@ -787,10 +787,10 @@ namespace AntdUI
             if (IsPassWord && !PasswordCopy) return;
             string strText = Clipboard.GetText();
             if (string.IsNullOrEmpty(strText)) return;
-            var chars = new List<char>(strText.Length);
+            var chars = new List<string>(strText.Length);
             foreach (char key in strText)
             {
-                if (Verify(key, out var change)) chars.Add(change ?? key);
+                if (Verify(key, out var change)) chars.Add(change ?? key.ToString());
             }
             if (chars.Count > 0) EnterText(string.Join("", chars), false);
         }
@@ -1060,7 +1060,7 @@ namespace AntdUI
             }
         }
 
-        Rectangle CurrentCaret = new Rectangle(0, 0, 1, 0);
+        internal Rectangle CurrentCaret = new Rectangle(0, 0, 1, 0);
 
         #region 得到光标位置
 
@@ -1189,8 +1189,12 @@ namespace AntdUI
             {
                 if (cache_font == null)
                 {
-                    if (textalign == HorizontalAlignment.Center) CurrentCaret.X = rect_text.X + rect_text.Width / 2;
-                    else if (textalign == HorizontalAlignment.Right) CurrentCaret.X = rect_text.Right;
+                    if (ModeRange) ModeRangeCaretPostion(true);
+                    else
+                    {
+                        if (textalign == HorizontalAlignment.Center) CurrentCaret.X = rect_text.X + rect_text.Width / 2;
+                        else if (textalign == HorizontalAlignment.Right) CurrentCaret.X = rect_text.Right;
+                    }
                     Win32.SetCaretPos(CurrentCaret.X - scrollx, CurrentCaret.Y - scrolly);
                 }
                 else
@@ -1229,6 +1233,7 @@ namespace AntdUI
                             CurrentCaret.Y = r.Y;
                         }
                     }
+                    if (ModeRange) ModeRangeCaretPostion(false);
                     Win32.SetCaretPos(CurrentCaret.X - scrollx, CurrentCaret.Y - scrolly);
                     ScrollTo(r);
                 }
@@ -1272,16 +1277,16 @@ namespace AntdUI
             Win32.ImmSetCompositionWindow(hIMC, ref CompositionForm);
             if (!string.IsNullOrEmpty(strResult))
             {
-                var chars = new List<char>(strResult.Length);
+                var chars = new List<string>(strResult.Length);
                 foreach (char key in strResult)
                 {
-                    if (Verify(key, out var change)) chars.Add(change ?? key);
+                    if (Verify(key, out var change)) chars.Add(change ?? key.ToString());
                 }
                 if (chars.Count > 0) EnterText(string.Join("", chars));
             }
         }
 
-        protected virtual bool Verify(char key, out char? change)
+        protected virtual bool Verify(char key, out string? change)
         {
             change = null;
             return true;

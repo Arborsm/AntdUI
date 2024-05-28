@@ -754,7 +754,7 @@ namespace AntdUI
 
         bool init = false;
         public override void LoadOK()
-        { init = true; Print(); }
+        { init = true; Print(); CanLoadMessage = true; LoadMessage(); }
 
         float AnimationBarValue = 0;
         public void SetArrow(float x)

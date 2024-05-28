@@ -1653,10 +1653,7 @@ namespace AntdUI
             if (control.Controls.Count > 0)
             {
                 if (control is Pagination || control is Input) return;
-                foreach (Control it in control.Controls)
-                {
-                    DpiLS(dpi, it);
-                }
+                foreach (Control it in control.Controls) DpiLS(dpi, it);
             }
         }
         internal static Padding SetPadding(float dpi, Padding padding)

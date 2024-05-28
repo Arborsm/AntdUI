@@ -391,11 +391,8 @@ namespace AntdUI
                 nccsp.rgrc0.bottom += borders.Bottom - 1;
                 Marshal.StructureToPtr(nccsp, m.LParam, false);
             }
-            m.Result = RNCCalc;
             return false;
         }
-
-        readonly IntPtr RNCCalc = new IntPtr(0x0400);
 
         [StructLayout(LayoutKind.Sequential)]
         internal struct NCCALCSIZE_PARAMS
@@ -469,7 +466,7 @@ namespace AntdUI
 
         Size PatchWindowSizeInRestoreWindowBoundsIfNecessary(int width, int height)
         {
-            if (winState == WState.Restore)
+            if (WindowState == FormWindowState.Normal)
             {
                 var restoredWindowBoundsSpecified = typeof(Form).GetField("restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance) ?? typeof(Form).GetField("_restoredWindowBoundsSpecified", BindingFlags.NonPublic | BindingFlags.Instance);
                 var restoredSpecified = (BoundsSpecified)restoredWindowBoundsSpecified!.GetValue(this)!;
