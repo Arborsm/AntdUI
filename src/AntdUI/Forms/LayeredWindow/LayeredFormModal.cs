@@ -294,6 +294,7 @@ namespace AntdUI
             base.OnClosing(e);
             close_button.Dispose();
             if (config.Content is Control control) control.Dispose();
+            Dispose();
         }
 
         protected override void WndProc(ref System.Windows.Forms.Message m)

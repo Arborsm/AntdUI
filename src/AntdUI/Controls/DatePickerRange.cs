@@ -75,11 +75,23 @@ namespace AntdUI
         [Browsable(false), Description("水印文本"), Category("行为"), DefaultValue(null)]
         public override string? PlaceholderText { get => null; }
 
+        string dateFormat = "yyyy-MM-dd";
+        bool ShowTime = false;
+
         /// <summary>
         /// 格式化
         /// </summary>
         [Description("格式化"), Category("行为"), DefaultValue("yyyy-MM-dd")]
-        public string Format { get; set; } = "yyyy-MM-dd";
+        public string Format
+        {
+            get => dateFormat;
+            set
+            {
+                if (dateFormat == value) return;
+                dateFormat = value;
+                ShowTime = dateFormat.Contains("H");
+            }
+        }
 
         bool setvalue = true;
         DateTime[]? _value = null;
@@ -268,7 +280,7 @@ namespace AntdUI
 
         #region 动画
 
-        LayeredFormCalendarRange? subForm = null;
+        ILayeredForm? subForm = null;
         public ILayeredForm? SubForm() { return subForm; }
 
         bool textFocus = false;
@@ -283,19 +295,41 @@ namespace AntdUI
                 {
                     if (subForm == null)
                     {
-                        subForm = new LayeredFormCalendarRange(this, ReadRectangle, _value, date =>
+                        if (ShowTime)
                         {
-                            Value = date;
-                        }, btn =>
+                            subForm = new LayeredFormCalendarTimeRange(this, ReadRectangle, _value, date =>
+                            {
+                                Value = date;
+                            }, btn =>
+                            {
+                                PresetsClickChanged?.Invoke(this, btn);
+                            }, BadgeAction);
+                            subForm.Disposed += (a, b) =>
+                            {
+                                subForm = null;
+                                TextFocus = false;
+                            };
+                            subForm.Show(this);
+                            //if (StartFocused)
+                            //{
+                            //} else if (EndFocused) { }
+                        }
+                        else
                         {
-                            PresetsClickChanged?.Invoke(this, btn);
-                        }, BadgeAction);
-                        subForm.Disposed += (a, b) =>
-                        {
-                            subForm = null;
-                            TextFocus = false;
-                        };
-                        subForm.Show(this);
+                            subForm = new LayeredFormCalendarRange(this, ReadRectangle, _value, date =>
+                            {
+                                Value = date;
+                            }, btn =>
+                            {
+                                PresetsClickChanged?.Invoke(this, btn);
+                            }, BadgeAction);
+                            subForm.Disposed += (a, b) =>
+                            {
+                                subForm = null;
+                                TextFocus = false;
+                            };
+                            subForm.Show(this);
+                        }
                     }
                 }
                 else subForm?.IClose();
@@ -348,16 +382,24 @@ namespace AntdUI
                 subForm.IClose();
                 return true;
             }
-            //else if (keyData == Keys.Enter && DateTime.TryParse(Text, out var _d))
-            //{
-            //    Value = _d;
-            //    if (subForm != null)
-            //    {
-            //        subForm.SelDate = subForm.Date = _d;
-            //        subForm.Print();
-            //    }
-            //}
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        internal override bool IMouseDown(Point e)
+        {
+            if (rect_d_l.Contains(e) || rect_d_ico.Contains(e))
+            {
+                EndFocused = false;
+                StartFocused = true;
+                StartEndFocused();
+            }
+            else if (rect_d_r.Contains(e))
+            {
+                StartFocused = false;
+                EndFocused = true;
+                StartEndFocused();
+            }
+            return false;
         }
 
         #endregion
@@ -490,14 +532,20 @@ namespace AntdUI
                                 return false;
                             }
                         }
-                        if (Placement == TAlignFrom.TR || Placement == TAlignFrom.BR) subForm?.SetArrow(AnimationBarValue.X - rect_d_r.X);
-                        else subForm?.SetArrow(AnimationBarValue.X);
+                        if (subForm is LayeredFormCalendarRange layered)
+                        {
+                            if (Placement == TAlignFrom.TR || Placement == TAlignFrom.BR) layered.SetArrow(AnimationBarValue.X - rect_d_r.X);
+                            else layered.SetArrow(AnimationBarValue.X);
+                        }
                         Invalidate();
                         return true;
                     }, 10, () =>
                     {
-                        if (Placement == TAlignFrom.TR || Placement == TAlignFrom.BR) subForm?.SetArrow(NewValue.X - rect_d_r.X);
-                        else subForm?.SetArrow(NewValue.X);
+                        if (subForm is LayeredFormCalendarRange layered)
+                        {
+                            if (Placement == TAlignFrom.TR || Placement == TAlignFrom.BR) layered.SetArrow(NewValue.X - rect_d_r.X);
+                            else layered.SetArrow(NewValue.X);
+                        }
                         AnimationBarValue = NewValue;
                         AnimationBar = false;
                         Invalidate();
@@ -516,27 +564,6 @@ namespace AntdUI
         {
             ThreadBar?.Dispose();
             base.Dispose(disposing);
-        }
-
-        #endregion
-
-        #region 鼠标
-
-        internal override bool IMouseDown(Point e)
-        {
-            if (rect_d_l.Contains(e) || rect_d_ico.Contains(e))
-            {
-                EndFocused = false;
-                StartFocused = true;
-                StartEndFocused();
-            }
-            else if (rect_d_r.Contains(e))
-            {
-                StartFocused = false;
-                EndFocused = true;
-                StartEndFocused();
-            }
-            return false;
         }
 
         #endregion
