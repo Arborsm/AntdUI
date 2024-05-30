@@ -58,11 +58,12 @@ namespace AntdUI
             btn_ok.Dock = DockStyle.Right;
             btn_ok.Location = new Point(304, 0);
             btn_ok.Name = "btn_ok";
-            btn_ok.Size = new Size(64, 38);
+            btn_ok.Size = new Size(64, config.BtnHeight);
             btn_ok.TabIndex = 0;
             btn_ok.Type = config.OkType;
             btn_ok.Text = config.OkText;
             btn_ok.Click += btn_ok_Click;
+            if (config.OkFont != null) btn_ok.Font = config.OkFont;
 
             if (config.CancelText != null)
             {
@@ -72,17 +73,18 @@ namespace AntdUI
                 btn_no.Dock = DockStyle.Right;
                 btn_no.Location = new Point(240, 0);
                 btn_no.Name = "btn_no";
-                btn_no.Size = new Size(64, 38);
+                btn_no.Size = new Size(64, config.BtnHeight);
                 btn_no.TabIndex = 1;
                 btn_no.Text = config.CancelText;
                 btn_no.Click += btn_no_Click;
+                if (config.CancelFont != null) btn_no.Font = config.CancelFont;
             }
 
             var panel1 = new Panel
             {
                 Dock = DockStyle.Bottom,
                 Back = Style.Db.BgElevated,
-                Size = new Size(368, 38)
+                Size = new Size(368, config.BtnHeight)
             };
             if (btn_no != null) panel1.Controls.Add(btn_no);
             panel1.Controls.Add(btn_ok);
