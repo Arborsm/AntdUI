@@ -1752,6 +1752,57 @@ namespace AntdUI
         }
 
         #endregion
+
+        /// <summary>
+        /// 叠加蒙版
+        /// </summary>
+        /// <param name="owner">父窗口</param>
+        public static ILayeredFormOpacity FormMask(this Form owner)
+        {
+            var mask = new LayeredFormMask(owner);
+            mask.Show(owner);
+            return mask;
+        }
+
+        /// <summary>
+        /// 叠加蒙版（可关闭）
+        /// </summary>
+        /// <param name="owner">父窗口</param>
+        /// <param name="MaskClosable">点击蒙层是否允许关闭</param>
+        /// <param name="form">操作对象</param>
+        public static ILayeredFormOpacity FormMask(this Form owner, bool MaskClosable, ILayeredForm form)
+        {
+            var mask = new LayeredFormMask(owner);
+            if (MaskClosable)
+            {
+                mask.Click += (s1, e1) =>
+                {
+                    form.IClose();
+                };
+            }
+            mask.Show(owner);
+            return mask;
+        }
+
+        /// <summary>
+        /// 叠加蒙版（可关闭）
+        /// </summary>
+        /// <param name="owner">父窗口</param>
+        /// <param name="MaskClosable">点击蒙层是否允许关闭</param>
+        /// <param name="form">操作对象</param>
+        public static ILayeredFormOpacity FormMask(this Form owner, bool MaskClosable, Form form)
+        {
+            var mask = new LayeredFormMask(owner);
+            if (MaskClosable)
+            {
+                mask.Click += (s1, e1) =>
+                {
+                    form.Close();
+                };
+            }
+            mask.Show(owner);
+            return mask;
+        }
     }
 
     public class RectTextLR
