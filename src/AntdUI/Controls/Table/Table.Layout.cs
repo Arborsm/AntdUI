@@ -501,7 +501,22 @@ namespace AntdUI
                     foreach (var it in fill_count) width_cell.Add(it, width);
                     sum_wi = rect.Width;
                 }
-                if (rect_read.Width > sum_wi) rect_read.Width = sum_wi;
+                if (rect_read.Width > sum_wi)
+                {
+                    if (AutoSizeColumnsMode == ColumnsMode.Fill)
+                    {
+                        //填充
+                        var percentage = new List<double>(width_cell.Count);
+                        foreach (var it in width_cell) percentage.Add((it.Value * 1.0) / sum_wi);
+                        int index = 0;
+                        foreach (var it in width_cell.Keys)
+                        {
+                            width_cell[it] = (int)Math.Round(rect_read.Width * percentage[index]);
+                            index++;
+                        }
+                    }
+                    else rect_read.Width = sum_wi;
+                }
             }
             return width_cell;
         }
@@ -513,7 +528,7 @@ namespace AntdUI
                 if (it.Width.EndsWith("%") && float.TryParse(it.Width.TrimEnd('%'), out var f)) col_width.Add(x, f / 100F);
                 else if (int.TryParse(it.Width, out var i)) col_width.Add(x, (int)(i * Config.Dpi));
                 else if (it.Width.Contains("fill")) col_width.Add(x, -2);//填充剩下的
-                else col_width.Add(x, -1); //AUTO 
+                else col_width.Add(x, -1); //AUTO
             }
         }
 

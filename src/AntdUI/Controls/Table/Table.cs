@@ -172,6 +172,12 @@ namespace AntdUI
         [Description("行复制"), Category("行为"), DefaultValue(true)]
         public bool ClipboardCopy { get; set; } = true;
 
+        /// <summary>
+        /// 列宽自动调整模式
+        /// </summary>
+        [Description("列宽自动调整模式"), Category("行为"), DefaultValue(ColumnsMode.Auto)]
+        public ColumnsMode AutoSizeColumnsMode { get; set; } = ColumnsMode.Auto;
+
         #region 为空
 
         [Description("是否显示空样式"), Category("外观"), DefaultValue(true)]
