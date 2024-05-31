@@ -248,11 +248,6 @@ namespace AntdUI
         #region 事件
 
         public delegate void SelectEventHandler(object sender, MenuItem item);
-        /// <summary>
-        /// SelectIndex 属性值更改时发生
-        /// </summary>
-        [Description("SelectIndex 属性值更改时发生"), Category("行为")]
-        public event SelectEventHandler? SelectIndexChanged = null;
 
         /// <summary>
         /// Select 属性值更改时发生
@@ -262,7 +257,6 @@ namespace AntdUI
 
         internal void OnSelectIndexChanged(MenuItem item)
         {
-            SelectIndexChanged?.Invoke(this, item);
             SelectChanged?.Invoke(this, item);
         }
 
@@ -1341,7 +1335,7 @@ namespace AntdUI
                 }
             }
         }
-        internal bool Select { get; set; }
+        public bool Select { get; set; }
         internal int Depth { get; set; }
         internal float ArrowProg { get; set; } = 1F;
         internal Menu? PARENT { get; set; }

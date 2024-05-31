@@ -546,7 +546,7 @@ namespace AntdUI
         internal int INDEX { get; set; }
 
         /// <summary>
-        /// 头部排序
+        /// 启用排序
         /// </summary>
         public bool SortOrder { get; set; }
 
