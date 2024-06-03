@@ -40,7 +40,7 @@ namespace AntdUI
             Resizable = false;
 
             config = _config;
-            TopMost = config.Form.TopMost;
+            if (config.Form != null) TopMost = config.Form.TopMost;
             close_button = new ITaskOpacity(this);
 
             #region InitializeComponent
@@ -49,10 +49,12 @@ namespace AntdUI
 
             BackColor = Style.Db.BgElevated;
             Size = new Size(416, 122 + config.BtnHeight);
-            Font = config.Font ?? config.Form.Font;
+            if (config.Form == null) { if (config.Font != null) Font = config.Font; }
+            else Font = config.Font ?? config.Form.Font;
             ForeColor = Style.Db.TextBase;
             ShowInTaskbar = false;
-            StartPosition = FormStartPosition.CenterParent;
+            if (config.Form == null) StartPosition = FormStartPosition.CenterScreen;
+            else StartPosition = FormStartPosition.CenterParent;
 
             btn_ok = new Button
             {

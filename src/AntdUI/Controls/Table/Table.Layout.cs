@@ -246,7 +246,7 @@ namespace AntdUI
                             }
                             else
                             {
-                                var text_size = it.GetSize(g, Font, rect.Width, gap, gap2);
+                                var text_size = it.GetSize(g, columnfont ?? Font, rect.Width, gap, gap2);
                                 int width = (int)Math.Ceiling(text_size.Width);
                                 if (max_height < text_size.Height) max_height = text_size.Height;
                                 if (read_width_cell[cel_i].value < width) read_width_cell[cel_i].value = width;

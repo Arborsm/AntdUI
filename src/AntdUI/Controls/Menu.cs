@@ -750,6 +750,7 @@ namespace AntdUI
                 return true;
             }
             if (can && item.Expand)
+            {
                 foreach (MenuItem sub in item.Sub)
                 {
                     var list_ = new List<MenuItem>(list.Count + 1);
@@ -757,6 +758,7 @@ namespace AntdUI
                     list_.Add(sub);
                     if (IMouseDown(sub, list_, point)) return true;
                 }
+            }
             return false;
         }
 
@@ -973,7 +975,8 @@ namespace AntdUI
                 }
                 return true;
             }
-            if (can && item.Expand)
+            if (can)
+            {
                 foreach (MenuItem sub in item.Sub)
                 {
                     var list_ = new List<MenuItem>(list.Count + 1);
@@ -981,6 +984,7 @@ namespace AntdUI
                     list_.Add(sub);
                     if (IDropDownChange(sub, list_, value)) return true;
                 }
+            }
             return false;
         }
 
