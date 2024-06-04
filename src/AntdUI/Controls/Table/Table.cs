@@ -1489,7 +1489,7 @@ namespace AntdUI
                 if (value < 0) value = 0;
                 else if (value > 1) value = 1;
                 _value = value;
-                OnPropertyChanged("Icon");
+                OnPropertyChanged("Value");
             }
         }
 
