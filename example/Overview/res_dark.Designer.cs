@@ -294,6 +294,15 @@ namespace Overview {
         }
         
         /// <summary>
+        ///   查找类似 &lt;svg viewBox=&quot;0 0 137 117&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&gt;&lt;g id=&quot;组件骨架图更新&quot; stroke=&quot;none&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;&gt;&lt;g id=&quot;🎉-5.0-新版---黑&quot; transform=&quot;translate(-1279.000000, -4547.000000)&quot;&gt;&lt;g id=&quot;Result&quot; transform=&quot;translate(1279.000000, 4547.000000)&quot;&gt;&lt;g id=&quot;1.通用/2.Icon图标/Fill/Check-Circle-Fill&quot; transform=&quot;translate(46.000000, 0.000000)&quot;&gt;&lt;rect id=&quot;矩形&quot; fill=&quot;#000000&quot; fill-rule=&quot;nonzero&quot; opacity=&quot;0&quot; x=&quot;0&quot; y=&quot;0&quot; width=&quot;44.7457627&quot; height=&quot;44.7457627&quot;&gt;&lt;/rect&gt;&lt;path d=&quot;M22.3728814, [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        /// </summary>
+        internal static string Result {
+            get {
+                return ResourceManager.GetString("Result", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 &lt;svg viewBox=&quot;0 0 192 44&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;&gt;&lt;g id=&quot;组件骨架图更新&quot; stroke=&quot;none&quot; stroke-width=&quot;1&quot; fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;&gt;&lt;g id=&quot;🎉-5.0-新版---黑&quot; transform=&quot;translate(-1233.000000, -3518.000000)&quot;&gt;&lt;g id=&quot;a3ff040f-24ba-43e0-92e9-c845df1612ad-(1)&quot; transform=&quot;translate(1233.000000, 3518.000000)&quot;&gt;&lt;path d=&quot;M5.1277704,0 L186.87223,0 C188.655267,0 189.30184,0.185651222 189.953691,0.534265408 C190.605543,0.882879593 191.11712,1.39445674 191.465735,2.04630859 C191.814349,2.69816044 192,3.34473 [字符串的其余部分被截断]&quot;; 的本地化字符串。
         /// </summary>
         internal static string Segmented {
