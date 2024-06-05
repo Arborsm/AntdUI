@@ -630,7 +630,7 @@ namespace AntdUI
                             else Invalidate();
                         };
                     }
-                    else if (it is TemplateProgress  progress)
+                    else if (it is TemplateProgress progress)
                     {
                         progress.Value.Changed = key =>
                         {

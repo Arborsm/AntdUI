@@ -96,12 +96,7 @@ namespace AntdUI
                 };
                 return frm.ShowDialog(formMask);
             }
-            else
-            {
-                return frm.ShowDialog(config.Form);
-            }
-
-            return DialogResult.None;
+            else return frm.ShowDialog(config.Form);
         }
 
         #region 配置

@@ -311,12 +311,28 @@ namespace AntdUI
             Dispose();
         }
 
+        DateTime old_now;
+        int count = 0;
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
-            if (config.MaskClosable && isclose && min && m.Msg == 0x86 && m.WParam == (IntPtr)1 && m.LParam == (IntPtr)0)
+            if (config.MaskClosable && isclose)
             {
-                DialogResult = DialogResult.No;
-                return;
+                if (m.Msg == 0xa0 || m.Msg == 0x200) count = 0;
+                else if (m.Msg == 134)
+                {
+                    var now = DateTime.Now;
+                    if (now > old_now)
+                    {
+                        count = 0;
+                        old_now = now.AddSeconds(1);
+                    }
+                    count++;
+                    if (count > 2)
+                    {
+                        DialogResult = DialogResult.No;
+                        return;
+                    }
+                }
             }
             base.WndProc(ref m);
         }
