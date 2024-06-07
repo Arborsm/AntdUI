@@ -208,6 +208,75 @@ namespace AntdUI
 
         #region 图标渲染
 
+        internal static void PaintIcons(this Graphics g, TType icon, RectangleF rect)
+        {
+            switch (icon)
+            {
+                case TType.Success:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoSuccess, rect, Style.Db.Success))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Info:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoInfo, rect, Style.Db.Info))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Warn:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoWarn, rect, Style.Db.Warning))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Error:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoError, rect, Style.Db.Error))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+            }
+        }
+        internal static void PaintIconGhosts(this Graphics g, TType icon, RectangleF rect, Color color)
+        {
+            switch (icon)
+            {
+                case TType.Success:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoSuccessGhost, rect, color))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Info:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoInfoGhost, rect, color))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Warn:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoWarnGhost, rect, color))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+                case TType.Error:
+                    using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoErrorGhost, rect, color))
+                    {
+                        if (bmp == null) return;
+                        g.DrawImage(bmp, rect);
+                    }
+                    break;
+            }
+        }
+
         internal static void PaintIconComplete(this Graphics g, RectangleF rect, Color color)
         {
             using (var brush = new SolidBrush(color))
@@ -215,7 +284,6 @@ namespace AntdUI
                 PaintIconComplete(g, rect, brush);
             }
         }
-
         internal static void PaintIconComplete(this Graphics g, RectangleF rect, SolidBrush brush)
         {
             float wh = rect.Height / 2F;
@@ -231,39 +299,14 @@ namespace AntdUI
                 new PointF(x - wh * 0.1F, y + wh * 0.357F),
             });
         }
-
         internal static void PaintIconError(this Graphics g, RectangleF rect, Color color, float dot = 0.34F, float width = 0.07F)
         {
             using (var brush = new Pen(color, rect.Height * width))
             {
-            float size = rect.Height * dot;
+                float size = rect.Height * dot;
                 PointF p1 = new PointF(rect.X + size, rect.Y + size), p2 = new PointF(rect.X + rect.Width - size, rect.Y + rect.Height - size);
                 g.DrawLines(brush, new PointF[] { p1, p2 });
                 g.DrawLines(brush, new PointF[] { new PointF(p2.X, p1.Y), new PointF(p1.X, p2.Y) });
-            }
-        }
-
-        internal static void PaintIconInfo(this Graphics g, RectangleF rect, Color color)
-        {
-            using (var brush = new SolidBrush(color))
-            {
-                float wh = rect.Height / 2F;
-
-                float w = rect.Height * 0.07F, w2 = rect.Height * 0.11F, h = rect.Height * 0.32F;
-                var rect_1 = new RectangleF(rect.X + (rect.Width - w) / 2F, rect.Y + rect.Height - h - wh * 0.5F, w, h);
-                g.FillRectangle(brush, rect_1);
-                g.FillEllipse(brush, new RectangleF(rect.X + (rect.Width - w2) / 2F, rect_1.Top - w - w2, w2, w2));
-            }
-        }
-        internal static void PaintIconWarn(this Graphics g, RectangleF rect, Color color)
-        {
-            using (var brush = new SolidBrush(color))
-            {
-                float wh = rect.Height / 2F;
-                float w = rect.Height * 0.07F, w2 = rect.Height * 0.11F;
-                var rect_1 = new RectangleF(rect.X + (rect.Width - w) / 2F, rect.Y + wh * 0.5F, w, rect.Height * 0.32F);
-                g.FillRectangle(brush, rect_1);
-                g.FillEllipse(brush, new RectangleF(rect.X + (rect.Width - w2) / 2F, rect_1.Top + rect_1.Height + w, w2, w2));
             }
         }
 

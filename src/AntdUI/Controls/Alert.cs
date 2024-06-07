@@ -346,37 +346,11 @@ namespace AntdUI
         /// <param name="rect_icon">图标位置</param>
         void PaintIcon(Graphics g, RectangleF rect_icon)
         {
-            switch (icon)
+            using (var brush = new SolidBrush(Style.Db.BgBase))
             {
-                case TType.Success:
-                    using (var brush = new SolidBrush(Style.Db.Success))
-                    {
-                        g.FillEllipse(brush, rect_icon);
-                    }
-                    g.PaintIconComplete(rect_icon, Style.Db.BgBase);
-                    break;
-                case TType.Info:
-                    using (var brush = new SolidBrush(Style.Db.Info))
-                    {
-                        g.FillEllipse(brush, rect_icon);
-                    }
-                    g.PaintIconInfo(rect_icon, Style.Db.BgBase);
-                    break;
-                case TType.Warn:
-                    using (var brush = new SolidBrush(Style.Db.Warning))
-                    {
-                        g.FillEllipse(brush, rect_icon);
-                    }
-                    g.PaintIconWarn(rect_icon, Style.Db.BgBase);
-                    break;
-                case TType.Error:
-                    using (var brush = new SolidBrush(Style.Db.Error))
-                    {
-                        g.FillEllipse(brush, rect_icon);
-                    }
-                    g.PaintIconError(rect_icon, Style.Db.BgBase);
-                    break;
+                g.FillEllipse(brush, rect_icon);
             }
+            g.PaintIcons(icon, rect_icon);
         }
 
         /// <summary>
