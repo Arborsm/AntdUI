@@ -72,7 +72,7 @@ namespace AntdUI.Icon
             {
                 using (var brush = new SolidBrush(color.Value))
                 {
-                    g.FillEllipse(brush, rect_dot);
+                    g.FillEllipse(brush, new RectangleF(rect_dot.X + 1, rect_dot.Y + 1, rect_dot.Width - 2, rect_dot.Height - 2));
                 }
             }
             using (var bmp = SvgExtend.GetImgExtend(SvgDb.IcoSuccess, rect, back ?? Style.Db.Success))

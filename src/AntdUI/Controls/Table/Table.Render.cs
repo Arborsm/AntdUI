@@ -169,7 +169,7 @@ namespace AntdUI
             }
         }
 
-         void PaintTableHeader(Graphics g, RowTemplate row, SolidBrush fore, Font column_font)
+        void PaintTableHeader(Graphics g, RowTemplate row, SolidBrush fore, Font column_font)
         {
             if (dragHeader != null)
             {

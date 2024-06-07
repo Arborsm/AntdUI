@@ -322,7 +322,7 @@ namespace AntdUI
                                 g.FillPath(brush, path);
                             }
                         }
-                        g.PaintIconError(rect_close, Style.Db.Text, 0.7F);
+                        g.PaintIconClose(rect_close, Style.Db.Text, 0.6F);
                     }
                     else if (close_button.Switch)
                     {
@@ -333,12 +333,9 @@ namespace AntdUI
                                 g.FillPath(brush, path);
                             }
                         }
-                        g.PaintIconError(rect_close, Style.Db.Text, 0.7F);
+                        g.PaintIconClose(rect_close, Style.Db.Text, 0.6F);
                     }
-                    else
-                    {
-                        g.PaintIconError(rect_close, Style.Db.TextTertiary, 0.7F);
-                    }
+                    else g.PaintIconClose(rect_close, Style.Db.TextTertiary, 0.6F);
                 }
                 using (var brush = new SolidBrush(Style.Db.TextBase))
                 {

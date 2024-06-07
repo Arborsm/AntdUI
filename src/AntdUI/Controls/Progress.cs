@@ -289,8 +289,7 @@ namespace AntdUI
                         if (icon != TType.None)
                         {
                             var size = rect_prog.Width * 0.26F;
-                            var rect_icon = new RectangleF(rect.X + (rect.Width - size) / 2, rect.Y + (rect.Height - size) / 2, size, size);
-                            g.PaintIconGhosts(icon, rect_icon, _color);
+                            g.PaintIconGhosts(icon, new RectangleF(rect.X + (rect.Width - size) / 2, rect.Y + (rect.Height - size) / 2, size, size), _color);
                         }
                         int max = (int)Math.Round(360 * _value);
                         using (var brush = new Pen(_color, w))
