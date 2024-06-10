@@ -164,7 +164,8 @@ namespace AntdUI.Chat
                     if (it.Visible && it.Contains(e.Location, 0, scroll.Value, out _))
                     {
                         it.Select = true;
-                        //OnSelectIndexChanged(item);
+                        // 触发ItemSelected事件
+                        OnItemSelected(it);
                         return;
                     }
                 }
@@ -233,6 +234,15 @@ namespace AntdUI.Chat
             base.OnMouseWheel(e);
         }
 
+        #endregion
+
+        #region 事件
+        public delegate void ItemSelectedEventHandler(object sender, MsgItemEventArgs e);
+        public event ItemSelectedEventHandler ItemSelected;
+        protected virtual void OnItemSelected(MsgItem selectedItem)
+        {
+            ItemSelected?.Invoke(this, new MsgItemEventArgs(selectedItem));
+        }
         #endregion
 
         #region 布局
@@ -515,5 +525,15 @@ namespace AntdUI.Chat
         internal Rectangle rect_time { get; set; }
         internal Rectangle rect_text { get; set; }
         internal Rectangle rect_icon { get; set; }
+    }
+
+    public class MsgItemEventArgs : EventArgs
+    {
+        public MsgItem SelectedItem { get; private set; }
+
+        public MsgItemEventArgs(MsgItem selectedItem)
+        {
+            SelectedItem = selectedItem;
+        }
     }
 }
