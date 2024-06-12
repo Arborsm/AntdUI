@@ -32,7 +32,7 @@ namespace AntdUI
         object? selectedValue;
         int r_w = 0;
         readonly List<ObjectItem> Items = new List<ObjectItem>();
-        public LayeredFormSelectDown(Select control, RectangleF rect_read, List<object> items, string filtertext)
+        public LayeredFormSelectDown(Select control, RectangleF rect_read, IList<object> items, string filtertext)
         {
             control.Parent.SetTopMost(Handle);
             PARENT = control;
@@ -45,7 +45,7 @@ namespace AntdUI
             Radius = (int)(control.radius * Config.Dpi);
             Init(control, control.Placement, control.DropDownArrow, control.ListAutoWidth, rect_read, items, filtertext);
         }
-        public LayeredFormSelectDown(Dropdown control, int radius, RectangleF rect_read, List<object> items)
+        public LayeredFormSelectDown(Dropdown control, int radius, RectangleF rect_read, IList<object> items)
         {
             control.Parent.SetTopMost(Handle);
             PARENT = control;
@@ -58,19 +58,19 @@ namespace AntdUI
             Init(control, control.Placement, control.DropDownArrow, control.ListAutoWidth, rect_read, items);
         }
 
-        public LayeredFormSelectDown(Select control, int sx, LayeredFormSelectDown ocontrol, float radius, RectangleF rect_read, List<object>? items, int sel = -1)
+        public LayeredFormSelectDown(Select control, int sx, LayeredFormSelectDown ocontrol, float radius, RectangleF rect_read, IList<object>? items, int sel = -1)
         {
             ClickEnd = control.ClickEnd;
             selectedValue = control.SelectedValue;
             InitObj(control, sx, ocontrol, radius, rect_read, items, sel);
         }
-        public LayeredFormSelectDown(Dropdown control, int sx, LayeredFormSelectDown ocontrol, float radius, RectangleF rect_read, List<object>? items, int sel = -1)
+        public LayeredFormSelectDown(Dropdown control, int sx, LayeredFormSelectDown ocontrol, float radius, RectangleF rect_read, IList<object>? items, int sel = -1)
         {
             ClickEnd = control.ClickEnd;
             InitObj(control, sx, ocontrol, radius, rect_read, items, sel);
         }
 
-        void InitObj(Control parent, int sx, LayeredFormSelectDown control, float radius, RectangleF rect_read, List<object>? items, int sel)
+        void InitObj(Control parent, int sx, LayeredFormSelectDown control, float radius, RectangleF rect_read, IList<object>? items, int sel)
         {
             parent.Parent.SetTopMost(Handle);
             select_x = sx;
@@ -98,7 +98,7 @@ namespace AntdUI
         TAlign ArrowAlign = TAlign.None;
         int ArrowSize = 8;
         internal LayeredFormSelectDown? SubForm = null;
-        void Init(Control control, TAlignFrom Placement, bool ShowArrow, bool ListAutoWidth, RectangleF rect_read, List<object> items, string? filtertext = null)
+        void Init(Control control, TAlignFrom Placement, bool ShowArrow, bool ListAutoWidth, RectangleF rect_read, IList<object> items, string? filtertext = null)
         {
             int y = 10, w = (int)rect_read.Width;
             r_w = w;
