@@ -48,6 +48,7 @@ namespace AntdUI
         /// 背景颜色
         /// </summary>
         [Description("背景颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public new Color? BackColor
         {
             get => back;
@@ -63,6 +64,7 @@ namespace AntdUI
         /// 文字颜色
         /// </summary>
         [Description("文字颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public new Color? ForeColor
         {
             get => fore;
@@ -118,12 +120,14 @@ namespace AntdUI
         /// 悬停背景颜色
         /// </summary>
         [Description("悬停背景颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? BackHover { get; set; }
 
         /// <summary>
         /// 激活背景颜色
         /// </summary>
         [Description("激活背景颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? BackActive { get; set; }
 
         Image? backImage = null;
@@ -167,6 +171,7 @@ namespace AntdUI
         /// Default模式背景颜色
         /// </summary>
         [Description("Default模式背景颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? DefaultBack
         {
             get => defaultback;
@@ -183,6 +188,7 @@ namespace AntdUI
         /// Default模式边框颜色
         /// </summary>
         [Description("Default模式边框颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? DefaultBorderColor
         {
             get => defaultbordercolor;
