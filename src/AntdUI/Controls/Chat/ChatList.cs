@@ -158,7 +158,7 @@ namespace AntdUI.Chat
                         }
                     }
                     if (text.Icon != null) g.PaintImg(text.rect_icon, text.Icon, TFit.Cover, 0, true);
-                  
+
                 }
             }
         }
@@ -996,7 +996,7 @@ namespace AntdUI.Chat
 
     internal class CacheFont
     {
-        public CacheFont(string _text, bool _emoji, int _width, Image? _svgImage = null,  bool _isSvg = false)
+        public CacheFont(string _text, bool _emoji, int _width, Image? _svgImage = null, bool _isSvg = false)
         {
             text = _text;
             emoji = _emoji;
