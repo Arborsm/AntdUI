@@ -105,7 +105,6 @@ namespace AntdUI
                                 i = cell.INDEX,
                                 x = e.X
                             };
-                            Cursor = Cursors.SizeAll;
                             return;
                         }
                     }
@@ -163,7 +162,8 @@ namespace AntdUI
             }
             if (dragHeader != null)
             {
-                if (dragHeader.im != -1)
+                bool hand = dragHeader.hand;
+                if (hand && dragHeader.im != -1)
                 {
                     //执行排序
                     if (rows == null) return;
@@ -194,8 +194,11 @@ namespace AntdUI
                     LoadLayout();
                 }
                 dragHeader = null;
-                Invalidate();
-                return;
+                if (hand)
+                {
+                    Invalidate();
+                    return;
+                }
             }
             if (scrollBar.MouseUpY() && scrollBar.MouseUpX())
             {
@@ -346,7 +349,6 @@ namespace AntdUI
         bool inEditMode = false;
         void EditModeClose()
         {
-            return;
             if (inEditMode)
             {
                 scrollBar.OnInvalidate = null;
@@ -592,6 +594,8 @@ namespace AntdUI
             }
             if (dragHeader != null)
             {
+                Cursor = Cursors.SizeAll;
+                dragHeader.hand = true;
                 dragHeader.xr = e.X - dragHeader.x;
                 if (rows == null) return;
                 int xr = dragHeader.x + dragHeader.xr;

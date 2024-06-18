@@ -1190,11 +1190,9 @@ namespace AntdUI
         }
         void Invalidates()
         {
-            if (PARENT != null)
-            {
-                PARENT.ChangeList();
-                PARENT.Invalidate();
-            }
+            if (PARENT == null) return;
+            PARENT.ChangeList();
+            PARENT.Invalidate();
         }
 
         internal float SubY { get; set; }

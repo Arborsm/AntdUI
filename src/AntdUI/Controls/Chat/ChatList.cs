@@ -974,11 +974,9 @@ namespace AntdUI.Chat
         }
         internal void Invalidates()
         {
-            if (PARENT != null)
-            {
-                PARENT.ChangeList();
-                PARENT.Invalidate();
-            }
+            if (PARENT == null) return;
+            PARENT.ChangeList();
+            PARENT.Invalidate();
         }
 
         internal bool show { get; set; }
