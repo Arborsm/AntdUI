@@ -758,7 +758,6 @@ namespace AntdUI
                             else rows[0].CheckState = CheckState.Unchecked;
                             check.SetCheckState(rows[0].CheckState);
                         }
-                        else if (it is ColumnSwitch _switch) { }
                         else
                         {
                             foreach (var row in rows)
