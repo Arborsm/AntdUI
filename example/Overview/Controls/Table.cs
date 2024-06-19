@@ -27,7 +27,7 @@ namespace Overview.Controls
             InitializeComponent();
 
             table1.Columns = new AntdUI.Column[] {
-                new AntdUI.ColumnCheck("check"){ Fixed=true,Visible=false },
+                new AntdUI.ColumnCheck("check"){ Fixed=true},
                 new AntdUI.Column("name","姓名"){ Fixed=true},
                 new AntdUI.Column("online","状态",AntdUI.ColumnAlign.Center),
                 new AntdUI.ColumnSwitch("enable","启用",AntdUI.ColumnAlign.Center){ Call=(value,record, i_row, i_col)=>{
@@ -62,6 +62,7 @@ namespace Overview.Controls
             var list2 = new List<TestClass2>(100);
             for (int i = 0; i < 100; i++) list2.Add(new TestClass2(i, "王健林" + i, (i + 20), "西湖区湖底公园" + (i + 1) + "号"));
             table2.DataSource = GetPageData(pagination1.Current, pagination1.PageSize);
+            pagination1.PageSizeOptions = new int[] { 10, 20, 30, 50, 100 };
         }
 
         private void Table1_CellClick(object sender, MouseEventArgs args, object record, int rowIndex, int columnIndex, Rectangle rect)
@@ -395,8 +396,7 @@ namespace Overview.Controls
 
         private void checkbox6_CheckedChanged(object sender, bool value)
         {
-            if (table1.Columns != null) table1.Columns[5].LineBreak = value;
-            //if (table1.Columns != null) table1.Columns[4].SortOrder = table1.Columns[5].SortOrder = value;
+            if (table1.Columns != null) table1.Columns[4].SortOrder = table1.Columns[5].SortOrder = value;
         }
 
         private AntdUI.Table.CellStyleInfo? Table1_SetRowStyle(object sender, object? record, int rowIndex)
