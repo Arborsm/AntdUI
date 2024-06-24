@@ -419,10 +419,10 @@ namespace AntdUI
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        protected override void OnTextChanged(EventArgs e)
+        protected override void OnLostFocus(EventArgs e)
         {
             if (IsHandleCreated && setvalue && decimal.TryParse(Text, out var _d)) Value = _d;
-            base.OnTextChanged(e);
+            base.OnLostFocus(e);
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)

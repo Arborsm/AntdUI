@@ -215,7 +215,7 @@ namespace AntdUI
             "/",
             "\\",
 
-            "\r","\t","\n"
+            "\r","\t","\n","\r\n"
         };
 
         /// <summary>
@@ -225,10 +225,7 @@ namespace AntdUI
         {
             for (int i = index; i >= 0; i--)
             {
-                if (sptext.Contains(cache_font[i].text))
-                {
-                    return i + 1;
-                }
+                if (sptext.Contains(cache_font[i].text)) return i + 1;
             }
             return 0;
         }
@@ -241,10 +238,7 @@ namespace AntdUI
             int end = cache_font.Length;
             for (int i = index; i < end; i++)
             {
-                if (sptext.Contains(cache_font[i].text))
-                {
-                    return i;
-                }
+                if (sptext.Contains(cache_font[i].text)) return i;
             }
             return end;
         }

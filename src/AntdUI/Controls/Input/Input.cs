@@ -570,12 +570,6 @@ namespace AntdUI
         #endregion
 
         /// <summary>
-        /// 多行编辑是否允许输入回车
-        /// </summary>
-        [Description("多行编辑是否允许输入回车"), Category("行为"), DefaultValue(false)]
-        public bool AcceptsReturn { get; set; } = false;
-
-        /// <summary>
         /// 多行编辑是否允许输入制表符
         /// </summary>
         [Description("多行编辑是否允许输入制表符"), Category("行为"), DefaultValue(false)]
@@ -933,7 +927,7 @@ namespace AntdUI
                 {
                     int start = selectionStartTemp, end = selectionLength;
                     int end_temp = start + end;
-                    if (end_temp > cache_font.Length - 1) end_temp = cache_font.Length - 1;
+                    if (end_temp > cache_font.Length) end_temp = cache_font.Length;
                     var texts = new List<string>(end);
                     foreach (var it in cache_font)
                     {
