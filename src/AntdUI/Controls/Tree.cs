@@ -487,6 +487,13 @@ namespace AntdUI
                 {
                     g.DrawString(item.Text, Font, brush, item.txt_rect, blockNode ? Helper.stringFormatLeft : sf_center);
                 }
+                if (item.SubTitle != null)
+                {
+                    using (var brush = new SolidBrush(Style.Db.TextTertiary))
+                    {
+                        g.DrawString(item.SubTitle, Font, brush, item.subtxt_rect, Helper.stringFormatLeft);
+                    }
+                }
             }
             else
             {
@@ -513,6 +520,13 @@ namespace AntdUI
                 using (var brush = new SolidBrush(item.Enabled ? fore : Style.Db.TextQuaternary))
                 {
                     g.DrawString(item.Text, Font, brush, item.txt_rect, blockNode ? Helper.stringFormatLeft : sf_center);
+                }
+                if (item.SubTitle != null)
+                {
+                    using (var brush = new SolidBrush(Style.Db.TextTertiary))
+                    {
+                        g.DrawString(item.SubTitle, Font, brush, item.subtxt_rect, Helper.stringFormatLeft);
+                    }
                 }
             }
             if (checkable)
@@ -946,6 +960,23 @@ namespace AntdUI
             }
         }
 
+        string? subTitle = null;
+        /// <summary>
+        /// 子标题
+        /// </summary>
+        [Description("子标题"), Category("外观"), DefaultValue(null)]
+        public string? SubTitle
+        {
+            get => subTitle;
+            set
+            {
+                if (string.IsNullOrEmpty(value)) value = null;
+                if (subTitle == value) return;
+                subTitle = value;
+                Invalidates();
+            }
+        }
+
         bool visible = true;
         /// <summary>
         /// 是否显示
@@ -1297,7 +1328,14 @@ namespace AntdUI
             int width = (int)Math.Ceiling(size.Width += gap);
             int height = (int)Math.Ceiling(size.Height += gap);
             txt_rect = new Rectangle(x, _rect.Y + (_rect.Height - height) / 2, width, height);
-            if (!blockNode) rect = txt_rect;
+            if (SubTitle != null)
+            {
+                var sizesub = g.MeasureString(SubTitle, font);
+                subtxt_rect = new Rectangle(txt_rect.Right, txt_rect.Y, (int)Math.Ceiling(sizesub.Width), txt_rect.Height);
+                if (!blockNode) rect = new Rectangle(txt_rect.X, txt_rect.Y, txt_rect.Width + subtxt_rect.Width, subtxt_rect.Height);
+            }
+            else if (!blockNode) rect = txt_rect;
+
             Show = true;
         }
         internal Rectangle rect { get; set; }
@@ -1335,6 +1373,7 @@ namespace AntdUI
         internal Rectangle check_rect { get; set; }
         internal float check_radius { get; set; }
         internal Rectangle txt_rect { get; set; }
+        internal Rectangle subtxt_rect { get; set; }
         internal Rectangle ico_rect { get; set; }
     }
 }

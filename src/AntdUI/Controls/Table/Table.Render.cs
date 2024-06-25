@@ -795,11 +795,15 @@ namespace AntdUI
                     g.FillPath(brush, path);
                     if (_switch.AnimationHover)
                     {
-                        int a = (int)(brush.Color.A * _switch.AnimationHoverValue);
-                        using (var brush2 = new SolidBrush(Color.FromArgb(a, brush.Color)))
+                        try
                         {
-                            g.FillPath(brush2, path);
+                            int a = (int)(brush.Color.A * _switch.AnimationHoverValue);
+                            using (var brush2 = new SolidBrush(Color.FromArgb(a, brush.Color)))
+                            {
+                                g.FillPath(brush2, path);
+                            }
                         }
+                        catch { }
                     }
                     else if (_switch.ExtraMouseHover) g.FillPath(brush, path);
                 }

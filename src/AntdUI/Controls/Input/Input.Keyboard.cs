@@ -24,6 +24,11 @@ namespace AntdUI
 {
     partial class Input
     {
+        public bool IProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
+        {
+            return ProcessCmdKey(ref msg, keyData);
+        }
+
         protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
         {
             switch (keyData)
@@ -141,6 +146,11 @@ namespace AntdUI
                     break;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        internal void IKeyPress(KeyPressEventArgs e)
+        {
+            OnKeyPress(e);
         }
 
         protected override void OnKeyPress(KeyPressEventArgs e)

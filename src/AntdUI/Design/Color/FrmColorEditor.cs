@@ -189,7 +189,6 @@ namespace AntdUI.Design
 
                 #endregion
 
-
                 #region ‰÷»æ÷∏±Í
 
                 using (var brush_val = new SolidBrush(Value))
