@@ -1727,6 +1727,23 @@ namespace AntdUI
             return new Size((int)Math.Ceiling(size.Width + p), (int)Math.Ceiling(size.Height + p));
         }
 
+        public static Color ToColor(float alpha, Color color)
+        {
+            return ToColor((int)alpha, color);
+        }
+
+        public static Color ToColorN(float val, Color color)
+        {
+            return ToColor((int)(val * color.A), color);
+        }
+
+        public static Color ToColor(int alpha, Color color)
+        {
+            if (alpha > 255) alpha = 255;
+            else if (alpha < 0) alpha = 0;
+            return Color.FromArgb(alpha, color);
+        }
+
         #region DPI
 
         internal static Dictionary<Control, AnchorDock> DpiSuspend(Control.ControlCollection controls)

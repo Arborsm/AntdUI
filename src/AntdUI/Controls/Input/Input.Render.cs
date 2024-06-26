@@ -97,7 +97,7 @@ namespace AntdUI
                             {
                                 g.DrawPath(brush, path);
                             }
-                            using (var brush = new Pen(Color.FromArgb(AnimationHoverValue, _borderHover), borderWidth))
+                            using (var brush = new Pen(Helper.ToColor(AnimationHoverValue, _borderHover), borderWidth))
                             {
                                 g.DrawPath(brush, path);
                             }
@@ -315,7 +315,7 @@ namespace AntdUI
             {
                 if (AnimationFocusValue > 0)
                 {
-                    using (var brush = new SolidBrush(Color.FromArgb(AnimationFocusValue, color)))
+                    using (var brush = new SolidBrush(Helper.ToColor(AnimationFocusValue, color)))
                     {
                         var rect = ClientRectangle.PaddingRect(Padding);
                         using (var path_click = Helper.RoundPath(rect, radius, round))

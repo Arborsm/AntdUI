@@ -503,7 +503,7 @@ namespace AntdUI
                     g.TranslateTransform(0, -sy);
                     if (item.AnimationHover)
                     {
-                        PaintBack(g, Color.FromArgb((int)(item.AnimationHoverValue * hover.A), hover), item.rect, radius);
+                        PaintBack(g, Helper.ToColorN(item.AnimationHoverValue, hover), item.rect, radius);
                     }
                     else if (item.Hover) PaintBack(g, hover, item.rect, radius);
                     g.TranslateTransform(-sx, 0);
@@ -512,7 +512,7 @@ namespace AntdUI
                 {
                     if (item.AnimationHover)
                     {
-                        PaintBack(g, Color.FromArgb((int)(item.AnimationHoverValue * hover.A), hover), item.rect, radius);
+                        PaintBack(g, Helper.ToColorN(item.AnimationHoverValue, hover), item.rect, radius);
                     }
                     else if (item.Hover) PaintBack(g, hover, item.rect, radius);
                 }
@@ -537,7 +537,7 @@ namespace AntdUI
                     {
                         if (item.AnimationCheck)
                         {
-                            int a = (int)(255 * item.AnimationCheckValue);
+                            var alpha = 255 * item.AnimationCheckValue;
 
                             if (item.CheckState == CheckState.Indeterminate || (item.checkStateOld == CheckState.Indeterminate && !item.Checked))
                             {
@@ -545,7 +545,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path_check);
                                 }
-                                using (var brush = new SolidBrush(Color.FromArgb(a, Style.Db.Primary)))
+                                using (var brush = new SolidBrush(Helper.ToColor(alpha, Style.Db.Primary)))
                                 {
                                     g.FillRectangle(brush, PaintBlock(item.check_rect));
                                 }
@@ -554,20 +554,19 @@ namespace AntdUI
                             {
                                 float dot = item.check_rect.Width * 0.3F;
 
-                                using (var brush = new SolidBrush(Color.FromArgb(a, Style.Db.Primary)))
+                                using (var brush = new SolidBrush(Helper.ToColor(alpha, Style.Db.Primary)))
                                 {
                                     g.FillPath(brush, path_check);
                                 }
-                                using (var brush = new Pen(Color.FromArgb(a, Style.Db.BgBase), 3F))
+                                using (var brush = new Pen(Helper.ToColor(alpha, Style.Db.BgBase), 3F))
                                 {
                                     g.DrawLines(brush, PaintArrow(item.check_rect));
                                 }
 
                                 if (item.Checked)
                                 {
-                                    float max = item.check_rect.Height + item.check_rect.Height * item.AnimationCheckValue;
-                                    int a2 = (int)(100 * (1f - item.AnimationCheckValue));
-                                    using (var brush = new SolidBrush(Color.FromArgb(a2, Style.Db.Primary)))
+                                    float max = item.check_rect.Height + item.check_rect.Height * item.AnimationCheckValue, alpha2 = 100 * (1F - item.AnimationCheckValue);
+                                    using (var brush = new SolidBrush(Helper.ToColor(alpha2, Style.Db.Primary)))
                                     {
                                         g.FillEllipse(brush, new RectangleF(item.check_rect.X + (item.check_rect.Width - max) / 2F, item.check_rect.Y + (item.check_rect.Height - max) / 2F, max, max));
                                     }

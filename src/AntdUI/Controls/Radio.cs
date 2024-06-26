@@ -245,20 +245,18 @@ namespace AntdUI
                     float dot = dot_size * 0.3F;
                     using (var path = new GraphicsPath())
                     {
-                        float dot_ant = dot_size - dot * AnimationCheckValue, dot_ant2 = dot_ant / 2F;
-                        int a = (int)(255 * AnimationCheckValue);
+                        float dot_ant = dot_size - dot * AnimationCheckValue, dot_ant2 = dot_ant / 2F, alpha = 255 * AnimationCheckValue;
                         path.AddEllipse(icon_rect);
                         path.AddEllipse(new RectangleF(icon_rect.X + dot_ant2, icon_rect.Y + dot_ant2, icon_rect.Width - dot_ant, icon_rect.Height - dot_ant));
-                        using (var brush = new SolidBrush(Color.FromArgb(a, color)))
+                        using (var brush = new SolidBrush(Helper.ToColor(alpha, color)))
                         {
                             g.FillPath(brush, path);
                         }
                     }
                     if (_checked)
                     {
-                        float max = icon_rect.Height + ((rect.Height - icon_rect.Height) * AnimationCheckValue);
-                        int a2 = (int)(100 * (1f - AnimationCheckValue));
-                        using (var brush = new SolidBrush(Color.FromArgb(a2, color)))
+                        float max = icon_rect.Height + ((rect.Height - icon_rect.Height) * AnimationCheckValue), alpha2 = 100 * (1F - AnimationCheckValue);
+                        using (var brush = new SolidBrush(Helper.ToColor(alpha2, color)))
                         {
                             g.FillEllipse(brush, new RectangleF(icon_rect.X + (icon_rect.Width - max) / 2F, icon_rect.Y + (icon_rect.Height - max) / 2F, max, max));
                         }
@@ -288,7 +286,7 @@ namespace AntdUI
                         {
                             g.DrawEllipse(brush, icon_rect);
                         }
-                        using (var brush = new Pen(Color.FromArgb(AnimationHoverValue, color), 2F))
+                        using (var brush = new Pen(Helper.ToColor(AnimationHoverValue, color), 2F))
                         {
                             g.DrawEllipse(brush, icon_rect);
                         }
