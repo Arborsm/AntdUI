@@ -1540,7 +1540,16 @@ namespace AntdUI
             _rect = value;
         }
 
+        internal void SetRectG(RectangleF value, float gap)
+        {
+            float w = value.Width * gap, h = value.Height * gap;
+            rect_read = new RectangleF(value.X + (value.Width - w) / 2F, value.Y + (value.Height - h) / 2F, w, h);
+            _rect = value;
+        }
+
         public RectangleF rect_read;
+        public RectangleF rect_f;
+        public RectangleF rect_l;
         public int x { get; set; }
         public int y { get; set; }
         public int t { get; set; }
