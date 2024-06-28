@@ -719,7 +719,6 @@ namespace AntdUI
                     Size = PSize;
                     break;
             }
-            Invalidate();
             return false;
         }
 

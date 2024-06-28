@@ -162,6 +162,18 @@ namespace AntdUI
         [Description("SelectedValue 属性值更改时发生"), Category("行为")]
         public event ObjectsEventHandler? SelectedValueChanged = null;
 
+        string filtertext = "";
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            if (HasFocus)
+            {
+                filtertext = Text;
+                TextFocus = true;
+                if (textFocus) subForm?.TextChange(Text);
+            }
+        }
+
         object[] selectedValue = new object[0];
         /// <summary>
         /// 清空选中
@@ -428,7 +440,7 @@ namespace AntdUI
                                 objs.Add(it);
                             }
                             Expand = true;
-                            subForm = new LayeredFormSelectMultiple(this, ReadRectangle, objs);
+                            subForm = new LayeredFormSelectMultiple(this, ReadRectangle, objs, filtertext);
                             subForm.Disposed += (a, b) =>
                             {
                                 subForm = null;
@@ -440,6 +452,7 @@ namespace AntdUI
                     }
                     else { textFocus = false; return; }
                 }
+                else filtertext = "";
             }
         }
 

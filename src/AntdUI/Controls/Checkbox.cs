@@ -103,7 +103,7 @@ namespace AntdUI
             {
                 if (text == value) return;
                 text = value;
-                BeforeAutoSize();
+                if (BeforeAutoSize()) Invalidate();
             }
         }
 
@@ -461,7 +461,7 @@ namespace AntdUI
 
         protected override void OnFontChanged(EventArgs e)
         {
-            BeforeAutoSize();
+            if (BeforeAutoSize()) Invalidate();
             base.OnFontChanged(e);
         }
 
@@ -489,16 +489,16 @@ namespace AntdUI
             base.OnResize(e);
         }
 
-        internal void BeforeAutoSize()
+        internal bool BeforeAutoSize()
         {
-            if (autoSize == TAutoSize.None) return;
+            if (autoSize == TAutoSize.None) return true;
             if (InvokeRequired)
             {
                 Invoke(new Action(() =>
                 {
                     BeforeAutoSize();
                 }));
-                return;
+                return false;
             }
             switch (autoSize)
             {
@@ -513,7 +513,7 @@ namespace AntdUI
                     Size = PSize;
                     break;
             }
-            Invalidate();
+            return false;
         }
 
         #endregion
