@@ -1746,7 +1746,14 @@ namespace AntdUI
 
         #region DPI
 
-        internal static Dictionary<Control, AnchorDock> DpiSuspend(Control.ControlCollection controls)
+        internal static void DpiAuto(float dpi, Control control)
+        {
+            var dir = DpiSuspend(control.Controls);
+            DpiLS(dpi, control);
+            DpiResume(dir, control.Controls);
+        }
+
+        static Dictionary<Control, AnchorDock> DpiSuspend(Control.ControlCollection controls)
         {
             var dir = new Dictionary<Control, AnchorDock>();
             foreach (Control control in controls)
@@ -1756,7 +1763,7 @@ namespace AntdUI
             }
             return dir;
         }
-        internal static void DpiSuspend(ref Dictionary<Control, AnchorDock> dir, Control.ControlCollection controls)
+        static void DpiSuspend(ref Dictionary<Control, AnchorDock> dir, Control.ControlCollection controls)
         {
             foreach (Control control in controls)
             {
@@ -1765,7 +1772,7 @@ namespace AntdUI
             }
         }
 
-        internal static void DpiResume(Dictionary<Control, AnchorDock> dir, Control.ControlCollection controls)
+        static void DpiResume(Dictionary<Control, AnchorDock> dir, Control.ControlCollection controls)
         {
             foreach (Control control in controls)
             {
@@ -1778,7 +1785,7 @@ namespace AntdUI
             }
         }
 
-        internal static void DpiLS(float dpi, Control control)
+        static void DpiLS(float dpi, Control control)
         {
             var size = new Size((int)(control.Width * dpi), (int)(control.Height * dpi));
             Point point;
@@ -1841,7 +1848,7 @@ namespace AntdUI
             }
         }
 
-        internal static void DpiLSS(float dpi, Control control)
+        static void DpiLSS(float dpi, Control control)
         {
             if (control.Controls.Count > 0)
             {

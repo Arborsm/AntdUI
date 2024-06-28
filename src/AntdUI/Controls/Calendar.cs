@@ -124,6 +124,7 @@ namespace AntdUI
                 _value = value;
                 DateChanged?.Invoke(this, _value);
                 Invalidate();
+                LoadBadge();
             }
         }
 
@@ -185,29 +186,7 @@ namespace AntdUI
 
                 OnSizeChanged(EventArgs.Empty);
 
-                if (BadgeAction != null)
-                {
-                    var oldval = value;
-                    ITask.Run(() =>
-                    {
-                        var dir = BadgeAction(new DateTime[] { calendar_day[0].date, calendar_day[calendar_day.Count - 1].date });
-                        if (_Date == oldval)
-                        {
-                            badge_list.Clear();
-                            if (dir == null)
-                            {
-                                Invalidate();
-                                return;
-                            }
-#if NET40 || NET46 || NET48
-                            foreach (var it in dir) badge_list.Add(it.Date, it);
-#else
-                            foreach (var it in dir) badge_list.TryAdd(it.Date, it);
-#endif
-                            Invalidate();
-                        }
-                    });
-                }
+                LoadBadge();
             }
         }
 
@@ -283,6 +262,36 @@ namespace AntdUI
                 }
             }
             return calendaris;
+        }
+
+        /// <summary>
+        /// 加载徽标
+        /// </summary>
+        public void LoadBadge()
+        {
+            if (BadgeAction != null && calendar_day != null)
+            {
+                var oldval = _Date;
+                ITask.Run(() =>
+                {
+                    var dir = BadgeAction(new DateTime[] { calendar_day[0].date, calendar_day[calendar_day.Count - 1].date });
+                    if (_Date == oldval)
+                    {
+                        badge_list.Clear();
+                        if (dir == null)
+                        {
+                            Invalidate();
+                            return;
+                        }
+#if NET40 || NET46 || NET48
+                        foreach (var it in dir) badge_list.Add(it.Date, it);
+#else
+                        foreach (var it in dir) badge_list.TryAdd(it.Date, it);
+#endif
+                        Invalidate();
+                    }
+                });
+            }
         }
 
         #endregion
