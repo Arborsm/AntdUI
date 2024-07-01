@@ -50,7 +50,9 @@ namespace AntdUI
         /// <param name="lr">水平（前后）</param>
         public static StringFormat SF_NoWrap(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
         {
-            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, FormatFlags = StringFormatFlags.NoWrap };
+            var sf = new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr };
+            sf.FormatFlags |= StringFormatFlags.NoWrap;
+            return sf;
         }
 
         /// <summary>
@@ -70,12 +72,16 @@ namespace AntdUI
         /// <param name="lr">水平（前后）</param>
         public static StringFormat SF_ALL(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
         {
-            return new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+            var sf = new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter, };
+            sf.FormatFlags |= StringFormatFlags.NoWrap;
+            return sf;
         }
 
         public static StringFormat SF_MEASURE_FONT()
         {
-            return new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center, FormatFlags = StringFormatFlags.MeasureTrailingSpaces };
+            var sf = new StringFormat(StringFormat.GenericTypographic) { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            sf.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
+            return sf;
         }
 
         #endregion
