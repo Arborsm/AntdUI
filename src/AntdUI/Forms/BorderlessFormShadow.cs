@@ -67,7 +67,7 @@ namespace AntdUI
 
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
-            if (form.is_resizable)
+            if (form.Resizable)
             {
                 switch (m.Msg)
                 {

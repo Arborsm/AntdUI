@@ -381,24 +381,34 @@ namespace AntdUI
             if (rect.Width == 0 || rect.Height == 0) return rect;
 
             int x = 0, y = 0;
+            bool has = HasSub(items);
             Helper.GDI(g =>
             {
                 var size = g.MeasureString(Config.NullText, Font);
-                int icon_size = (int)(size.Height), gap = icon_size / 2;
-                int height = (int)Math.Ceiling(size.Height + gap * 2);
-                int gapI = (int)(gap / 2);
-                ChangeList(g, rect, null, Items, ref x, ref y, height, icon_size, gap, gapI, 0, true);
+                int icon_size = (int)(size.Height), gap = icon_size / 2, gapI = gap / 2, height = (int)Math.Ceiling(size.Height + gap * 2);
+                check_radius = icon_size * .2F;
+                ChangeList(g, rect, null, items, has, ref x, ref y, height, icon_size, gap, gapI, 0, true);
             });
             scrollBar.SetVrSize(x, y);
             return rect;
         }
-        void ChangeList(Graphics g, Rectangle rect, TreeItem? Parent, TreeItemCollection items, ref int x, ref int y, int height, int icon_size, int gap, int gapI, int depth, bool expand)
+
+        bool HasSub(TreeItemCollection items)
+        {
+            foreach (TreeItem it in items)
+            {
+                if (it.CanExpand) return true;
+            }
+            return false;
+        }
+
+        void ChangeList(Graphics g, Rectangle rect, TreeItem? Parent, TreeItemCollection items, bool has_sub, ref int x, ref int y, int height, int icon_size, int gap, int gapI, int depth, bool expand)
         {
             foreach (TreeItem it in items)
             {
                 it.PARENT = this;
                 it.PARENTITEM = Parent;
-                it.SetRect(g, Font, depth, checkable, blockNode, new Rectangle(0, y, rect.Width, height), icon_size, gap);
+                it.SetRect(g, Font, depth, checkable, blockNode, has_sub, new Rectangle(0, y, rect.Width, height), icon_size, gap);
                 if (expand && it.txt_rect.Right > x) x = it.txt_rect.Right;
                 if (it.Show && it.Visible)
                 {
@@ -406,7 +416,7 @@ namespace AntdUI
                     if (it.CanExpand)
                     {
                         int y_item = y;
-                        ChangeList(g, rect, it, it.Sub, ref x, ref y, height, icon_size, gap, gapI, depth + 1, expand ? it.Expand : false);
+                        ChangeList(g, rect, it, it.Sub, has_sub, ref x, ref y, height, icon_size, gap, gapI, depth + 1, expand ? it.Expand : false);
                         it.SubY = y_item - gapI / 2;
                         it.SubHeight = y - y_item;
                         if ((it.Expand || it.ExpandThread) && it.ExpandProg > 0)
@@ -425,10 +435,12 @@ namespace AntdUI
         #region 渲染
 
         ScrollBar scrollBar;
+        float check_radius = 0F;
         public Tree()
         {
             scrollBar = new ScrollBar(this, true, true);
         }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             if (items == null || items.Count == 0) return;
@@ -531,7 +543,7 @@ namespace AntdUI
             }
             if (checkable)
             {
-                using (var path_check = Helper.RoundPath(item.check_rect, item.check_radius, false))
+                using (var path_check = Helper.RoundPath(item.check_rect, check_radius, false))
                 {
                     if (item.Enabled)
                     {
@@ -1302,24 +1314,26 @@ namespace AntdUI
         internal Tree? PARENT { get; set; }
         public TreeItem? PARENTITEM { get; set; }
 
-        internal void SetRect(Graphics g, Font font, int depth, bool checkable, bool blockNode, Rectangle _rect, int icon_size, int gap)
+        internal void SetRect(Graphics g, Font font, int depth, bool checkable, bool blockNode, bool has_sub, Rectangle _rect, int icon_size, int gap)
         {
             Depth = depth;
             rect = _rect;
-            int x = _rect.X + gap + (icon_size * depth);
-            arr_rect = new Rectangle(x, _rect.Y + (_rect.Height - icon_size) / 2, icon_size, icon_size);
-            x += icon_size + gap;
+            int x = _rect.X + gap + (icon_size * depth), y = _rect.Y + (_rect.Height - icon_size) / 2;
+            if (has_sub)
+            {
+                arr_rect = new Rectangle(x, y, icon_size, icon_size);
+                x += icon_size + gap;
+            }
 
             if (checkable)
             {
-                check_radius = arr_rect.Height * .2F;
-                check_rect = new Rectangle(x, arr_rect.Y, arr_rect.Width, arr_rect.Height);
+                check_rect = new Rectangle(x, y, icon_size, icon_size);
                 x += icon_size + gap;
             }
 
             if (HasIcon)
             {
-                ico_rect = new Rectangle(x, arr_rect.Y, arr_rect.Width, arr_rect.Height);
+                ico_rect = new Rectangle(x, y, icon_size, icon_size);
                 x += icon_size + gap;
             }
 
@@ -1370,7 +1384,6 @@ namespace AntdUI
         ITask? ThreadHover = null;
 
         internal Rectangle check_rect { get; set; }
-        internal float check_radius { get; set; }
         internal Rectangle txt_rect { get; set; }
         internal Rectangle subtxt_rect { get; set; }
         internal Rectangle ico_rect { get; set; }
