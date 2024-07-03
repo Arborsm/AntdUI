@@ -401,7 +401,7 @@ namespace AntdUI
                         {
                             if (iseg)
                             {
-                                for (int i = 0; i < row.cells.Length - 1; i++)
+                                for (int i = 0; i < row.cells.Length; i++)
                                 {
                                     var it = (TCellColumn)row.cells[i];
                                     _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, it.RECT.Height));
@@ -409,7 +409,7 @@ namespace AntdUI
                             }
                             else
                             {
-                                for (int i = 0; i < row.cells.Length - 1; i++)
+                                for (int i = 0; i < row.cells.Length; i++)
                                 {
                                     var it = (TCellColumn)row.cells[i];
                                     _dividerHs.Add(new Rectangle(it.RECT.Right - split2, rect.Y, split, rect_read.Height));
