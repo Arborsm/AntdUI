@@ -127,8 +127,7 @@ namespace AntdUI
 
                 int selY = -1;
                 int item_count = 0, divider_count = 0;
-                int text_height = font_size - y2;
-                float gap = (text_height - gap_y) / 2F;
+                int text_height = font_size - y2, gap = (text_height - gap_y) / 2;
                 for (int i = 0; i < items.Count; i++) ReadList(items[i], i, w, y2, gap_x, gap_y, gap, font_size, text_height, ref item_count, ref divider_count, ref y, ref selY);
                 var vr = (font_size * item_count) + (gap_y * divider_count);
                 if (MaxCount > 0)
@@ -310,12 +309,12 @@ namespace AntdUI
         }
         StringFormat stringFormatLeft = Helper.SF(lr: StringAlignment.Near);
 
-        void ReadList(object obj, int i, int w, int y2, int gap_x, int gap_y, float gap, int font_size, int text_height, ref int item_count, ref int divider_count, ref int y, ref int selY, bool NoIndex = true)
+        void ReadList(object obj, int i, int w, int y2, int gap_x, int gap_y, int gap, int font_size, int text_height, ref int item_count, ref int divider_count, ref int y, ref int selY, bool NoIndex = true)
         {
             if (obj is SelectItem it)
             {
                 item_count++;
-                RectangleF rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size), rect_text = new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
+                Rectangle rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size), rect_text = new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
                 Items.Add(new ObjectItem(it, i, rect_bg, gap_y, gap, rect_text) { NoIndex = NoIndex });
                 if (selectedValue == it.Tag) selY = y;
                 y += font_size;
@@ -323,7 +322,7 @@ namespace AntdUI
             else if (obj is GroupSelectItem group && group.Sub != null && group.Sub.Count > 0)
             {
                 item_count++;
-                RectangleF rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size), rect_text = new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
+                Rectangle rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size), rect_text = new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
                 Items.Add(new ObjectItem(group, i, rect_bg, rect_text));
                 if (selectedValue == obj) selY = y;
                 y += font_size;
@@ -332,13 +331,13 @@ namespace AntdUI
             else if (obj is DividerSelectItem)
             {
                 divider_count++;
-                Items.Add(new ObjectItem(new RectangleF(10 + gap_y, y + (gap_y - 1F) / 2F, w - y2, 1)));
+                Items.Add(new ObjectItem(new Rectangle(10 + gap_y, y + (gap_y - 1) / 2, w - y2, 1)));
                 y += gap_y;
             }
             else
             {
                 item_count++;
-                RectangleF rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size), rect_text = new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
+                Rectangle rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size), rect_text = new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, text_height);
                 Items.Add(new ObjectItem(obj, i, rect_bg, rect_text) { NoIndex = NoIndex });
                 if (selectedValue == obj) selY = y;
                 y += font_size;
@@ -447,15 +446,14 @@ namespace AntdUI
                         var y2 = gap_y * 2;
                         y += gap_y;
 
-                        int text_height = font_size - y2;
-                        float gap = (text_height - gap_y) / 2F;
+                        int text_height = font_size - y2, gap = (text_height - gap_y) / 2;
                         foreach (var it in Items)
                         {
                             if (it.ID > -1 && it.Show)
                             {
                                 list_count++;
-                                var rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size);
-                                it.SetRect(rect_bg, new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
+                                var rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size);
+                                it.SetRect(rect_bg, new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
                                 y += font_size;
                             }
                         }
@@ -523,15 +521,14 @@ namespace AntdUI
                     var y2 = gap_y * 2;
                     y += gap_y;
 
-                    int text_height = font_size - y2;
-                    float gap = (text_height - gap_y) / 2F;
+                    int text_height = font_size - y2, gap = (text_height - gap_y) / 2;
                     foreach (var it in Items)
                     {
                         if (it.ID > -1 && it.Show)
                         {
                             list_count++;
-                            var rect_bg = new RectangleF(10 + gap_y, y, w - y2, font_size);
-                            it.SetRect(rect_bg, new RectangleF(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
+                            var rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size);
+                            it.SetRect(rect_bg, new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
                             y += font_size;
                         }
                     }
@@ -580,7 +577,7 @@ namespace AntdUI
             {
                 foreach (var it in Items)
                 {
-                    if (it.Show && it.ID > -1 && it.Contains(e.Location, 0, scrollY.Value, out _))
+                    if (it.Show && it.ID > -1 && it.Contains(e.Location, 0, (int)scrollY.Value, out _))
                     {
                         if (OnClick(it)) return;
                     }
@@ -649,7 +646,7 @@ namespace AntdUI
                 for (int i = 0; i < Items.Count; i++)
                 {
                     var it = Items[i];
-                    if (it.Contains(e.Location, 0, scrollY.Value, out var change)) hoveindex = i;
+                    if (it.Contains(e.Location, 0, (int)scrollY.Value, out var change)) hoveindex = i;
                     if (change) count++;
                 }
                 if (count > 0) Print();
@@ -767,13 +764,13 @@ namespace AntdUI
         }
         void PanintArrow(Graphics g, ObjectItem item, Color color)
         {
-            float size = item.arr_rect.Width, size2 = size / 2F;
-            g.TranslateTransform(item.arr_rect.X + size2, item.arr_rect.Y + size2);
+            int size = item.arr_rect.Width, size_arrow = size / 2;
+            g.TranslateTransform(item.arr_rect.X + size_arrow, item.arr_rect.Y + size_arrow);
             g.RotateTransform(-90F);
             using (var pen = new Pen(color, 2F))
             {
                 pen.StartCap = pen.EndCap = LineCap.Round;
-                g.DrawLines(pen, new RectangleF(-size2, -size2, item.arr_rect.Width, item.arr_rect.Height).TriangleLines(-1, .2F));
+                g.DrawLines(pen, new Rectangle(-size_arrow, -size_arrow, item.arr_rect.Width, item.arr_rect.Height).TriangleLines(-1, .2F));
             }
             g.ResetTransform();
             g.TranslateTransform(0, -scrollY.Value);

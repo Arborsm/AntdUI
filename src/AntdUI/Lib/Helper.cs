@@ -570,7 +570,7 @@ namespace AntdUI
         internal static PointF[] TriangleLines(this Rectangle rect, float prog, float d = 0.7F)
         {
             float size = rect.Width * d, size2 = size / 2;
-            float x = rect.X + rect.Width / 2F, y = rect.Y + rect.Height / 2F;
+            float x = rect.X + rect.Width / 2F, y = rect.Y + rect.Height / 2F; prog = 1;
             if (prog == 0)
             {
                 return new PointF[] {
@@ -580,53 +580,24 @@ namespace AntdUI
             }
             else if (prog > 0)
             {
-                float h = size2 * prog, h2 = h / 2, yc = rect.Y + (rect.Height - h2) / 2F;
+                float h = size2 * prog, h2 = h / 2;
                 return new PointF[] {
-                    new PointF(x - size2,yc + h2),
-                    new PointF(x, yc - h2),
-                    new PointF(x + size2,yc + h2)
+                    new PointF(x - size2,y + h2),
+                    new PointF(x, y - h2),
+                    new PointF(x + size2,y + h2)
                 };
             }
             else
             {
-                float h = size2 * -prog, h2 = h / 2, yc = rect.Y + (rect.Height - h2) / 2F;
+                float h = size2 * -prog, h2 = h / 2;
                 return new PointF[] {
-                    new PointF(x - size2,yc - h2),
-                    new PointF(x, yc + h2),
-                    new PointF(x + size2,yc - h2)
+                    new PointF(x - size2,y - h2),
+                    new PointF(x, y + h2),
+                    new PointF(x + size2,y - h2)
                 };
             }
         }
-        internal static PointF[] TriangleLines(this RectangleF rect, float prog, float d = 0.7F)
-        {
-            float size = rect.Width * d, size2 = size / 2;
-            float x = rect.X + rect.Width / 2F, y = rect.Y + rect.Height / 2F;
-            if (prog == 0)
-            {
-                return new PointF[] {
-                    new PointF(x - size2, y),
-                    new PointF(x + size2,y)
-                };
-            }
-            else if (prog > 0)
-            {
-                float h = size2 * prog, h2 = h / 2, yc = rect.Y + (rect.Height - h2) / 2F;
-                return new PointF[] {
-                    new PointF(x - size2,yc + h2),
-                    new PointF(x, yc - h2),
-                    new PointF(x + size2,yc + h2)
-                };
-            }
-            else
-            {
-                float h = size2 * -prog, h2 = h / 2, yc = rect.Y + (rect.Height - h2) / 2F;
-                return new PointF[] {
-                    new PointF(x - size2,yc - h2),
-                    new PointF(x, yc + h2),
-                    new PointF(x + size2,yc - h2)
-                };
-            }
-        }
+
         internal static PointF[] TriangleLines(this TAlignMini align, RectangleF rect, float b = 0.375F)
         {
             float size = rect.Height * b, size2 = size / 2F;
@@ -1186,6 +1157,48 @@ namespace AntdUI
         /// <param name="BR">↘</param>
         /// <param name="BL">↙</param>
         public static GraphicsPath RoundPath(this RectangleF rect, float radius, bool TL, bool TR, bool BR, bool BL)
+        {
+            var path = new GraphicsPath();
+            if (radius <= 0F) path.AddRectangle(rect);
+            else
+            {
+                float diameter = radius * 2F;
+                var arc = new RectangleF(rect.X, rect.Y, diameter, diameter);
+
+                // TL
+                if (TL) path.AddArc(arc, 180, 90);
+                else path.AddLine(rect.X, rect.Y, rect.Right - diameter, rect.Y);
+
+                // TR
+                arc.X = rect.Right - diameter;
+                if (TR) path.AddArc(arc, 270, 90);
+                else path.AddLine(rect.Right, rect.Y, rect.Right, rect.Bottom - diameter);
+
+                // BR
+                arc.Y = rect.Bottom - diameter;
+                if (BR) path.AddArc(arc, 0, 90);
+                else path.AddLine(rect.Right, rect.Bottom, rect.X + diameter, rect.Bottom);
+
+                // BL
+                arc.X = rect.Left;
+                if (BL) path.AddArc(arc, 90, 90);
+                else path.AddLine(rect.X, rect.Bottom, rect.X, rect.Y + diameter);
+
+                path.CloseFigure();
+            }
+            return path;
+        }
+
+        /// <summary>
+        /// 自定义圆角
+        /// </summary>
+        /// <param name="rect">区域</param>
+        /// <param name="radius">圆角大小</param>
+        /// <param name="TL">↖</param>
+        /// <param name="TR">↗</param>
+        /// <param name="BR">↘</param>
+        /// <param name="BL">↙</param>
+        public static GraphicsPath RoundPath(this Rectangle rect, float radius, bool TL, bool TR, bool BR, bool BL)
         {
             var path = new GraphicsPath();
             if (radius <= 0F) path.AddRectangle(rect);

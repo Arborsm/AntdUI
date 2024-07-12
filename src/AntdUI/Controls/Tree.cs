@@ -678,13 +678,13 @@ namespace AntdUI
 
         void PanintArrow(Graphics g, TreeItem item, SolidBrush color, int sx, int sy)
         {
-            float size = item.arr_rect.Width, size2 = size / 2F;
-            g.TranslateTransform(item.arr_rect.X + size2, item.arr_rect.Y + size2);
+            int size = item.arr_rect.Width, size_arrow = size / 2;
+            g.TranslateTransform(item.arr_rect.X + size_arrow, item.arr_rect.Y + size_arrow);
             g.RotateTransform(-90F + item.ArrowProg);
             using (var pen = new Pen(color, 2F))
             {
                 pen.StartCap = pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-                g.DrawLines(pen, new RectangleF(-size2, -size2, item.arr_rect.Width, item.arr_rect.Height).TriangleLines(-1, .4F));
+                g.DrawLines(pen, new Rectangle(-size_arrow, -size_arrow, item.arr_rect.Width, item.arr_rect.Height).TriangleLines(-1, .4F));
             }
             g.ResetTransform();
             g.TranslateTransform(-sx, -sy);

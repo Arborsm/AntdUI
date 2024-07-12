@@ -539,7 +539,7 @@ namespace AntdUI
 
     internal class ObjectItem
     {
-        public ObjectItem(object _val, int _i, RectangleF rect, RectangleF rect_text)
+        public ObjectItem(object _val, int _i, Rectangle rect, Rectangle rect_text)
         {
             Show = true;
             Val = _val;
@@ -550,7 +550,7 @@ namespace AntdUI
             SetRect(rect, rect_text);
         }
 
-        public ObjectItem(GroupSelectItem _val, int _i, RectangleF rect, RectangleF rect_text)
+        public ObjectItem(GroupSelectItem _val, int _i, Rectangle rect, Rectangle rect_text)
         {
             Show = Group = true;
             Val = _val;
@@ -561,7 +561,7 @@ namespace AntdUI
             SetRect(rect, rect_text);
         }
 
-        public ObjectItem(SelectItem _val, int _i, RectangleF rect, int gap_y, float gap, RectangleF rect_text)
+        public ObjectItem(SelectItem _val, int _i, Rectangle rect, int gap_y, int gap, Rectangle rect_text)
         {
             Sub = _val.Sub;
             if (Sub != null && Sub.Count > 0) has_sub = true;
@@ -577,7 +577,7 @@ namespace AntdUI
             SetRect(rect, rect_text, gap, gap_y);
         }
 
-        public ObjectItem(RectangleF rect)
+        public ObjectItem(Rectangle rect)
         {
             ID = -1;
             Rect = rect;
@@ -601,8 +601,8 @@ namespace AntdUI
         public Color? OnlineCustom { get; set; }
 
         public Image? Icon { get; set; }
-        public RectangleF RectIcon { get; set; }
-        public RectangleF RectOnline { get; set; }
+        public Rectangle RectIcon { get; set; }
+        public Rectangle RectOnline { get; set; }
 
         string PY { get; set; }
         string PYS { get; set; }
@@ -621,11 +621,11 @@ namespace AntdUI
 
         internal bool ShowAndID { get => ID == -1 || !Show; }
 
-        internal RectangleF arr_rect { get; set; }
+        internal Rectangle arr_rect { get; set; }
 
-        public RectangleF Rect { get; set; }
+        public Rectangle Rect { get; set; }
 
-        internal void SetRect(RectangleF rect, RectangleF rect_text, float gap, float gap_y)
+        internal void SetRect(Rectangle rect, Rectangle rect_text, int gap, int gap_y)
         {
             Rect = rect;
             if (Val is SelectItem)
@@ -634,30 +634,30 @@ namespace AntdUI
                 {
                     if (Online > -1 && Icon != null)
                     {
-                        float h2 = rect_text.Height * 0.7F;
-                        RectOnline = new RectangleF(rect_text.X + (h2 - gap_y) / 2F, rect_text.Y + gap, gap_y, gap_y);
-                        RectIcon = new RectangleF(rect_text.X + h2, rect_text.Y, rect_text.Height, rect_text.Height);
-                        RectText = new RectangleF(rect_text.X + h2 + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y - h2, rect_text.Height);
+                        int h2 = (int)(rect_text.Height * 0.7F);
+                        RectOnline = new Rectangle(rect_text.X + (h2 - gap_y) / 2, rect_text.Y + gap, gap_y, gap_y);
+                        RectIcon = new Rectangle(rect_text.X + h2, rect_text.Y, rect_text.Height, rect_text.Height);
+                        RectText = new Rectangle(rect_text.X + h2 + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y - h2, rect_text.Height);
                     }
                     else if (Online > -1)
                     {
-                        RectOnline = new RectangleF(rect_text.X + gap, rect_text.Y + gap, gap_y, gap_y);
-                        RectText = new RectangleF(rect_text.X + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y, rect_text.Height);
+                        RectOnline = new Rectangle(rect_text.X + gap, rect_text.Y + gap, gap_y, gap_y);
+                        RectText = new Rectangle(rect_text.X + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y, rect_text.Height);
                     }
                     else
                     {
-                        RectIcon = new RectangleF(rect_text.X, rect_text.Y, rect_text.Height, rect_text.Height);
-                        RectText = new RectangleF(rect_text.X + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y, rect_text.Height);
+                        RectIcon = new Rectangle(rect_text.X, rect_text.Y, rect_text.Height, rect_text.Height);
+                        RectText = new Rectangle(rect_text.X + gap_y + rect_text.Height, rect_text.Y, rect_text.Width - rect_text.Height - gap_y, rect_text.Height);
                     }
                 }
                 else RectText = rect_text;
 
-                arr_rect = new RectangleF(Rect.Right - Rect.Height - gap_y, Rect.Y, Rect.Height, Rect.Height);
+                arr_rect = new Rectangle(Rect.Right - Rect.Height - gap_y, Rect.Y, Rect.Height, Rect.Height);
             }
             else RectText = rect_text;
         }
 
-        internal void SetRect(RectangleF rect, RectangleF rect_text)
+        internal void SetRect(Rectangle rect, Rectangle rect_text)
         {
             Rect = rect;
             RectText = rect_text;
@@ -678,9 +678,9 @@ namespace AntdUI
             }
             return change;
         }
-        internal bool Contains(Point point, float x, float y, out bool change)
+        internal bool Contains(Point point, int x, int y, out bool change)
         {
-            if (ID > -1 && Rect.Contains(new PointF(point.X + x, point.Y + y)))
+            if (ID > -1 && Rect.Contains(point.X + x, point.Y + y))
             {
                 change = SetHover(true);
                 return true;
