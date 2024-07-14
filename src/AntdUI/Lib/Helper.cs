@@ -570,7 +570,7 @@ namespace AntdUI
         internal static PointF[] TriangleLines(this Rectangle rect, float prog, float d = 0.7F)
         {
             float size = rect.Width * d, size2 = size / 2;
-            float x = rect.X + rect.Width / 2F, y = rect.Y + rect.Height / 2F; prog = 1;
+            float x = rect.X + rect.Width / 2F, y = rect.Y + rect.Height / 2F;
             if (prog == 0)
             {
                 return new PointF[] {
