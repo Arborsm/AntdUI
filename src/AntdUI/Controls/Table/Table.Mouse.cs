@@ -761,7 +761,7 @@ namespace AntdUI
                             var rect = new Rectangle(_rect.X + cel.RECT.X - offset_xi, _rect.Y + cel.RECT.Y - offset_y, cel.RECT.Width, cel.RECT.Height);
                             if (tooltipForm == null)
                             {
-                                tooltipForm = new TooltipForm(rect, text, new TooltipConfig
+                                tooltipForm = new TooltipForm(this, rect, text, new TooltipConfig
                                 {
                                     Font = Font,
                                     ArrowAlign = TAlign.Top,
