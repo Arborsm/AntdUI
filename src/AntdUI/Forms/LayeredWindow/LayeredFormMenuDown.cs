@@ -46,7 +46,7 @@ namespace AntdUI
         {
             isauto = parent.Theme == TAMode.Auto;
             isdark = Config.IsDark || parent.Theme == TAMode.Dark;
-            control.Parent.SetTopMost(Handle);
+            parent.Parent.SetTopMost(Handle);
             select_x = sx;
             PARENT = parent;
             Font = control.Font;

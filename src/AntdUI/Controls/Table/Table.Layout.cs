@@ -732,7 +732,7 @@ namespace AntdUI
             {
                 #region 判断复选框
 
-                for (int cel = 0; cel < columns.Length; cel++)
+                for (int cel = 0; cel < columns.Count; cel++)
                 {
                     var it = columns[cel];
                     if (it.Key == key)
