@@ -51,16 +51,16 @@ namespace Overview.Controls
             table2 = new AntdUI.Table();
             table1 = new AntdUI.Table();
             tabs1 = new AntdUI.Tabs();
-            tabPage1 = new TabPage();
+            tabPage1 = new AntdUI.TabPage();
             panel1 = new AntdUI.Panel();
+            checkbox7 = new AntdUI.Checkbox();
             checkbox2 = new AntdUI.Checkbox();
             checkbox6 = new AntdUI.Checkbox();
             checkbox5 = new AntdUI.Checkbox();
             checkbox4 = new AntdUI.Checkbox();
             checkbox3 = new AntdUI.Checkbox();
             checkbox1 = new AntdUI.Checkbox();
-            tabPage2 = new TabPage();
-            checkbox7 = new AntdUI.Checkbox();
+            tabPage2 = new AntdUI.TabPage();
             tabs1.SuspendLayout();
             tabPage1.SuspendLayout();
             panel1.SuspendLayout();
@@ -83,11 +83,11 @@ namespace Overview.Controls
             // 
             pagination1.Dock = DockStyle.Bottom;
             pagination1.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            pagination1.Location = new Point(3, 30);
+            pagination1.Location = new Point(0, 33);
             pagination1.Name = "pagination1";
             pagination1.RightToLeft = RightToLeft.Yes;
             pagination1.ShowSizeChanger = true;
-            pagination1.Size = new Size(186, 34);
+            pagination1.Size = new Size(192, 34);
             pagination1.TabIndex = 5;
             pagination1.Total = 100;
             pagination1.ValueChanged += pagination1_ValueChanged;
@@ -98,9 +98,9 @@ namespace Overview.Controls
             table2.AutoSizeColumnsMode = AntdUI.ColumnsMode.Fill;
             table2.Dock = DockStyle.Fill;
             table2.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            table2.Location = new Point(3, 3);
+            table2.Location = new Point(0, 0);
             table2.Name = "table2";
-            table2.Size = new Size(186, 27);
+            table2.Size = new Size(192, 33);
             table2.TabIndex = 3;
             table2.Text = "table2";
             // 
@@ -109,24 +109,26 @@ namespace Overview.Controls
             table1.AutoSizeColumnsMode = AntdUI.ColumnsMode.Fill;
             table1.Dock = DockStyle.Fill;
             table1.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            table1.Location = new Point(3, 46);
+            table1.Location = new Point(0, 43);
             table1.Name = "table1";
             table1.Radius = 6;
-            table1.Size = new Size(1286, 486);
+            table1.Size = new Size(1294, 509);
             table1.TabIndex = 0;
             table1.Text = "table1";
             table1.CellButtonClick += table1_CellButtonClick;
             // 
             // tabs1
             // 
-            tabs1.Appearance = TabAppearance.FlatButtons;
-            tabs1.Controls.Add(tabPage1);
-            tabs1.Controls.Add(tabPage2);
+            tabs1.BarPadding = 8;
+            tabs1.BarRadius = 2;
             tabs1.Dock = DockStyle.Fill;
-            tabs1.ItemSize = new Size(80, 54);
+            tabs1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            tabs1.Gap = 12;
             tabs1.Location = new Point(0, 79);
             tabs1.Name = "tabs1";
-            tabs1.SelectedIndex = 0;
+            tabs1.Padding = new Padding(0, 4, 0, 0);
+            tabs1.Pages.Add(tabPage1);
+            tabs1.Pages.Add(tabPage2);
             tabs1.Size = new Size(1300, 597);
             tabs1.TabIndex = 0;
             // 
@@ -134,13 +136,13 @@ namespace Overview.Controls
             // 
             tabPage1.Controls.Add(table1);
             tabPage1.Controls.Add(panel1);
-            tabPage1.Location = new Point(4, 58);
+            tabPage1.Dock = DockStyle.Fill;
+            tabPage1.Location = new Point(3, 42);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1292, 535);
+            tabPage1.Size = new Size(1294, 552);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "常规";
-            tabPage1.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -153,12 +155,23 @@ namespace Overview.Controls
             panel1.Controls.Add(checkbox1);
             panel1.Dock = DockStyle.Top;
             panel1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            panel1.Location = new Point(3, 3);
+            panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(10, 0, 0, 0);
-            panel1.Size = new Size(1286, 43);
+            panel1.Size = new Size(1294, 43);
             panel1.TabIndex = 1;
             panel1.Text = "panel1";
+            // 
+            // checkbox7
+            // 
+            checkbox7.Checked = true;
+            checkbox7.Dock = DockStyle.Left;
+            checkbox7.Location = new Point(777, 0);
+            checkbox7.Name = "checkbox7";
+            checkbox7.Size = new Size(116, 43);
+            checkbox7.TabIndex = 6;
+            checkbox7.Text = "显示表头";
+            checkbox7.CheckedChanged += checkbox7_CheckedChanged;
             // 
             // checkbox2
             // 
@@ -225,24 +238,13 @@ namespace Overview.Controls
             // 
             tabPage2.Controls.Add(table2);
             tabPage2.Controls.Add(pagination1);
+            tabPage2.Dock = DockStyle.Fill;
             tabPage2.Location = new Point(4, 29);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(192, 67);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "分页";
-            tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // checkbox7
-            // 
-            checkbox7.Checked = true;
-            checkbox7.Dock = DockStyle.Left;
-            checkbox7.Location = new Point(777, 0);
-            checkbox7.Name = "checkbox7";
-            checkbox7.Size = new Size(116, 43);
-            checkbox7.TabIndex = 6;
-            checkbox7.Text = "显示表头";
-            checkbox7.CheckedChanged += checkbox7_CheckedChanged;
             // 
             // Table
             // 
@@ -264,8 +266,8 @@ namespace Overview.Controls
         private AntdUI.Table table2;
         private AntdUI.Pagination pagination1;
         private AntdUI.Tabs tabs1;
-        private TabPage tabPage1;
-        private TabPage tabPage2;
+        private AntdUI.TabPage tabPage1;
+        private AntdUI.TabPage tabPage2;
         private AntdUI.Panel panel1;
         private AntdUI.Checkbox checkbox1;
         private AntdUI.Checkbox checkbox2;

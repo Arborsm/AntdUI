@@ -801,6 +801,17 @@ namespace AntdUI
         {
             return new Rectangle(rect.X + padding.Left + x, rect.Y + padding.Top + y, rect.Width - padding.Horizontal - r, rect.Height - padding.Vertical - b);
         }
+        public static Rectangle PaddingRect(this Rectangle rect, params Padding[] paddings)
+        {
+            foreach (var padding in paddings)
+            {
+                rect.X += padding.Left;
+                rect.Y += padding.Top;
+                rect.Width -= padding.Horizontal;
+                rect.Height -= padding.Vertical;
+            }
+            return rect;
+        }
 
         /// <summary>
         /// 获取边距
@@ -1779,6 +1790,10 @@ namespace AntdUI
             {
                 if (control.Dock != DockStyle.None || control.Anchor != (AnchorStyles.Left | AnchorStyles.Top)) dir.Add(control, new AnchorDock(control));
                 if (controls.Count > 0) DpiSuspend(ref dir, control.Controls);
+                if (control is Tabs tabs)
+                {
+                    foreach (var page in tabs.Pages) DpiSuspend(ref dir, page.Controls);
+                }
             }
             return dir;
         }
@@ -1788,6 +1803,10 @@ namespace AntdUI
             {
                 if (control.Dock != DockStyle.None || control.Anchor != (AnchorStyles.Left | AnchorStyles.Top)) dir.Add(control, new AnchorDock(control));
                 if (controls.Count > 0) DpiSuspend(ref dir, control.Controls);
+                if (control is Tabs tabs)
+                {
+                    foreach (var page in tabs.Pages) DpiSuspend(ref dir, page.Controls);
+                }
             }
         }
 
@@ -1801,6 +1820,10 @@ namespace AntdUI
                     control.Anchor = find.Anchor;
                 }
                 if (controls.Count > 0) DpiResume(dir, control.Controls);
+                if (control is Tabs tabs)
+                {
+                    foreach (var page in tabs.Pages) DpiResume(dir, page.Controls);
+                }
             }
         }
 
@@ -1858,6 +1881,16 @@ namespace AntdUI
             else if (control is TabControl tab && tab.ItemSize.Width > 1 && tab.ItemSize.Height > 1)
             {
                 tab.ItemSize = new Size((int)(tab.ItemSize.Width * dpi), (int)(tab.ItemSize.Height * dpi));
+            }
+            else if (control is Tabs tabs)
+            {
+                foreach (var page in tabs.Pages) DpiLSS(dpi, page);
+                if (last)
+                {
+                    control.Size = size;
+                    control.Location = point;
+                }
+                return;
             }
             DpiLSS(dpi, control);
             if (last)
