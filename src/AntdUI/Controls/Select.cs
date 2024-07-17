@@ -161,7 +161,7 @@ namespace AntdUI
             SelectedIndexChanged?.Invoke(this, selectedIndex);
         }
 
-        void ChangeValue(int value, object obj)
+        void ChangeValue(int value, object? obj)
         {
             selectedIndex = value;
             if (obj is SelectItem it)
@@ -172,7 +172,8 @@ namespace AntdUI
             else
             {
                 selectedValue = obj;
-                Text = obj.ToString() ?? "";
+                if (obj == null) Text = "";
+                else Text = obj.ToString() ?? "";
             }
             SelectedValueChanged?.Invoke(this, selectedValue);
             SelectedIndexChanged?.Invoke(this, selectedIndex);
@@ -198,7 +199,8 @@ namespace AntdUI
         internal void DropDownChange(int i)
         {
             selectedIndexX = 0;
-            ChangeValue(i, items[i]);
+            if (items == null || items.Count == 0) ChangeValueNULL();
+            else ChangeValue(i, items[i]);
             TextFocus = false;
             select_x = 0;
             subForm = null;
@@ -237,6 +239,14 @@ namespace AntdUI
         [Description("SelectedValue 属性值更改时发生"), Category("行为")]
         public event ObjectNEventHandler? SelectedValueChanged = null;
 
+
+        public delegate IList<object>? FilterEventHandler(object sender, string value);
+        /// <summary>
+        /// 控制筛选 Text更改时发生
+        /// </summary>
+        [Description("控制筛选 Text更改时发生"), Category("行为")]
+        public event FilterEventHandler? FilterChanged = null;
+
         string filtertext = "";
         protected override void OnTextChanged(EventArgs e)
         {
@@ -244,8 +254,31 @@ namespace AntdUI
             if (HasFocus)
             {
                 filtertext = Text;
-                TextFocus = true;
-                if (textFocus) subForm?.TextChange(Text);
+
+                if (FilterChanged == null)
+                {
+                    TextFocus = true;
+                    if (textFocus) subForm?.TextChange(Text);
+                }
+                else
+                {
+                    string temp = filtertext;
+                    ITask.Run(() =>
+                    {
+                        var list = FilterChanged(this, temp);
+                        if (filtertext == temp)
+                        {
+                            Items.Clear();
+                            if (list == null || list.Count == 0) subForm?.IClose();
+                            else
+                            {
+                                Items.AddRange(list);
+                                if (subForm == null) ShowLayeredForm(list);
+                                else subForm.TextChange(Text, list);
+                            }
+                        }
+                    });
+                }
             }
         }
 
@@ -370,22 +403,32 @@ namespace AntdUI
                         {
                             var objs = new List<object>(items.Count);
                             foreach (var it in items) objs.Add(it);
-                            Expand = true;
-                            subForm = new LayeredFormSelectDown(this, ReadRectangle, objs, filtertext);
-                            subForm.Disposed += (a, b) =>
-                            {
-                                select_x = 0;
-                                subForm = null;
-                                Expand = false;
-                                TextFocus = false;
-                            };
-                            subForm.Show(this);
+                            ShowLayeredForm(objs);
                         }
                     }
                     else { textFocus = false; return; }
                 }
                 else filtertext = "";
             }
+        }
+
+        void ShowLayeredForm(IList<object> list)
+        {
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(() => { ShowLayeredForm(list); }));
+                return;
+            }
+            Expand = true;
+            subForm = new LayeredFormSelectDown(this, ReadRectangle, list, filtertext);
+            subForm.Disposed += (a, b) =>
+            {
+                select_x = 0;
+                subForm = null;
+                Expand = false;
+                TextFocus = false;
+            };
+            subForm.Show(this);
         }
 
         protected override void OnGotFocus(EventArgs e)

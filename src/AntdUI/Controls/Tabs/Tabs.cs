@@ -36,7 +36,26 @@ namespace AntdUI
     [Designer(typeof(TabControlDesigner))]
     public partial class Tabs : IControl
     {
+        public Tabs() { style = SetType(type); }
+
         #region 属性
+
+        Color? fore;
+        /// <summary>
+        /// 文字颜色
+        /// </summary>
+        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
+        public new Color? ForeColor
+        {
+            get => fore;
+            set
+            {
+                if (fore == value) fore = value;
+                fore = value;
+                Invalidate();
+            }
+        }
 
         Color? fill;
         /// <summary>
@@ -62,6 +81,13 @@ namespace AntdUI
         [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? FillHover { get; set; }
 
+        /// <summary>
+        /// 激活颜色
+        /// </summary>
+        [Description("激活颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
+        public Color? FillActive { get; set; }
+
         TabAlignment alignment = TabAlignment.Top;
         /// <summary>
         /// 位置
@@ -78,107 +104,49 @@ namespace AntdUI
             }
         }
 
-        #region 线条
+        #region 样式
 
-        float barsize = 3F;
+        IStyle style;
         /// <summary>
-        /// 条大小
+        /// 样式
         /// </summary>
-        [Description("条大小"), Category("条"), DefaultValue(3F)]
-        public float BarSize
+        [Description("样式"), Category("外观")]
+        public IStyle Style
         {
-            get => barsize;
-            set
-            {
-                if (barsize == value) return;
-                barsize = value;
-                if (Type == TabType.Line) LoadLayout();
-            }
+            get => style;
+            set => style = value;
         }
 
-        int barpadding = 0;
+        TabType type = TabType.Line;
         /// <summary>
-        /// 条边距
+        /// 样式类型
         /// </summary>
-        [Description("条边距"), Category("条"), DefaultValue(0)]
-        public int BarPadding
+        [Description("样式类型"), Category("外观"), DefaultValue(TabType.Line)]
+        public TabType Type
         {
-            get => barpadding;
+            get => type;
             set
             {
-                if (barpadding == value) return;
-                barpadding = value;
-                if (Type == TabType.Line) LoadLayout();
-            }
-        }
-
-        /// <summary>
-        /// 条圆角
-        /// </summary>
-        [Description("条圆角"), Category("条"), DefaultValue(0)]
-        public int BarRadius { get; set; }
-
-        /// <summary>
-        /// 条背景大小
-        /// </summary>
-        [Description("条背景大小"), Category("条"), DefaultValue(1F)]
-        public float BarBackSize { get; set; } = 1F;
-
-        /// <summary>
-        /// 条背景
-        /// </summary>
-        [Description("条背景"), Category("条"), DefaultValue(null)]
-        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
-        public Color? BarBack { get; set; }
-
-        #endregion
-
-        #region 卡片
-
-        /// <summary>
-        /// 卡片边框颜色
-        /// </summary>
-        [Description("卡片边框颜色"), Category("卡片"), DefaultValue(null)]
-        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
-        public Color? CardBorder { get; set; }
-
-        int _cardgap = 2;
-        /// <summary>
-        /// 卡片间距
-        /// </summary>
-        [Description("卡片间距"), Category("卡片"), DefaultValue(2)]
-        public int CardGap
-        {
-            get => _cardgap;
-            set
-            {
-                if (_cardgap == value) return;
-                _cardgap = value;
+                if (type == value) return;
+                type = value;
+                style = SetType(value);
                 LoadLayout();
             }
         }
 
-        #endregion
-
-        [Description("样式"), Category("外观"), DefaultValue(TabType.Line)]
-        public TabType Type { get; set; } = TabType.Line;
-
-        Color _backColor = Color.Transparent;
-        /// <summary>
-        /// 背景颜色
-        /// </summary>
-        [Browsable(true)]
-        [Description("背景颜色"), Category("外观"), DefaultValue(typeof(Color), "Transparent")]
-        public override Color BackColor
+        IStyle SetType(TabType type)
         {
-            get => _backColor;
-            set
+            switch (type)
             {
-                if (_backColor == value) return;
-                _backColor = value;
-                Invalidate();
+                case TabType.Card:
+                    return new StyleCard(this);
+                case TabType.Line:
+                default:
+                    return new StyleLine(this);
             }
         }
+
+        #endregion
 
         int _gap = 8;
         /// <summary>
@@ -192,6 +160,22 @@ namespace AntdUI
             {
                 if (_gap == value) return;
                 _gap = value;
+                LoadLayout();
+            }
+        }
+
+        float iconratio = .7F;
+        /// <summary>
+        /// 图标比例
+        /// </summary>
+        [Description("图标比例"), Category("外观"), DefaultValue(.7F)]
+        public float IconRatio
+        {
+            get => iconratio;
+            set
+            {
+                if (iconratio == value) return;
+                iconratio = value;
                 LoadLayout();
             }
         }
@@ -269,8 +253,7 @@ namespace AntdUI
                 if (_select == value) return;
                 int old = _select;
                 _select = value;
-                if (Type == TabType.Line) SetRect(old, _select);
-                else Invalidate();
+                style.SelectedIndexChanged(value, old);
                 SelectedIndexChanged?.Invoke(this, value);
                 ShowPage();
             }
@@ -303,142 +286,8 @@ namespace AntdUI
 
         protected override void Dispose(bool disposing)
         {
-            ThreadBar?.Dispose();
+            style.Dispose();
             base.Dispose(disposing);
-        }
-        bool AnimationBar = false;
-        RectangleF AnimationBarValue;
-        ITask? ThreadBar = null;
-
-        void SetRect(int old, int value)
-        {
-            if (value > -1)
-            {
-                if (items == null) return;
-                if (old > -1 && items.Count > old)
-                {
-                    ThreadBar?.Dispose();
-                    Helper.GDI(g =>
-                    {
-                        RectangleF OldValue = items[old].Rect_Line, NewValue = items[value].Rect_Line;
-                        if (AnimationBarValue.Height == 0) AnimationBarValue = OldValue;
-                        if (Config.Animation)
-                        {
-                            if (alignment == TabAlignment.Left || alignment == TabAlignment.Right)
-                            {
-                                if (OldValue.X == NewValue.X)
-                                {
-                                    AnimationBarValue.X = OldValue.X;
-                                    AnimationBar = true;
-                                    float p_val = Math.Abs(NewValue.Y - AnimationBarValue.Y) * 0.09F, p_w_val = Math.Abs(NewValue.Height - AnimationBarValue.Height) * 0.1F, p_val2 = (NewValue.Y - AnimationBarValue.Y) * 0.5F;
-                                    ThreadBar = new ITask(this, () =>
-                                    {
-                                        if (AnimationBarValue.Height != NewValue.Height)
-                                        {
-                                            if (NewValue.Height > OldValue.Height)
-                                            {
-                                                AnimationBarValue.Height += p_w_val;
-                                                if (AnimationBarValue.Height > NewValue.Height) AnimationBarValue.Height = NewValue.Height;
-                                            }
-                                            else
-                                            {
-                                                AnimationBarValue.Height -= p_w_val;
-                                                if (AnimationBarValue.Height < NewValue.Height) AnimationBarValue.Height = NewValue.Height;
-                                            }
-                                        }
-                                        if (NewValue.Y > OldValue.Y)
-                                        {
-                                            if (AnimationBarValue.Y > p_val2) AnimationBarValue.Y += p_val / 2F;
-                                            else AnimationBarValue.Y += p_val;
-                                            if (AnimationBarValue.Y > NewValue.Y)
-                                            {
-                                                AnimationBarValue.Y = NewValue.Y;
-                                                Invalidate();
-                                                return false;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            AnimationBarValue.Y -= p_val;
-                                            if (AnimationBarValue.Y < NewValue.Y)
-                                            {
-                                                AnimationBarValue.Y = NewValue.Y;
-                                                Invalidate();
-                                                return false;
-                                            }
-                                        }
-                                        Invalidate();
-                                        return true;
-                                    }, 10, () =>
-                                    {
-                                        AnimationBarValue = NewValue;
-                                        AnimationBar = false;
-                                        Invalidate();
-                                    });
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                if (OldValue.Y == NewValue.Y)
-                                {
-                                    AnimationBarValue.Y = OldValue.Y;
-                                    AnimationBar = true;
-                                    float p_val = Math.Abs(NewValue.X - AnimationBarValue.X) * 0.09F, p_w_val = Math.Abs(NewValue.Width - AnimationBarValue.Width) * 0.1F, p_val2 = (NewValue.X - AnimationBarValue.X) * 0.5F;
-                                    ThreadBar = new ITask(this, () =>
-                                    {
-                                        if (AnimationBarValue.Width != NewValue.Width)
-                                        {
-                                            if (NewValue.Width > OldValue.Width)
-                                            {
-                                                AnimationBarValue.Width += p_w_val;
-                                                if (AnimationBarValue.Width > NewValue.Width) AnimationBarValue.Width = NewValue.Width;
-                                            }
-                                            else
-                                            {
-                                                AnimationBarValue.Width -= p_w_val;
-                                                if (AnimationBarValue.Width < NewValue.Width) AnimationBarValue.Width = NewValue.Width;
-                                            }
-                                        }
-                                        if (NewValue.X > OldValue.X)
-                                        {
-                                            if (AnimationBarValue.X > p_val2) AnimationBarValue.X += p_val / 2F;
-                                            else AnimationBarValue.X += p_val;
-                                            if (AnimationBarValue.X > NewValue.X)
-                                            {
-                                                AnimationBarValue.X = NewValue.X;
-                                                Invalidate();
-                                                return false;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            AnimationBarValue.X -= p_val;
-                                            if (AnimationBarValue.X < NewValue.X)
-                                            {
-                                                AnimationBarValue.X = NewValue.X;
-                                                Invalidate();
-                                                return false;
-                                            }
-                                        }
-                                        Invalidate();
-                                        return true;
-                                    }, 10, () =>
-                                    {
-                                        AnimationBarValue = NewValue;
-                                        AnimationBar = false;
-                                        Invalidate();
-                                    });
-                                    return;
-                                }
-                            }
-                        }
-                        AnimationBarValue = NewValue;
-                        Invalidate();
-                    });
-                }
-                else AnimationBarValue = items[value].Rect_Line;
-            }
         }
 
         #endregion
@@ -474,7 +323,6 @@ namespace AntdUI
             return false;
         }
 
-        Rectangle rect_line_top;
         internal void LoadLayout(bool r = true)
         {
             if (IsHandleCreated)
@@ -483,167 +331,8 @@ namespace AntdUI
                 if (_tabMenuVisible)
                 {
                     var rect_t = ClientRectangle.DeflateRect(Margin);
-                    Helper.GDI(g =>
-                    {
-                        int gap = (int)(_gap * Config.Dpi), gapI = gap / 2, xy = 0, xy2 = 0;
-                        if (Type == TabType.Line)
-                        {
-                            int barSize = (int)(BarSize * Config.Dpi), barPadding = (int)(BarPadding * Config.Dpi), barPadding2 = barPadding * 2;
-                            switch (alignment)
-                            {
-                                case TabAlignment.Bottom:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X + xy, rect_t.Y, size.Width + gap, xy2);
-                                        item.SetRect(rect_it);
-                                        int h = size.Height + gap;
-                                        if (xy2 < h) xy2 = h;
-                                        xy += rect_it.Width;
-                                    }
-                                    SetPadding(0, 0, 0, xy2);
-                                    foreach (var item in items)
-                                    {
-                                        var rect_it = item.SetRectH(rect_t.Bottom - xy2, xy2);
-                                        item.Rect_Line = new Rectangle(rect_it.X + barPadding, rect_it.Y, rect_it.Width - barPadding2, barSize);
-                                    }
-                                    if (BarBackSize > 0)
-                                    {
-                                        int barBackSize = (int)(BarBackSize * Config.Dpi);
-                                        rect_line_top = new Rectangle(rect_t.X, rect_t.Bottom - xy2, rect_t.Width, barBackSize);
-                                    }
-                                    break;
-                                case TabAlignment.Left:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X, rect_t.Y + xy, xy2, size.Height + gap);
-                                        item.SetRect(rect_it);
-                                        int w = size.Width + gap;
-                                        if (xy2 < w) xy2 = w;
-                                        xy += rect_it.Height;
-                                    }
-                                    SetPadding(xy2, 0, 0, 0);
-                                    foreach (var item in items)
-                                    {
-                                        var rect_it = item.SetRectW(xy2);
-                                        item.Rect_Line = new Rectangle(rect_it.X + xy2 - barSize, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2);
-                                    }
-                                    if (BarBackSize > 0)
-                                    {
-                                        int barBackSize = (int)(BarBackSize * Config.Dpi);
-                                        rect_line_top = new Rectangle(rect_t.X + xy2, rect_t.Y, barBackSize, rect_t.Height);
-                                    }
-                                    break;
-                                case TabAlignment.Right:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X, rect_t.Y + xy, xy2, size.Height + gap);
-                                        item.SetRect(rect_it);
-                                        int w = size.Width + gap;
-                                        if (xy2 < w) xy2 = w;
-                                        xy += rect_it.Height;
-                                    }
-                                    SetPadding(0, 0, xy2, 0);
-                                    foreach (var item in items)
-                                    {
-                                        var rect_it = item.SetRectW(rect_t.Right - xy2, xy2);
-                                        item.Rect_Line = new Rectangle(rect_it.X, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2);
-                                    }
-                                    if (BarBackSize > 0)
-                                    {
-                                        int barBackSize = (int)(BarBackSize * Config.Dpi);
-                                        rect_line_top = new Rectangle(rect_t.Right - xy2, rect_t.Y, barBackSize, rect_t.Height);
-                                    }
-                                    break;
-                                case TabAlignment.Top:
-                                default:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X + xy, rect_t.Y, size.Width + gap, xy2);
-                                        item.SetRect(rect_it);
-                                        int h = size.Height + gap;
-                                        if (xy2 < h) xy2 = h;
-                                        xy += rect_it.Width;
-                                    }
-                                    SetPadding(0, xy2, 0, 0);
-                                    foreach (var item in items)
-                                    {
-                                        var rect_it = item.SetRectH(xy2);
-                                        item.Rect_Line = new Rectangle(rect_it.X + barPadding, rect_it.Bottom - barSize, rect_it.Width - barPadding2, barSize);
-                                    }
-                                    if (BarBackSize > 0)
-                                    {
-                                        int barBackSize = (int)(BarBackSize * Config.Dpi);
-                                        rect_line_top = new Rectangle(rect_t.Left, rect_t.Y + xy2 - barBackSize, rect_t.Width, barBackSize);
-                                    }
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            int cardgap = (int)(_cardgap * Config.Dpi);
-                            switch (alignment)
-                            {
-                                case TabAlignment.Bottom:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X + xy, rect_t.Y, size.Width + gap, xy2);
-                                        item.SetRect(rect_it);
-                                        int h = size.Height + gap;
-                                        if (xy2 < h) xy2 = h;
-                                        xy += rect_it.Width + cardgap;
-                                    }
-                                    SetPadding(0, 0, 0, xy2);
-                                    foreach (var item in items) item.SetRectH(rect_t.Bottom - xy2, xy2);
-                                    break;
-                                case TabAlignment.Left:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X, rect_t.Y + xy, xy2, size.Height + gap);
-                                        item.SetRect(rect_it);
-                                        int w = size.Width + gap;
-                                        if (xy2 < w) xy2 = w;
-                                        xy += rect_it.Height + cardgap;
-                                    }
-                                    SetPadding(xy2, 0, 0, 0);
-                                    foreach (var item in items) item.SetRectW(xy2);
-                                    break;
-                                case TabAlignment.Right:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X, rect_t.Y + xy, xy2, size.Height + gap);
-                                        item.SetRect(rect_it);
-                                        int w = size.Width + gap;
-                                        if (xy2 < w) xy2 = w;
-                                        xy += rect_it.Height + cardgap;
-                                    }
-                                    SetPadding(0, 0, xy2, 0);
-                                    foreach (var item in items) item.SetRectW(rect_t.Right - xy2, xy2);
-                                    break;
-                                case TabAlignment.Top:
-                                default:
-                                    foreach (var item in items)
-                                    {
-                                        var size = g.MeasureString(item.Text, Font).Size();
-                                        var rect_it = new Rectangle(rect_t.X + xy, rect_t.Y, size.Width + gap, xy2);
-                                        item.SetRect(rect_it);
-                                        int h = size.Height + gap;
-                                        if (xy2 < h) xy2 = h;
-                                        xy += rect_it.Width + cardgap;
-                                    }
-                                    SetPadding(0, xy2, 0, 0);
-                                    foreach (var item in items) item.SetRectH(xy2);
-                                    break;
-                            }
-                        }
-                        if (r) Invalidate();
-                    });
+                    style.LoadLayout(this, rect_t, items);
+                    if (r) Invalidate();
                 }
                 else SetPadding(0, 0, 0, 0);
             }
@@ -675,266 +364,7 @@ namespace AntdUI
         {
             if (items == null || !_tabMenuVisible) return;
             var g = e.Graphics.High();
-            int selectedIndex = _select, hover_i = Hover_i;
-            using (var brush_fore = new SolidBrush(ForeColor))
-            using (var brush_fill = new SolidBrush(fill ?? Style.Db.Primary))
-            using (var brush_hover = new SolidBrush(FillHover ?? Style.Db.PrimaryHover))
-            {
-                if (Type == TabType.Line)
-                {
-                    if (BarBackSize > 0)
-                    {
-                        using (var brush = new SolidBrush(BarBack ?? Style.Db.Fill))
-                        {
-                            g.FillRectangle(brush, rect_line_top);
-                        }
-                    }
-                    if (AnimationBar)
-                    {
-                        if (BarRadius > 0)
-                        {
-                            using (var path = AnimationBarValue.RoundPath(BarRadius * Config.Dpi))
-                            {
-                                g.FillPath(brush_fill, path);
-                            }
-                        }
-                        else g.FillRectangle(brush_fill, AnimationBarValue);
-                        int i = 0;
-                        foreach (var page in items)
-                        {
-                            if (page.Visible)
-                            {
-                                if (selectedIndex == i) g.DrawString(page.Text, Font, brush_fill, page.Rect, s_c);
-                                else if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                            }
-                            i++;
-                        }
-                    }
-                    else
-                    {
-                        int i = 0;
-                        foreach (var page in items)
-                        {
-                            if (page.Visible)
-                            {
-                                if (selectedIndex == i)//是否选中
-                                {
-                                    if (BarRadius > 0)
-                                    {
-                                        using (var path = page.Rect_Line.RoundPath(BarRadius * Config.Dpi))
-                                        {
-                                            g.FillPath(brush_fill, path);
-                                        }
-                                    }
-                                    else g.FillRectangle(brush_fill, page.Rect_Line);
-                                    g.DrawString(page.Text, Font, brush_fill, page.Rect, s_c);
-                                }
-                                else if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                            }
-                            i++;
-                        }
-                    }
-                }
-                else
-                {
-                    var rect_t = ClientRectangle;
-                    int radius = (int)(6 * Config.Dpi), sp = (int)(1F * Config.Dpi), sp2 = sp * 6, sp22 = sp2 * 2;
-
-                    using (var brush_bg = new SolidBrush(fill ?? Style.Db.FillQuaternary))
-                    {
-                        TabPage? sel = null;
-                        int i = 0;
-                        switch (alignment)
-                        {
-                            case TabAlignment.Bottom:
-                                foreach (var page in items)
-                                {
-                                    if (page.Visible)
-                                    {
-                                        if (selectedIndex == i) sel = page;
-                                        else
-                                        {
-                                            using (var path = Helper.RoundPath(page.Rect, radius, false, false, true, true))
-                                            {
-                                                g.FillPath(brush_bg, path);
-                                                using (var pen_bg = new Pen(Style.Db.BorderSecondary, sp))
-                                                {
-                                                    g.DrawPath(pen_bg, path);
-                                                }
-                                                if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                                if (sel != null)//是否选中
-                                {
-                                    var rect_page = sel.Rect;
-                                    using (var path = Helper.RoundPath(rect_page, radius, false, false, true, true))
-                                    {
-                                        using (var brush_bgw = new SolidBrush(Style.Db.BgContainer))
-                                        {
-                                            using (var pen_bg = new Pen(CardBorder ?? Style.Db.BorderColor, sp))
-                                            {
-                                                int ly = rect_page.Y + sp;
-                                                g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
-                                                g.FillPath(brush_bgw, path);
-                                                g.SetClip(new Rectangle(rect_page.X - sp2, rect_page.Y + sp, rect_page.Width + sp22, rect_page.Height + sp22));
-                                                g.DrawPath(pen_bg, path);
-                                                g.ResetClip();
-                                            }
-                                        }
-                                        g.DrawString(sel.Text, Font, brush_fill, rect_page, s_c);
-                                    }
-                                }
-                                break;
-                            case TabAlignment.Left:
-                                foreach (var page in items)
-                                {
-                                    if (page.Visible)
-                                    {
-                                        if (selectedIndex == i) sel = page;
-                                        else
-                                        {
-                                            using (var path = Helper.RoundPath(page.Rect, radius, true, false, false, true))
-                                            {
-                                                g.FillPath(brush_bg, path);
-                                                using (var pen_bg = new Pen(Style.Db.BorderSecondary, sp))
-                                                {
-                                                    g.DrawPath(pen_bg, path);
-                                                }
-                                                if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                                if (sel != null)//是否选中
-                                {
-                                    var rect_page = sel.Rect;
-                                    using (var path = Helper.RoundPath(rect_page, radius, true, false, false, true))
-                                    {
-                                        using (var brush_bgw = new SolidBrush(Style.Db.BgContainer))
-                                        {
-                                            using (var pen_bg = new Pen(CardBorder ?? Style.Db.BorderColor, sp))
-                                            {
-                                                int lx = rect_page.Right - sp;
-                                                g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
-                                                g.FillPath(brush_bgw, path);
-                                                g.SetClip(new Rectangle(rect_page.X - sp2, rect_page.Y - sp2, rect_page.Width + sp2 - sp, rect_page.Height + sp22));
-                                                g.DrawPath(pen_bg, path);
-                                                g.ResetClip();
-                                            }
-                                        }
-                                        g.DrawString(sel.Text, Font, brush_fill, rect_page, s_c);
-                                    }
-                                }
-                                break;
-                            case TabAlignment.Right:
-                                foreach (var page in items)
-                                {
-                                    if (page.Visible)
-                                    {
-                                        if (selectedIndex == i) sel = page;
-                                        else
-                                        {
-                                            using (var path = Helper.RoundPath(page.Rect, radius, false, true, true, false))
-                                            {
-                                                g.FillPath(brush_bg, path);
-                                                using (var pen_bg = new Pen(Style.Db.BorderSecondary, sp))
-                                                {
-                                                    g.DrawPath(pen_bg, path);
-                                                }
-                                                if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                                if (sel != null)//是否选中
-                                {
-                                    var rect_page = sel.Rect;
-                                    using (var path = Helper.RoundPath(rect_page, radius, false, true, true, false))
-                                    {
-                                        using (var brush_bgw = new SolidBrush(Style.Db.BgContainer))
-                                        {
-                                            using (var pen_bg = new Pen(CardBorder ?? Style.Db.BorderColor, sp))
-                                            {
-                                                int lx = rect_page.X + sp;
-                                                g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
-                                                g.FillPath(brush_bgw, path);
-                                                g.SetClip(new Rectangle(rect_page.X + sp, rect_page.Y - sp2, rect_page.Width + sp22, rect_page.Height + sp22));
-                                                g.DrawPath(pen_bg, path);
-                                                g.ResetClip();
-                                            }
-                                        }
-                                        g.DrawString(sel.Text, Font, brush_fill, rect_page, s_c);
-                                    }
-                                }
-                                break;
-                            case TabAlignment.Top:
-                            default:
-                                foreach (var page in items)
-                                {
-                                    if (page.Visible)
-                                    {
-                                        if (selectedIndex == i) sel = page;
-                                        else
-                                        {
-                                            using (var path = Helper.RoundPath(page.Rect, radius, true, true, false, false))
-                                            {
-                                                g.FillPath(brush_bg, path);
-                                                using (var pen_bg = new Pen(Style.Db.BorderSecondary, sp))
-                                                {
-                                                    g.DrawPath(pen_bg, path);
-                                                }
-                                                if (hover_i == i) g.DrawString(page.Text, Font, brush_hover, page.Rect, s_c);
-                                                else g.DrawString(page.Text, Font, brush_fore, page.Rect, s_c);
-                                            }
-                                        }
-                                    }
-                                    i++;
-                                }
-                                if (sel != null)//是否选中
-                                {
-                                    var rect_page = sel.Rect;
-                                    using (var path = Helper.RoundPath(rect_page, radius, true, true, false, false))
-                                    {
-                                        using (var brush_bgw = new SolidBrush(Style.Db.BgContainer))
-                                        {
-                                            using (var pen_bg = new Pen(CardBorder ?? Style.Db.BorderColor, sp))
-                                            {
-                                                int ly = rect_page.Bottom - sp;
-                                                g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
-                                                g.FillPath(brush_bgw, path);
-                                                g.SetClip(new Rectangle(rect_page.X - sp2, rect_page.Y - sp2, rect_page.Width + sp22, rect_page.Height + sp2 - sp));
-                                                g.DrawPath(pen_bg, path);
-                                                g.ResetClip();
-                                            }
-                                        }
-                                        g.DrawString(sel.Text, Font, brush_fill, rect_page, s_c);
-                                    }
-                                }
-                                break;
-                        }
-                    }
-                }
-                if (badges.Count > 0)
-                {
-                    //using (var font = new Font(Font.FontFamily, BadgeSize))
-                    //{
-                    //    for (int i = 0; i < TabCount; i++)
-                    //    {
-                    //        if (badges.TryGetValue(i, out var find)) this.PaintBadge(find, GetTabRect(i), font, g);
-                    //    }
-                    //}
-                }
-            }
+            style.Paint(this, g, items);
             base.OnPaint(e);
         }
 
@@ -953,6 +383,7 @@ namespace AntdUI
                     if (item.Visible && item.Contains(e.X, e.Y))
                     {
                         item.MDown = true;
+                        Invalidate();
                         return;
                     }
                     i++;
@@ -972,6 +403,7 @@ namespace AntdUI
                     {
                         item.MDown = false;
                         if (item.Contains(e.X, e.Y)) SelectedIndex = i;
+                        else Invalidate();
                         return;
                     }
                     i++;

@@ -25,7 +25,7 @@ using System.Windows.Forms;
 
 namespace AntdUI
 {
-    public partial class Tabs
+    partial class Tabs
     {
         public class TabCollection : IList<TabPage>, IList
         {
@@ -237,8 +237,21 @@ namespace AntdUI
     }
 
     [Designer(typeof(IControlDesigner))]
-    public class TabPage : IControl
+    public class TabPage : ScrollableControl
     {
+        public TabPage()
+        {
+            SetStyle(
+               ControlStyles.AllPaintingInWmPaint |
+               ControlStyles.OptimizedDoubleBuffer |
+               ControlStyles.ResizeRedraw |
+               ControlStyles.DoubleBuffer |
+               ControlStyles.SupportsTransparentBackColor |
+               ControlStyles.ContainerControl |
+               ControlStyles.UserPaint, true);
+            UpdateStyles();
+        }
+
         #region 属性
 
         Image? icon = null;
@@ -251,7 +264,25 @@ namespace AntdUI
             get => icon;
             set
             {
+                if (icon == value) return;
                 icon = value;
+                if (Parent is Tabs tabs) tabs?.LoadLayout();
+            }
+        }
+
+        string? iconSvg = null;
+        /// <summary>
+        /// 图标
+        /// </summary>
+        [Category("外观"), Description("图标SVG"), DefaultValue(null)]
+        public string? IconSvg
+        {
+            get => iconSvg;
+            set
+            {
+                if (iconSvg == value) return;
+                iconSvg = value;
+                if (Parent is Tabs tabs) tabs?.LoadLayout();
             }
         }
 
@@ -260,6 +291,8 @@ namespace AntdUI
         internal bool HDPI = false;
         internal bool MDown = false;
         internal Rectangle Rect = new Rectangle(-10, -10, 0, 0);
+        internal Rectangle Rect_Ico;
+        internal Rectangle Rect_Text;
         internal Rectangle Rect_Line = new Rectangle(-10, -10, 0, 0);
         internal bool Contains(int x, int y)
         {
@@ -272,43 +305,31 @@ namespace AntdUI
         }
         internal Rectangle SetRectW(int w)
         {
-            Rect.Width = w;
+            Rect.Width = Rect_Text.Width = w;
             return Rect;
         }
         internal Rectangle SetRectW(int x, int w)
         {
-            Rect.X = x;
-            Rect.Width = w;
+            Rect.X = Rect_Text.X = x;
+            Rect.Width = Rect_Text.Width = w;
             return Rect;
         }
         internal Rectangle SetRectH(int h)
         {
-            Rect.Height = h;
+            Rect.Height = Rect_Text.Height = h;
+            Rect_Ico.Y = Rect.Y + (h - Rect_Ico.Height) / 2;
             return Rect;
         }
         internal Rectangle SetRectH(int y, int h)
         {
-            Rect.Y = y;
-            Rect.Height = h;
+            Rect.Y = Rect_Text.Y = y;
+            Rect.Height = Rect_Text.Height = h;
+            Rect_Ico.Y = y + (h - Rect_Ico.Height) / 2;
             return Rect;
         }
-        #endregion
 
         #endregion
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            if (base.DesignMode)
-            {
-                Rectangle clientRectangle = base.ClientRectangle;
-                clientRectangle.Inflate(-2, -2);
-                ControlPaint.DrawBorder(e.Graphics, clientRectangle, Color.Black, ButtonBorderStyle.Dashed);
-            }
-            base.OnPaint(e);
-            //if (Parent != null)
-            //{
-            //    Parent.OnPagePaint(new PagePaintEventArgs(e.Graphics, this));
-            //}
-        }
+        #endregion
     }
 }

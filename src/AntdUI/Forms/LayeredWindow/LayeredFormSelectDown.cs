@@ -477,6 +477,107 @@ namespace AntdUI
                 Print();
             }
         }
+        internal void TextChange(string val, IList<object> items)
+        {
+            int selY = -1, y_ = 0;
+            int item_count = 0, divider_count = 0;
+            Items.Clear();
+            for (int i = 0; i < items.Count; i++) ReadList(items[i], i, 20, 0, 10, 10, 1, 10, 10, ref item_count, ref divider_count, ref y_, ref selY);
+            int count = 0;
+            if (string.IsNullOrEmpty(val))
+            {
+                nodata = false;
+                foreach (var it in Items)
+                {
+                    if (!it.Show)
+                    {
+                        it.Show = true;
+                        count++;
+                    }
+                }
+            }
+            else
+            {
+                val = val.ToLower();
+                int showcount = 0;
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    var it = Items[i];
+                    if (it.ID > -1)
+                    {
+                        if (it.Contains(val))
+                        {
+                            showcount++;
+                            if (it.Text.ToLower() == val)
+                            {
+                                it.Hover = true;
+                                hoveindex = i;
+                                count++;
+                            }
+                            if (!it.Show)
+                            {
+                                it.Show = true;
+                                count++;
+                            }
+                        }
+                        else
+                        {
+                            if (it.Show)
+                            {
+                                it.Show = false;
+                                count++;
+                            }
+                        }
+                    }
+                }
+                nodata = showcount == 0;
+            }
+            if (count > 0)
+            {
+                if (nodata) SetSizeH(80);
+                else
+                {
+                    scrollY.val = 0;
+                    int y = 10, w = r_w, list_count = 0;
+                    Helper.GDI(g =>
+                    {
+                        var size = g.MeasureString(Config.NullText, Font).Size(2);
+                        int gap_y = (int)Math.Ceiling(size.Height * 0.227F), gap_x = (int)Math.Ceiling(size.Height * 0.54F);
+                        int font_size = size.Height + gap_y * 2;
+                        var y2 = gap_y * 2;
+                        y += gap_y;
+
+                        int text_height = font_size - y2, gap = (text_height - gap_y) / 2;
+                        foreach (var it in Items)
+                        {
+                            if (it.ID > -1 && it.Show)
+                            {
+                                list_count++;
+                                var rect_bg = new Rectangle(10 + gap_y, y, w - y2, font_size);
+                                it.SetRect(rect_bg, new Rectangle(rect_bg.X + gap_x, rect_bg.Y + gap_y, rect_bg.Width - gap_x * 2, rect_bg.Height - y2), gap, gap_y);
+                                y += font_size;
+                            }
+                        }
+
+                        var vr = font_size * list_count;
+                        if (list_count > MaxCount)
+                        {
+                            y = 10 + gap_y * 2 + (font_size * MaxCount);
+                            scrollY.Rect = new Rectangle(w - gap_y, 10 + gap_y, 20, (font_size * MaxCount));
+                            scrollY.Show = true;
+                            scrollY.SetVrSize(vr, scrollY.Rect.Height);
+                        }
+                        else
+                        {
+                            y = 10 + gap_y * 2 + vr;
+                            scrollY.Show = false;
+                        }
+                        SetSizeH(y + 10);
+                    });
+                }
+                Print();
+            }
+        }
         internal int TextChangeCore(string val)
         {
             if (string.IsNullOrEmpty(val))

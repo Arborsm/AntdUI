@@ -25,7 +25,7 @@ using System.Windows.Forms.Design;
 
 namespace AntdUI
 {
-    public partial class Tabs
+    partial class Tabs
     {
         internal class TabControlDesigner : ParentControlDesigner
         {
