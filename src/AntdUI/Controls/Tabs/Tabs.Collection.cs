@@ -77,8 +77,15 @@ namespace AntdUI
                 owner.ShowPage();
             }
 
-            void Del(TabPage item)
-            { }
+            void Del(TabPage item, int old, int index)
+            {
+                if (old == index)
+                {
+                    owner.Controls.Remove(item);
+                    int _new = index - 1;
+                    if (_new > -1) owner.SelectedIndex = _new;
+                }
+            }
 
             #endregion
 
@@ -173,27 +180,47 @@ namespace AntdUI
 
             #region 删除
 
-            public void Clear() => list.Clear();
+            public void Clear()
+            {
+                list.Clear();
+                owner.Controls.Clear();
+                owner.SelectedIndex = 0;
+                owner.Invalidate();
+            }
 
             public void Remove(object? value)
             {
                 if (value is TabPage item)
                 {
-                    Del(item);
-                    list.Remove(item);
-                    owner.LoadLayout();
+                    int old = owner.SelectedIndex;
+                    int index = list.IndexOf(item);
+                    if (index > -1)
+                    {
+                        list.Remove(item);
+                        Del(item, old, index);
+                        owner.LoadLayout();
+                    }
                 }
             }
             public bool Remove(TabPage item)
             {
-                Del(item);
-                bool flag = list.Contains(item);
-                if (flag) owner.LoadLayout();
-                return flag;
+                int old = owner.SelectedIndex;
+                int index = list.IndexOf(item);
+                if (index > -1)
+                {
+                    bool flag = list.Remove(item);
+                    Del(item, old, index);
+                    owner.LoadLayout();
+                    return flag;
+                }
+                return false;
             }
             public void RemoveAt(int index)
             {
+                int old = owner.SelectedIndex;
+                var item = list[index];
                 list.RemoveAt(index);
+                Del(item, old, index);
                 owner.LoadLayout();
             }
             public int RemoveAll(Predicate<TabPage> match)

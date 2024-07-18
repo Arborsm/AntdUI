@@ -46,6 +46,7 @@ namespace Overview.Controls
         /// </summary>
         private void InitializeComponent()
         {
+            AntdUI.Tabs.StyleLine styleLine1 = new AntdUI.Tabs.StyleLine();
             header1 = new AntdUI.Header();
             pagination1 = new AntdUI.Pagination();
             table2 = new AntdUI.Table();
@@ -83,11 +84,11 @@ namespace Overview.Controls
             // 
             pagination1.Dock = DockStyle.Bottom;
             pagination1.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            pagination1.Location = new Point(0, 33);
+            pagination1.Location = new Point(3, 30);
             pagination1.Name = "pagination1";
             pagination1.RightToLeft = RightToLeft.Yes;
             pagination1.ShowSizeChanger = true;
-            pagination1.Size = new Size(192, 34);
+            pagination1.Size = new Size(186, 34);
             pagination1.TabIndex = 5;
             pagination1.Total = 100;
             pagination1.ValueChanged += pagination1_ValueChanged;
@@ -98,9 +99,9 @@ namespace Overview.Controls
             table2.AutoSizeColumnsMode = AntdUI.ColumnsMode.Fill;
             table2.Dock = DockStyle.Fill;
             table2.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            table2.Location = new Point(0, 0);
+            table2.Location = new Point(3, 3);
             table2.Name = "table2";
-            table2.Size = new Size(192, 33);
+            table2.Size = new Size(186, 27);
             table2.TabIndex = 3;
             table2.Text = "table2";
             // 
@@ -109,18 +110,16 @@ namespace Overview.Controls
             table1.AutoSizeColumnsMode = AntdUI.ColumnsMode.Fill;
             table1.Dock = DockStyle.Fill;
             table1.Font = new Font("Microsoft YaHei UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            table1.Location = new Point(0, 43);
+            table1.Location = new Point(3, 46);
             table1.Name = "table1";
             table1.Radius = 6;
-            table1.Size = new Size(1294, 509);
+            table1.Size = new Size(1288, 503);
             table1.TabIndex = 0;
             table1.Text = "table1";
             table1.CellButtonClick += table1_CellButtonClick;
             // 
             // tabs1
             // 
-            tabs1.BarPadding = 8;
-            tabs1.BarRadius = 2;
             tabs1.Dock = DockStyle.Fill;
             tabs1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             tabs1.Gap = 12;
@@ -130,6 +129,8 @@ namespace Overview.Controls
             tabs1.Pages.Add(tabPage1);
             tabs1.Pages.Add(tabPage2);
             tabs1.Size = new Size(1300, 597);
+            styleLine1.Radius = 2;
+            tabs1.Style = styleLine1;
             tabs1.TabIndex = 0;
             // 
             // tabPage1
@@ -155,10 +156,10 @@ namespace Overview.Controls
             panel1.Controls.Add(checkbox1);
             panel1.Dock = DockStyle.Top;
             panel1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            panel1.Location = new Point(0, 0);
+            panel1.Location = new Point(3, 3);
             panel1.Name = "panel1";
             panel1.Padding = new Padding(10, 0, 0, 0);
-            panel1.Size = new Size(1294, 43);
+            panel1.Size = new Size(1288, 43);
             panel1.TabIndex = 1;
             panel1.Text = "panel1";
             // 

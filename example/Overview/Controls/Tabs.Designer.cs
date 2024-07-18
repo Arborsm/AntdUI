@@ -46,10 +46,13 @@ namespace Overview.Controls
         /// </summary>
         private void InitializeComponent()
         {
-            AntdUI.CarouselItem carouselItem17 = new AntdUI.CarouselItem();
-            AntdUI.CarouselItem carouselItem18 = new AntdUI.CarouselItem();
-            AntdUI.CarouselItem carouselItem19 = new AntdUI.CarouselItem();
-            AntdUI.CarouselItem carouselItem20 = new AntdUI.CarouselItem();
+            AntdUI.Tabs.StyleLine styleLine1 = new AntdUI.Tabs.StyleLine();
+            AntdUI.CarouselItem carouselItem1 = new AntdUI.CarouselItem();
+            AntdUI.CarouselItem carouselItem2 = new AntdUI.CarouselItem();
+            AntdUI.CarouselItem carouselItem3 = new AntdUI.CarouselItem();
+            AntdUI.CarouselItem carouselItem4 = new AntdUI.CarouselItem();
+            AntdUI.Tabs.StyleCard styleCard1 = new AntdUI.Tabs.StyleCard();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Tabs));
             header1 = new AntdUI.Header();
             tabs1 = new AntdUI.Tabs();
             tabPage1 = new AntdUI.TabPage();
@@ -65,8 +68,8 @@ namespace Overview.Controls
             tabPage5 = new AntdUI.TabPage();
             label5 = new Label();
             tabPage6 = new AntdUI.TabPage();
-            tabPage7 = new AntdUI.TabPage();
             label6 = new Label();
+            tabPage7 = new AntdUI.TabPage();
             label7 = new Label();
             tabs1.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -102,6 +105,7 @@ namespace Overview.Controls
             tabs1.Pages.Add(tabPage3);
             tabs1.Pages.Add(tabPage4);
             tabs1.Size = new Size(663, 314);
+            tabs1.Style = styleLine1;
             tabs1.TabIndex = 5;
             // 
             // tabPage1
@@ -119,11 +123,11 @@ namespace Overview.Controls
             // carousel2
             // 
             carousel2.DotPosition = AntdUI.TAlignMini.Top;
-            carouselItem17.Img = Properties.Resources.img1;
-            carouselItem18.Img = Properties.Resources.bg1;
-            carouselItem19.Img = Properties.Resources.bg7;
-            carouselItem20.Img = Properties.Resources.bg2;
-            carousel2.Image.AddRange(new AntdUI.CarouselItem[] { carouselItem17, carouselItem18, carouselItem19, carouselItem20 });
+            carouselItem1.Img = Properties.Resources.img1;
+            carouselItem2.Img = Properties.Resources.bg1;
+            carouselItem3.Img = Properties.Resources.bg7;
+            carouselItem4.Img = Properties.Resources.bg2;
+            carousel2.Image.AddRange(new AntdUI.CarouselItem[] { carouselItem1, carouselItem2, carouselItem3, carouselItem4 });
             carousel2.Location = new Point(22, 43);
             carousel2.Name = "carousel2";
             carousel2.Radius = 8;
@@ -134,7 +138,7 @@ namespace Overview.Controls
             // 
             label1.AutoSize = true;
             label1.Dock = DockStyle.Top;
-            label1.Location = new Point(0, 0);
+            label1.Location = new Point(3, 3);
             label1.Name = "label1";
             label1.Size = new Size(49, 20);
             label1.TabIndex = 0;
@@ -155,7 +159,7 @@ namespace Overview.Controls
             // 
             label2.AutoSize = true;
             label2.Dock = DockStyle.Top;
-            label2.Location = new Point(0, 0);
+            label2.Location = new Point(3, 3);
             label2.Name = "label2";
             label2.Size = new Size(41, 17);
             label2.TabIndex = 1;
@@ -176,7 +180,7 @@ namespace Overview.Controls
             // 
             label3.AutoSize = true;
             label3.Dock = DockStyle.Top;
-            label3.Location = new Point(0, 0);
+            label3.Location = new Point(3, 3);
             label3.Name = "label3";
             label3.Size = new Size(41, 17);
             label3.TabIndex = 1;
@@ -197,7 +201,7 @@ namespace Overview.Controls
             // 
             label4.AutoSize = true;
             label4.Dock = DockStyle.Top;
-            label4.Location = new Point(0, 0);
+            label4.Location = new Point(3, 3);
             label4.Name = "label4";
             label4.Size = new Size(41, 17);
             label4.TabIndex = 1;
@@ -206,15 +210,16 @@ namespace Overview.Controls
             // tabs2
             // 
             tabs2.Alignment = TabAlignment.Left;
-            tabs2.CardBorder = Color.Aqua;
-            tabs2.CardGap = 6;
             tabs2.Dock = DockStyle.Fill;
             tabs2.Location = new Point(0, 393);
+            tabs2.Margin = new Padding(8);
             tabs2.Name = "tabs2";
             tabs2.Pages.Add(tabPage5);
             tabs2.Pages.Add(tabPage6);
             tabs2.Pages.Add(tabPage7);
             tabs2.Size = new Size(663, 162);
+            styleCard1.Gap = 8;
+            tabs2.Style = styleCard1;
             tabs2.TabIndex = 7;
             tabs2.Type = AntdUI.TabType.Card;
             // 
@@ -222,10 +227,10 @@ namespace Overview.Controls
             // 
             tabPage5.Controls.Add(label5);
             tabPage5.Dock = DockStyle.Fill;
-            tabPage5.Location = new Point(85, 3);
+            tabPage5.Location = new Point(72, 8);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(575, 156);
+            tabPage5.Size = new Size(583, 146);
             tabPage5.TabIndex = 6;
             tabPage5.Text = "Tab 1";
             // 
@@ -233,7 +238,7 @@ namespace Overview.Controls
             // 
             label5.AutoSize = true;
             label5.Dock = DockStyle.Top;
-            label5.Location = new Point(0, 0);
+            label5.Location = new Point(3, 3);
             label5.Name = "label5";
             label5.Size = new Size(49, 20);
             label5.TabIndex = 0;
@@ -243,37 +248,41 @@ namespace Overview.Controls
             // 
             tabPage6.Controls.Add(label6);
             tabPage6.Dock = DockStyle.Fill;
+            tabPage6.IconSvg = resources.GetString("tabPage6.IconSvg");
             tabPage6.Location = new Point(85, 3);
             tabPage6.Name = "tabPage6";
+            tabPage6.Padding = new Padding(3);
             tabPage6.Size = new Size(575, 156);
             tabPage6.TabIndex = 0;
             tabPage6.Text = "Tab 2";
-            // 
-            // tabPage7
-            // 
-            tabPage7.Controls.Add(label7);
-            tabPage7.Dock = DockStyle.Fill;
-            tabPage7.Location = new Point(85, 3);
-            tabPage7.Name = "tabPage7";
-            tabPage7.Size = new Size(575, 156);
-            tabPage7.TabIndex = 0;
-            tabPage7.Text = "Tab 3";
             // 
             // label6
             // 
             label6.AutoSize = true;
             label6.Dock = DockStyle.Top;
-            label6.Location = new Point(0, 0);
+            label6.Location = new Point(3, 3);
             label6.Name = "label6";
             label6.Size = new Size(41, 17);
             label6.TabIndex = 1;
             label6.Text = "Tab 2";
             // 
+            // tabPage7
+            // 
+            tabPage7.Controls.Add(label7);
+            tabPage7.Dock = DockStyle.Fill;
+            tabPage7.IconSvg = resources.GetString("tabPage7.IconSvg");
+            tabPage7.Location = new Point(85, 3);
+            tabPage7.Name = "tabPage7";
+            tabPage7.Padding = new Padding(3);
+            tabPage7.Size = new Size(575, 156);
+            tabPage7.TabIndex = 0;
+            tabPage7.Text = "Tab 3";
+            // 
             // label7
             // 
             label7.AutoSize = true;
             label7.Dock = DockStyle.Top;
-            label7.Location = new Point(0, 0);
+            label7.Location = new Point(3, 3);
             label7.Name = "label7";
             label7.Size = new Size(41, 17);
             label7.TabIndex = 1;

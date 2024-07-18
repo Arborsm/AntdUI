@@ -1705,8 +1705,8 @@ namespace AntdUI
                             });
                         }
                         OnClick(e);
-                        OnMouseClick(e);
                     }
+                    OnMouseClick(e);
                 }
                 ExtraMouseDown = false;
             }

@@ -256,43 +256,46 @@ namespace AntdUI
 
             public void Paint(Tabs owner, Graphics g, TabCollection items)
             {
-                if (BackSize > 0)
+                if (rects.Length == items.Count)
                 {
-                    using (var brush = new SolidBrush(Back ?? AntdUI.Style.Db.BorderSecondary))
+                    if (BackSize > 0)
                     {
-                        g.FillRectangle(brush, rect_line_top);
-                    }
-                }
-                using (var brush_fore = new SolidBrush(owner.ForeColor ?? AntdUI.Style.Db.Text))
-                using (var brush_fill = new SolidBrush(owner.Fill ?? AntdUI.Style.Db.Primary))
-                using (var brush_active = new SolidBrush(owner.FillActive ?? AntdUI.Style.Db.PrimaryActive))
-                using (var brush_hover = new SolidBrush(owner.FillHover ?? AntdUI.Style.Db.PrimaryHover))
-                {
-                    if (AnimationBar)
-                    {
-                        PaintBar(g, AnimationBarValue, brush_fill);
-                        int i = 0;
-                        foreach (var page in items)
+                        using (var brush = new SolidBrush(Back ?? AntdUI.Style.Db.BorderSecondary))
                         {
-                            if (owner.SelectedIndex == i) PaintText(g, rects[i], owner, page, brush_fill);
-                            else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, brush_hover);
-                            else PaintText(g, rects[i], owner, page, brush_fore);
-                            i++;
+                            g.FillRectangle(brush, rect_line_top);
                         }
                     }
-                    else
+                    using (var brush_fore = new SolidBrush(owner.ForeColor ?? AntdUI.Style.Db.Text))
+                    using (var brush_fill = new SolidBrush(owner.Fill ?? AntdUI.Style.Db.Primary))
+                    using (var brush_active = new SolidBrush(owner.FillActive ?? AntdUI.Style.Db.PrimaryActive))
+                    using (var brush_hover = new SolidBrush(owner.FillHover ?? AntdUI.Style.Db.PrimaryHover))
                     {
-                        int i = 0;
-                        foreach (var page in items)
+                        if (AnimationBar)
                         {
-                            if (owner.SelectedIndex == i)//是否选中
+                            PaintBar(g, AnimationBarValue, brush_fill);
+                            int i = 0;
+                            foreach (var page in items)
                             {
-                                PaintBar(g, rects[i][1], brush_fill);
-                                PaintText(g, rects[i], owner, page, brush_fill);
+                                if (owner.SelectedIndex == i) PaintText(g, rects[i], owner, page, brush_fill);
+                                else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, brush_hover);
+                                else PaintText(g, rects[i], owner, page, brush_fore);
+                                i++;
                             }
-                            else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                            else PaintText(g, rects[i], owner, page, brush_fore);
-                            i++;
+                        }
+                        else
+                        {
+                            int i = 0;
+                            foreach (var page in items)
+                            {
+                                if (owner.SelectedIndex == i)//是否选中
+                                {
+                                    PaintBar(g, rects[i][1], brush_fill);
+                                    PaintText(g, rects[i], owner, page, brush_fill);
+                                }
+                                else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                else PaintText(g, rects[i], owner, page, brush_fore);
+                                i++;
+                            }
                         }
                     }
                 }
@@ -759,220 +762,223 @@ namespace AntdUI
 
             public void Paint(Tabs owner, Graphics g, TabCollection items)
             {
-                using (var brush_fore = new SolidBrush(owner.ForeColor ?? AntdUI.Style.Db.Text))
-                using (var brush_fill = new SolidBrush(owner.Fill ?? AntdUI.Style.Db.Primary))
-                using (var brush_active = new SolidBrush(owner.FillActive ?? AntdUI.Style.Db.PrimaryActive))
-                using (var brush_hover = new SolidBrush(owner.FillHover ?? AntdUI.Style.Db.PrimaryHover))
-                using (var brush_bg = new SolidBrush(Fill ?? AntdUI.Style.Db.FillQuaternary))
-                using (var brush_bg_hover = new SolidBrush(FillHover ?? AntdUI.Style.Db.FillQuaternary))
-                using (var brush_bg_active = new SolidBrush(FillActive ?? AntdUI.Style.Db.BgContainer))
+                if (rects.Length == items.Count)
                 {
-                    var rect_t = owner.ClientRectangle;
-                    int radius = (int)(Radius * Config.Dpi), bor = (int)(bordersize * Config.Dpi), bor2 = bor * 6, bor22 = bor2 * 2;
-                    float borb2 = bor / 2F;
-                    TabPage? sel = null;
-                    int i = 0, select = owner.SelectedIndex;
-                    switch (owner.Alignment)
+                    using (var brush_fore = new SolidBrush(owner.ForeColor ?? AntdUI.Style.Db.Text))
+                    using (var brush_fill = new SolidBrush(owner.Fill ?? AntdUI.Style.Db.Primary))
+                    using (var brush_active = new SolidBrush(owner.FillActive ?? AntdUI.Style.Db.PrimaryActive))
+                    using (var brush_hover = new SolidBrush(owner.FillHover ?? AntdUI.Style.Db.PrimaryHover))
+                    using (var brush_bg = new SolidBrush(Fill ?? AntdUI.Style.Db.FillQuaternary))
+                    using (var brush_bg_hover = new SolidBrush(FillHover ?? AntdUI.Style.Db.FillQuaternary))
+                    using (var brush_bg_active = new SolidBrush(FillActive ?? AntdUI.Style.Db.BgContainer))
                     {
-                        case TabAlignment.Bottom:
-                            int read_b_h = rects[0][0].Height + rects[0][0].X;
-                            g.SetClip(new Rectangle(rect_t.X, rect_t.Bottom - read_b_h, rect_t.Width, read_b_h));
-                            foreach (var page in items)
-                            {
-                                if (select == i) sel = page;
-                                else
+                        var rect_t = owner.ClientRectangle;
+                        int radius = (int)(Radius * Config.Dpi), bor = (int)(bordersize * Config.Dpi), bor2 = bor * 6, bor22 = bor2 * 2;
+                        float borb2 = bor / 2F;
+                        TabPage? sel = null;
+                        int i = 0, select = owner.SelectedIndex;
+                        switch (owner.Alignment)
+                        {
+                            case TabAlignment.Bottom:
+                                int read_b_h = rects[0][0].Height + rects[0][0].X;
+                                g.SetClip(new Rectangle(rect_t.X, rect_t.Bottom - read_b_h, rect_t.Width, read_b_h));
+                                foreach (var page in items)
                                 {
-                                    using (var path = Helper.RoundPath(page.Rect, radius, false, false, true, true))
+                                    if (select == i) sel = page;
+                                    else
                                     {
-                                        g.FillPath(brush_bg, path);
+                                        using (var path = Helper.RoundPath(page.Rect, radius, false, false, true, true))
+                                        {
+                                            g.FillPath(brush_bg, path);
+                                            if (bor > 0)
+                                            {
+                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                {
+                                                    g.DrawPath(pen_bg, path);
+                                                }
+                                            }
+                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                            else PaintText(g, rects[i], owner, page, brush_fore);
+                                        }
+                                    }
+                                    i++;
+                                }
+                                g.ResetClip();
+                                if (sel != null)//是否选中
+                                {
+                                    var rect_page = sel.Rect;
+                                    using (var path = Helper.RoundPath(rect_page, radius, false, false, true, true))
+                                    {
                                         if (bor > 0)
                                         {
-                                            using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                            using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
                                             {
+                                                float ly = rect_page.Y + borb2;
+                                                g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
+                                                using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, false, false, true, true))
+                                                {
+                                                    g.FillPath(brush_bg_active, path2);
+                                                }
+                                                g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + bor, rect_page.Height + bor));
                                                 g.DrawPath(pen_bg, path);
+                                                g.ResetClip();
                                             }
                                         }
-                                        if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                        else PaintText(g, rects[i], owner, page, brush_fore);
+                                        else g.FillPath(brush_bg_active, path);
+                                        PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
-                                i++;
-                            }
-                            g.ResetClip();
-                            if (sel != null)//是否选中
-                            {
-                                var rect_page = sel.Rect;
-                                using (var path = Helper.RoundPath(rect_page, radius, false, false, true, true))
+                                break;
+                            case TabAlignment.Left:
+                                g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rects[0][0].Right, rect_t.Height));
+                                foreach (var page in items)
                                 {
-                                    if (bor > 0)
+                                    if (owner.SelectedIndex == i) sel = page;
+                                    else
                                     {
-                                        using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
+                                        using (var path = Helper.RoundPath(page.Rect, radius, true, false, false, true))
                                         {
-                                            float ly = rect_page.Y + borb2;
-                                            g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
-                                            using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, false, false, true, true))
+                                            g.FillPath(brush_bg, path);
+                                            if (bor > 0)
                                             {
-                                                g.FillPath(brush_bg_active, path2);
+                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                {
+                                                    g.DrawPath(pen_bg, path);
+                                                }
                                             }
-                                            g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + bor, rect_page.Height + bor));
-                                            g.DrawPath(pen_bg, path);
-                                            g.ResetClip();
+                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
-                                    else g.FillPath(brush_bg_active, path);
-                                    PaintText(g, rects[select], owner, sel, brush_fill);
+                                    i++;
                                 }
-                            }
-                            break;
-                        case TabAlignment.Left:
-                            g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rects[0][0].Right, rect_t.Height));
-                            foreach (var page in items)
-                            {
-                                if (owner.SelectedIndex == i) sel = page;
-                                else
+                                g.ResetClip();
+                                if (sel != null)//是否选中
                                 {
-                                    using (var path = Helper.RoundPath(page.Rect, radius, true, false, false, true))
+                                    var rect_page = sel.Rect;
+                                    using (var path = Helper.RoundPath(rect_page, radius, true, false, false, true))
                                     {
-                                        g.FillPath(brush_bg, path);
                                         if (bor > 0)
                                         {
-                                            using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                            using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
                                             {
+                                                float lx = rect_page.Right - borb2;
+                                                g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
+                                                using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + borb2, rect_page.Height - bor), radius, true, false, false, true))
+                                                {
+                                                    g.FillPath(brush_bg_active, path2);
+                                                }
+                                                g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y - borb2, rect_page.Width, rect_page.Height + bor));
                                                 g.DrawPath(pen_bg, path);
+                                                g.ResetClip();
                                             }
                                         }
-                                        if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                        else PaintText(g, rects[i], owner, page, brush_fore);
+                                        else g.FillPath(brush_bg_active, path);
+                                        PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
-                                i++;
-                            }
-                            g.ResetClip();
-                            if (sel != null)//是否选中
-                            {
-                                var rect_page = sel.Rect;
-                                using (var path = Helper.RoundPath(rect_page, radius, true, false, false, true))
+                                break;
+                            case TabAlignment.Right:
+                                int read_r_w = rects[0][0].Width + rects[0][0].Y;
+                                g.SetClip(new Rectangle(rect_t.Right - read_r_w, rect_t.Y, read_r_w, rect_t.Height));
+                                foreach (var page in items)
                                 {
-                                    if (bor > 0)
+                                    if (owner.SelectedIndex == i) sel = page;
+                                    else
                                     {
-                                        using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
+                                        using (var path = Helper.RoundPath(page.Rect, radius, false, true, true, false))
                                         {
-                                            float lx = rect_page.Right - borb2;
-                                            g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
-                                            using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + borb2, rect_page.Height - bor), radius, true, false, false, true))
+                                            g.FillPath(brush_bg, path);
+                                            if (bor > 0)
                                             {
-                                                g.FillPath(brush_bg_active, path2);
+                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                {
+                                                    g.DrawPath(pen_bg, path);
+                                                }
                                             }
-                                            g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y - borb2, rect_page.Width, rect_page.Height + bor));
-                                            g.DrawPath(pen_bg, path);
-                                            g.ResetClip();
+                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
-                                    else g.FillPath(brush_bg_active, path);
-                                    PaintText(g, rects[select], owner, sel, brush_fill);
+                                    i++;
                                 }
-                            }
-                            break;
-                        case TabAlignment.Right:
-                            int read_r_w = rects[0][0].Width + rects[0][0].Y;
-                            g.SetClip(new Rectangle(rect_t.Right - read_r_w, rect_t.Y, read_r_w, rect_t.Height));
-                            foreach (var page in items)
-                            {
-                                if (owner.SelectedIndex == i) sel = page;
-                                else
+                                g.ResetClip();
+                                if (sel != null)//是否选中
                                 {
-                                    using (var path = Helper.RoundPath(page.Rect, radius, false, true, true, false))
+                                    var rect_page = sel.Rect;
+                                    using (var path = Helper.RoundPath(rect_page, radius, false, true, true, false))
                                     {
-                                        g.FillPath(brush_bg, path);
                                         if (bor > 0)
                                         {
-                                            using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                            using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
                                             {
+                                                float lx = rect_page.X + borb2;
+                                                g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
+                                                using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + borb2, rect_page.Height - bor), radius, false, true, true, false))
+                                                {
+                                                    g.FillPath(brush_bg_active, path2);
+                                                }
+                                                g.SetClip(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width + borb2, rect_page.Height + bor));
                                                 g.DrawPath(pen_bg, path);
+                                                g.ResetClip();
                                             }
                                         }
-                                        if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                        else PaintText(g, rects[i], owner, page, brush_fore);
+                                        else g.FillPath(brush_bg_active, path);
+                                        PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
-                                i++;
-                            }
-                            g.ResetClip();
-                            if (sel != null)//是否选中
-                            {
-                                var rect_page = sel.Rect;
-                                using (var path = Helper.RoundPath(rect_page, radius, false, true, true, false))
+                                break;
+                            case TabAlignment.Top:
+                            default:
+                                g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rect_t.Width, rects[0][0].Bottom));
+                                foreach (var page in items)
                                 {
-                                    if (bor > 0)
+                                    if (owner.SelectedIndex == i) sel = page;
+                                    else
                                     {
-                                        using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
+                                        using (var path = Helper.RoundPath(page.Rect, radius, true, true, false, false))
                                         {
-                                            float lx = rect_page.X + borb2;
-                                            g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
-                                            using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + borb2, rect_page.Height - bor), radius, false, true, true, false))
+                                            g.FillPath(owner.hover_i == i ? brush_bg_hover : brush_bg, path);
+                                            if (bor > 0)
                                             {
-                                                g.FillPath(brush_bg_active, path2);
+                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                {
+                                                    g.DrawPath(pen_bg, path);
+                                                }
                                             }
-                                            g.SetClip(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width + borb2, rect_page.Height + bor));
-                                            g.DrawPath(pen_bg, path);
-                                            g.ResetClip();
+                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
-                                    else g.FillPath(brush_bg_active, path);
-                                    PaintText(g, rects[select], owner, sel, brush_fill);
+                                    i++;
                                 }
-                            }
-                            break;
-                        case TabAlignment.Top:
-                        default:
-                            g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rect_t.Width, rects[0][0].Bottom));
-                            foreach (var page in items)
-                            {
-                                if (owner.SelectedIndex == i) sel = page;
-                                else
+                                g.ResetClip();
+                                if (sel != null)//是否选中
                                 {
-                                    using (var path = Helper.RoundPath(page.Rect, radius, true, true, false, false))
+                                    var rect_page = sel.Rect;
+                                    using (var path = Helper.RoundPath(rect_page, radius, true, true, false, false))
                                     {
-                                        g.FillPath(owner.hover_i == i ? brush_bg_hover : brush_bg, path);
                                         if (bor > 0)
                                         {
-                                            using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                            using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
                                             {
+                                                float ly = rect_page.Bottom - borb2;
+                                                g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
+                                                using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, true, true, false, false))
+                                                {
+                                                    g.FillPath(brush_bg_active, path2);
+                                                }
+                                                g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y - bor, rect_page.Width + bor, rect_page.Height));
                                                 g.DrawPath(pen_bg, path);
+                                                g.ResetClip();
                                             }
                                         }
-                                        if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                        else PaintText(g, rects[i], owner, page, brush_fore);
+                                        else g.FillPath(brush_bg_active, path);
+                                        PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
-                                i++;
-                            }
-                            g.ResetClip();
-                            if (sel != null)//是否选中
-                            {
-                                var rect_page = sel.Rect;
-                                using (var path = Helper.RoundPath(rect_page, radius, true, true, false, false))
-                                {
-                                    if (bor > 0)
-                                    {
-                                        using (var pen_bg = new Pen(BorderActive ?? AntdUI.Style.Db.BorderColor, bor))
-                                        {
-                                            float ly = rect_page.Bottom - borb2;
-                                            g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
-                                            using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, true, true, false, false))
-                                            {
-                                                g.FillPath(brush_bg_active, path2);
-                                            }
-                                            g.SetClip(new RectangleF(rect_page.X - borb2, rect_page.Y - bor, rect_page.Width + bor, rect_page.Height));
-                                            g.DrawPath(pen_bg, path);
-                                            g.ResetClip();
-                                        }
-                                    }
-                                    else g.FillPath(brush_bg_active, path);
-                                    PaintText(g, rects[select], owner, sel, brush_fill);
-                                }
-                            }
-                            break;
+                                break;
+                        }
                     }
                 }
             }

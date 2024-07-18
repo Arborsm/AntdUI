@@ -364,7 +364,7 @@ namespace AntdUI
         StringFormat s_c = Helper.SF_ALL();
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (items == null || !_tabMenuVisible) return;
+            if (items == null || items.Count == 0 || !_tabMenuVisible) return;
             var g = e.Graphics.High();
             style.Paint(this, g, items);
             base.OnPaint(e);
