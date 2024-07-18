@@ -1641,66 +1641,6 @@ namespace AntdUI
                 }
             }
         }
-        public static void PaintBadge(this Tabs control, TabsBadge badge, RectangleF rect, Font font, Graphics g)
-        {
-            var color = badge.Fill ?? control.BadgeBack ?? Style.Db.Error;
-            using (var brush_fore = new SolidBrush(Style.Db.ErrorColor))
-            {
-                if (badge.Count == 0)
-                {
-                    var rect_badge = new RectangleF(rect.Right - 7F, 1F, 6, 6);
-                    using (var brush = new SolidBrush(color))
-                    {
-                        g.FillEllipse(brush, rect_badge);
-                        using (var pen = new Pen(brush_fore.Color, 1F))
-                        {
-                            g.DrawEllipse(pen, rect_badge);
-                        }
-                    }
-                }
-                else
-                {
-                    string countStr;
-                    if (badge.Count == 999) countStr = "999";
-                    else if (badge.Count > 1000) countStr = (badge.Count / 1000).ToString().Substring(0, 1) + "K+";
-                    else if (badge.Count > 99) countStr = "99+";
-                    else countStr = badge.Count.ToString();
-
-                    var size = g.MeasureString(countStr, font);
-                    var size_badge = size.Height * 1.2F;
-                    if (size.Height > size.Width)
-                    {
-                        var rect_badge = new RectangleF(rect.Right - size_badge - 1F, 1F, size_badge, size_badge);
-                        using (var brush = new SolidBrush(color))
-                        {
-                            g.FillEllipse(brush, rect_badge);
-                            using (var pen = new Pen(brush_fore.Color, 1F))
-                            {
-                                g.DrawEllipse(pen, rect_badge);
-                            }
-                        }
-                        g.DrawString(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
-                    }
-                    else
-                    {
-                        var w_badge = size.Width * 1.2F;
-                        var rect_badge = new RectangleF(rect.Right - w_badge - 1F, 1F, w_badge, size_badge);
-                        using (var brush = new SolidBrush(color))
-                        {
-                            using (var path = rect_badge.RoundPath(rect_badge.Height))
-                            {
-                                g.FillPath(brush, path);
-                                using (var pen = new Pen(brush_fore.Color, 1F))
-                                {
-                                    g.DrawPath(pen, path);
-                                }
-                            }
-                        }
-                        g.DrawString(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
-                    }
-                }
-            }
-        }
 
         #endregion
 

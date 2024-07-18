@@ -17,7 +17,6 @@
 // QQ: 17379620
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
@@ -199,33 +198,6 @@ namespace AntdUI
             get => ClientRectangle.PaddingRect(Margin, Padding, _padding);
         }
 
-        #region 徽标
-
-        TabsBadgeCollection? badge;
-        /// <summary>
-        /// 徽标集合
-        /// </summary>
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
-        [Description("徽标集合"), Category("徽标")]
-        public TabsBadgeCollection Badge
-        {
-            get
-            {
-                badge ??= new TabsBadgeCollection(this);
-                return badge;
-            }
-            set => badge = value.BindData(this);
-        }
-
-        [Description("徽标大小"), Category("徽标"), DefaultValue(9F)]
-        public float BadgeSize { get; set; } = 9F;
-
-        [Description("徽标背景颜色"), Category("徽标"), DefaultValue(null)]
-        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
-        public Color? BadgeBack { get; set; }
-
-        #endregion
-
         #region 数据
 
         TabCollection? items;
@@ -344,23 +316,6 @@ namespace AntdUI
 
         #region 渲染
 
-        Dictionary<int, TabsBadge> badges = new Dictionary<int, TabsBadge>();
-        public void ChangeBadge()
-        {
-            badges.Clear();
-#if NET40 || NET46 || NET48
-            foreach (TabsBadge it in Badge)
-            {
-                if (!badges.ContainsKey(it.Index)) badges.Add(it.Index, it);
-            }
-#else
-            foreach (TabsBadge it in Badge)
-            {
-                badges.TryAdd(it.Index, it);
-            }
-#endif
-        }
-
         StringFormat s_c = Helper.SF_ALL();
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -382,7 +337,7 @@ namespace AntdUI
                 int i = 0;
                 foreach (var item in items)
                 {
-                    if (item.Visible && item.Contains(e.X, e.Y))
+                    if (item.Visible && item.Contains(e.X + scroll_x, e.Y + scroll_y))
                     {
                         item.MDown = true;
                         Invalidate();
@@ -404,7 +359,7 @@ namespace AntdUI
                     if (item.MDown)
                     {
                         item.MDown = false;
-                        if (item.Contains(e.X, e.Y)) SelectedIndex = i;
+                        if (item.Contains(e.X + scroll_x, e.Y + scroll_y)) SelectedIndex = i;
                         else Invalidate();
                         return;
                     }
@@ -432,50 +387,125 @@ namespace AntdUI
             int i = 0;
             foreach (var item in items)
             {
-                if (item.Contains(e.X, e.Y))
+                if (item.Contains(e.X + scroll_x, e.Y + scroll_y))
                 {
+                    Cursor = Cursors.Hand;
                     Hover_i = i;
                     return;
                 }
                 i++;
             }
+            Cursor = DefaultCursor;
             base.OnMouseMove(e);
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
             Hover_i = -1;
+            Cursor = DefaultCursor;
             base.OnMouseLeave(e);
+        }
+
+        int _scroll_x = 0, _scroll_y = 0, scroll_max = 0;
+        int scroll_x
+        {
+            get => _scroll_x;
+            set
+            {
+                if (value < 0) value = 0;
+                else if (scroll_max > 0 && value > scroll_max) value = scroll_max;
+                if (value == _scroll_x) return;
+                _scroll_x = value;
+                Invalidate();
+            }
+        }
+
+        int scroll_y
+        {
+            get => _scroll_y;
+            set
+            {
+                if (value < 0) value = 0;
+                else if (scroll_max > 0 && value > scroll_max) value = scroll_max;
+                if (value == _scroll_y) return;
+                _scroll_y = value;
+                Invalidate();
+            }
+        }
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            style.MouseWheel(e.Delta);
+            base.OnMouseWheel(e);
         }
 
         #endregion
     }
 
-    public class TabsBadgeCollection : iCollection<TabsBadge>
+    [Designer(typeof(IControlDesigner))]
+    public class TabPage : ScrollableControl
     {
-        public TabsBadgeCollection(Tabs it)
+        public TabPage()
         {
-            BindData(it);
+            SetStyle(
+               ControlStyles.AllPaintingInWmPaint |
+               ControlStyles.OptimizedDoubleBuffer |
+               ControlStyles.ResizeRedraw |
+               ControlStyles.DoubleBuffer |
+               ControlStyles.SupportsTransparentBackColor |
+               ControlStyles.ContainerControl |
+               ControlStyles.UserPaint, true);
+            UpdateStyles();
         }
 
-        internal TabsBadgeCollection BindData(Tabs it)
+        #region 属性
+
+        Image? icon = null;
+        /// <summary>
+        /// 图标
+        /// </summary>
+        [Category("外观"), Description("图标"), DefaultValue(null)]
+        public Image? Icon
         {
-            action = render =>
+            get => icon;
+            set
             {
-                if (render) it.ChangeBadge();
-                it.Invalidate();
-            };
-            return this;
+                if (icon == value) return;
+                icon = value;
+                if (Parent is Tabs tabs) tabs?.LoadLayout();
+            }
         }
-    }
-    public class TabsBadge
-    {
+
+        string? iconSvg = null;
+        /// <summary>
+        /// 图标
+        /// </summary>
+        [Category("外观"), Description("图标SVG"), DefaultValue(null)]
+        public string? IconSvg
+        {
+            get => iconSvg;
+            set
+            {
+                if (iconSvg == value) return;
+                iconSvg = value;
+                if (Parent is Tabs tabs) tabs?.LoadLayout();
+            }
+        }
+
+        /// <summary>
+        /// 是否包含图标
+        /// </summary>
+        public bool HasIcon
+        {
+            get => iconSvg != null || icon != null;
+        }
+
+        #region 徽标
+
         /// <summary>
         /// 序号
         /// </summary>
         [Description("序号"), Category("外观")]
         public int Index { get; set; }
-
 
         /// <summary>
         /// 徽标计数 0是点
@@ -489,10 +519,35 @@ namespace AntdUI
         [Description("填充颜色"), Category("外观")]
         public Color? Fill { get; set; }
 
-        /// <summary>
-        /// 用户定义数据
-        /// </summary>
-        [Description("用户定义数据"), Category("数据"), DefaultValue(null)]
-        public object? Tag { get; set; }
+        #endregion
+
+        #endregion
+
+        #region 坐标
+
+        internal bool HDPI = false;
+        internal bool MDown = false;
+        internal Rectangle Rect = new Rectangle(-10, -10, 0, 0);
+        internal bool Contains(int x, int y)
+        {
+            return Rect.Contains(x, y);
+        }
+        internal Rectangle SetRect(Rectangle rect)
+        {
+            Rect = rect;
+            return Rect;
+        }
+
+        #endregion
+
+        #region 变更
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (Parent is Tabs tabs) tabs?.LoadLayout();
+            base.OnTextChanged(e);
+        }
+
+        #endregion
     }
 }

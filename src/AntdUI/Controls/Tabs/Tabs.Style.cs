@@ -152,6 +152,8 @@ namespace AntdUI
                                 int barBackSize = (int)(BackSize * Config.Dpi);
                                 rect_line_top = new Rectangle(rect.X, rect.Bottom - xy2, rect.Width, barBackSize);
                             }
+                            owner.scroll_max = xy - rect.Width;
+                            scroll_show = xy > rect.Width;
                             break;
                         case TabAlignment.Left:
                             foreach (var it in rect_dir)
@@ -183,6 +185,8 @@ namespace AntdUI
                                 int barBackSize = (int)(BackSize * Config.Dpi);
                                 rect_line_top = new Rectangle(rect.X + xy2 - barBackSize, rect.Y, barBackSize, rect.Height);
                             }
+                            owner.scroll_max = xy - rect.Height;
+                            scroll_show = xy > rect.Height;
                             break;
                         case TabAlignment.Right:
                             int x = rect.Right - xy2;
@@ -215,6 +219,8 @@ namespace AntdUI
                                 int barBackSize = (int)(BackSize * Config.Dpi);
                                 rect_line_top = new Rectangle(x, rect.Y, barBackSize, rect.Height);
                             }
+                            owner.scroll_max = xy - rect.Height;
+                            scroll_show = xy > rect.Height;
                             break;
                         case TabAlignment.Top:
                         default:
@@ -248,8 +254,11 @@ namespace AntdUI
                                 int barBackSize = (int)(BackSize * Config.Dpi);
                                 rect_line_top = new Rectangle(rect.Left, rect.Y + xy2 - barBackSize, rect.Width, barBackSize);
                             }
+                            owner.scroll_max = xy - rect.Width;
+                            scroll_show = xy > rect.Width;
                             break;
                     }
+                    if (!scroll_show) owner.scroll_x = owner.scroll_y = 0;
                     return rect_list.ToArray();
                 });
             }
@@ -270,6 +279,7 @@ namespace AntdUI
                     using (var brush_active = new SolidBrush(owner.FillActive ?? AntdUI.Style.Db.PrimaryActive))
                     using (var brush_hover = new SolidBrush(owner.FillHover ?? AntdUI.Style.Db.PrimaryHover))
                     {
+                        if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                         if (AnimationBar)
                         {
                             PaintBar(g, AnimationBarValue, brush_fill);
@@ -528,6 +538,28 @@ namespace AntdUI
             {
                 ThreadBar?.Dispose();
             }
+
+            bool scroll_show = false;
+            public void MouseWheel(int delta)
+            {
+                if (scroll_show && owner != null)
+                {
+                    switch (owner.Alignment)
+                    {
+                        case TabAlignment.Left:
+                        case TabAlignment.Right:
+                            owner.scroll_x = 0;
+                            owner.scroll_y -= delta;
+                            break;
+                        case TabAlignment.Top:
+                        case TabAlignment.Bottom:
+                        default:
+                            owner.scroll_y = 0;
+                            owner.scroll_x -= delta;
+                            break;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -680,7 +712,10 @@ namespace AntdUI
                                 it.Key.SetRect(rect_it);
                                 xy += rect_it.Width + cardgap;
                             }
+                            xy -= cardgap;
                             tabs.SetPadding(0, 0, 0, xy2);
+                            owner.scroll_max = xy - rect.Width;
+                            scroll_show = xy > rect.Width;
                             break;
                         case TabAlignment.Left:
                             foreach (var it in rect_dir)
@@ -704,7 +739,10 @@ namespace AntdUI
                                 it.Key.SetRect(rect_it);
                                 xy += rect_it.Height + cardgap;
                             }
+                            xy -= cardgap;
                             tabs.SetPadding(xy2, 0, 0, 0);
+                            owner.scroll_max = xy - rect.Height;
+                            scroll_show = xy > rect.Height;
                             break;
                         case TabAlignment.Right:
                             int x = rect.Right - xy2;
@@ -729,7 +767,10 @@ namespace AntdUI
                                 it.Key.SetRect(rect_it);
                                 xy += rect_it.Height + cardgap;
                             }
+                            xy -= cardgap;
                             tabs.SetPadding(0, 0, xy2, 0);
+                            owner.scroll_max = xy - rect.Height;
+                            scroll_show = xy > rect.Height;
                             break;
                         case TabAlignment.Top:
                         default:
@@ -753,9 +794,13 @@ namespace AntdUI
                                 it.Key.SetRect(rect_it);
                                 xy += rect_it.Width + cardgap;
                             }
+                            xy -= cardgap;
                             tabs.SetPadding(0, xy2, 0, 0);
+                            owner.scroll_max = xy - rect.Width;
+                            scroll_show = xy > rect.Width;
                             break;
                     }
+                    if (!scroll_show) owner.scroll_x = owner.scroll_y = 0;
                     return rect_list.ToArray();
                 });
             }
@@ -782,6 +827,7 @@ namespace AntdUI
                             case TabAlignment.Bottom:
                                 int read_b_h = rects[0][0].Height + rects[0][0].X;
                                 g.SetClip(new Rectangle(rect_t.X, rect_t.Bottom - read_b_h, rect_t.Width, read_b_h));
+                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
                                     if (select == i) sel = page;
@@ -804,6 +850,7 @@ namespace AntdUI
                                     i++;
                                 }
                                 g.ResetClip();
+                                g.ResetTransform();
                                 if (sel != null)//是否选中
                                 {
                                     var rect_page = sel.Rect;
@@ -815,6 +862,7 @@ namespace AntdUI
                                             {
                                                 float ly = rect_page.Y + borb2;
                                                 g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
+                                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                                 using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, false, false, true, true))
                                                 {
                                                     g.FillPath(brush_bg_active, path2);
@@ -824,13 +872,18 @@ namespace AntdUI
                                                 g.ResetClip();
                                             }
                                         }
-                                        else g.FillPath(brush_bg_active, path);
+                                        else
+                                        {
+                                            if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
+                                            g.FillPath(brush_bg_active, path);
+                                        }
                                         PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
                                 break;
                             case TabAlignment.Left:
                                 g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rects[0][0].Right, rect_t.Height));
+                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
                                     if (owner.SelectedIndex == i) sel = page;
@@ -853,6 +906,7 @@ namespace AntdUI
                                     i++;
                                 }
                                 g.ResetClip();
+                                g.ResetTransform();
                                 if (sel != null)//是否选中
                                 {
                                     var rect_page = sel.Rect;
@@ -864,6 +918,7 @@ namespace AntdUI
                                             {
                                                 float lx = rect_page.Right - borb2;
                                                 g.DrawLine(pen_bg, lx, rect_t.Y, lx, rect_t.Bottom);
+                                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                                 using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X - borb2, rect_page.Y + borb2, rect_page.Width + borb2, rect_page.Height - bor), radius, true, false, false, true))
                                                 {
                                                     g.FillPath(brush_bg_active, path2);
@@ -873,7 +928,11 @@ namespace AntdUI
                                                 g.ResetClip();
                                             }
                                         }
-                                        else g.FillPath(brush_bg_active, path);
+                                        else
+                                        {
+                                            if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
+                                            g.FillPath(brush_bg_active, path);
+                                        }
                                         PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
@@ -881,6 +940,7 @@ namespace AntdUI
                             case TabAlignment.Right:
                                 int read_r_w = rects[0][0].Width + rects[0][0].Y;
                                 g.SetClip(new Rectangle(rect_t.Right - read_r_w, rect_t.Y, read_r_w, rect_t.Height));
+                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
                                     if (owner.SelectedIndex == i) sel = page;
@@ -903,6 +963,7 @@ namespace AntdUI
                                     i++;
                                 }
                                 g.ResetClip();
+                                g.ResetTransform();
                                 if (sel != null)//是否选中
                                 {
                                     var rect_page = sel.Rect;
@@ -931,6 +992,7 @@ namespace AntdUI
                             case TabAlignment.Top:
                             default:
                                 g.SetClip(new Rectangle(rect_t.X, rect_t.Y, rect_t.Width, rects[0][0].Bottom));
+                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
                                     if (owner.SelectedIndex == i) sel = page;
@@ -953,6 +1015,7 @@ namespace AntdUI
                                     i++;
                                 }
                                 g.ResetClip();
+                                g.ResetTransform();
                                 if (sel != null)//是否选中
                                 {
                                     var rect_page = sel.Rect;
@@ -964,6 +1027,7 @@ namespace AntdUI
                                             {
                                                 float ly = rect_page.Bottom - borb2;
                                                 g.DrawLine(pen_bg, rect_t.X, ly, rect_t.Right, ly);
+                                                if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                                 using (var path2 = Helper.RoundPath(new RectangleF(rect_page.X + borb2, rect_page.Y - borb2, rect_page.Width - bor, rect_page.Height + borb2), radius, true, true, false, false))
                                                 {
                                                     g.FillPath(brush_bg_active, path2);
@@ -973,7 +1037,11 @@ namespace AntdUI
                                                 g.ResetClip();
                                             }
                                         }
-                                        else g.FillPath(brush_bg_active, path);
+                                        else
+                                        {
+                                            if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
+                                            g.FillPath(brush_bg_active, path);
+                                        }
                                         PaintText(g, rects[select], owner, sel, brush_fill);
                                     }
                                 }
@@ -1049,6 +1117,28 @@ namespace AntdUI
             {
 
             }
+
+            bool scroll_show = false;
+            public void MouseWheel(int delta)
+            {
+                if (scroll_show && owner != null)
+                {
+                    switch (owner.Alignment)
+                    {
+                        case TabAlignment.Left:
+                        case TabAlignment.Right:
+                            owner.scroll_x = 0;
+                            owner.scroll_y -= delta;
+                            break;
+                        case TabAlignment.Top:
+                        case TabAlignment.Bottom:
+                        default:
+                            owner.scroll_y = 0;
+                            owner.scroll_x -= delta;
+                            break;
+                    }
+                }
+            }
         }
 
 
@@ -1058,6 +1148,7 @@ namespace AntdUI
             void LoadLayout(Tabs owner, Rectangle rect, TabCollection items);
             void Paint(Tabs owner, Graphics g, TabCollection items);
             void SelectedIndexChanged(int i, int old);
+            void MouseWheel(int delta);
             void Dispose();
         }
     }

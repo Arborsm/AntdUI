@@ -19,8 +19,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -261,84 +259,5 @@ namespace AntdUI
 
             #endregion
         }
-    }
-
-    [Designer(typeof(IControlDesigner))]
-    public class TabPage : ScrollableControl
-    {
-        public TabPage()
-        {
-            SetStyle(
-               ControlStyles.AllPaintingInWmPaint |
-               ControlStyles.OptimizedDoubleBuffer |
-               ControlStyles.ResizeRedraw |
-               ControlStyles.DoubleBuffer |
-               ControlStyles.SupportsTransparentBackColor |
-               ControlStyles.ContainerControl |
-               ControlStyles.UserPaint, true);
-            UpdateStyles();
-        }
-
-        #region 属性
-
-        Image? icon = null;
-        /// <summary>
-        /// 图标
-        /// </summary>
-        [Category("外观"), Description("图标"), DefaultValue(null)]
-        public Image? Icon
-        {
-            get => icon;
-            set
-            {
-                if (icon == value) return;
-                icon = value;
-                if (Parent is Tabs tabs) tabs?.LoadLayout();
-            }
-        }
-
-        string? iconSvg = null;
-        /// <summary>
-        /// 图标
-        /// </summary>
-        [Category("外观"), Description("图标SVG"), DefaultValue(null)]
-        public string? IconSvg
-        {
-            get => iconSvg;
-            set
-            {
-                if (iconSvg == value) return;
-                iconSvg = value;
-                if (Parent is Tabs tabs) tabs?.LoadLayout();
-            }
-        }
-
-        /// <summary>
-        /// 是否包含图标
-        /// </summary>
-        public bool HasIcon
-        {
-            get => iconSvg != null || icon != null;
-        }
-
-
-        #region 坐标
-
-        internal bool HDPI = false;
-        internal bool MDown = false;
-        internal Rectangle Rect = new Rectangle(-10, -10, 0, 0);
-        internal bool Contains(int x, int y)
-        {
-            return Rect.Contains(x, y);
-        }
-        internal Rectangle SetRect(Rectangle rect)
-        {
-            Rect = rect;
-            return Rect;
-        }
-
-        #endregion
-
-        #endregion
     }
 }
