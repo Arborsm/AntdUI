@@ -174,7 +174,7 @@ namespace AntdUI
                     }
                 }
 
-                if (EmptyHeader && _rows.Count == 0)
+                if ((visibleHeader && EmptyHeader) && _rows.Count == 0)
                 {
                     rows = ChangeLayoutCore(rect, _rows, _columns, check_count, col_width, out int x, out int y, out bool is_exceed);
                     scrollBar.SetVrSize(is_exceed ? x : 0, y);

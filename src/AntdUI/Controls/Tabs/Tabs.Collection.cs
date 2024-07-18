@@ -286,14 +286,20 @@ namespace AntdUI
             }
         }
 
+        /// <summary>
+        /// 是否包含图标
+        /// </summary>
+        public bool HasIcon
+        {
+            get => iconSvg != null || icon != null;
+        }
+
+
         #region 坐标
 
         internal bool HDPI = false;
         internal bool MDown = false;
         internal Rectangle Rect = new Rectangle(-10, -10, 0, 0);
-        internal Rectangle Rect_Ico;
-        internal Rectangle Rect_Text;
-        internal Rectangle Rect_Line = new Rectangle(-10, -10, 0, 0);
         internal bool Contains(int x, int y)
         {
             return Rect.Contains(x, y);
@@ -301,30 +307,6 @@ namespace AntdUI
         internal Rectangle SetRect(Rectangle rect)
         {
             Rect = rect;
-            return Rect;
-        }
-        internal Rectangle SetRectW(int w)
-        {
-            Rect.Width = Rect_Text.Width = w;
-            return Rect;
-        }
-        internal Rectangle SetRectW(int x, int w)
-        {
-            Rect.X = Rect_Text.X = x;
-            Rect.Width = Rect_Text.Width = w;
-            return Rect;
-        }
-        internal Rectangle SetRectH(int h)
-        {
-            Rect.Height = Rect_Text.Height = h;
-            Rect_Ico.Y = Rect.Y + (h - Rect_Ico.Height) / 2;
-            return Rect;
-        }
-        internal Rectangle SetRectH(int y, int h)
-        {
-            Rect.Y = Rect_Text.Y = y;
-            Rect.Height = Rect_Text.Height = h;
-            Rect_Ico.Y = y + (h - Rect_Ico.Height) / 2;
             return Rect;
         }
 

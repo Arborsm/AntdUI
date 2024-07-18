@@ -139,9 +139,11 @@ namespace AntdUI
             switch (type)
             {
                 case TabType.Card:
+                    if (style is StyleCard stylec) return stylec;
                     return new StyleCard(this);
                 case TabType.Line:
                 default:
+                    if (style is StyleLine stylel) return stylel;
                     return new StyleLine(this);
             }
         }
