@@ -587,8 +587,8 @@ namespace AntdUI
             Show = true;
             Val = _val;
             Text = _val.ToString() ?? string.Empty;
-            PY = Pinyin.Pinyin.GetPinyin(Text).ToLower();
-            PYS = Pinyin.Pinyin.GetInitials(Text).ToLower();
+            PY = Pinyin.GetPinyin(Text).ToLower();
+            PYS = Pinyin.GetInitials(Text).ToLower();
             ID = _i;
             SetRect(rect, rect_text);
         }
@@ -598,8 +598,8 @@ namespace AntdUI
             Show = Group = true;
             Val = _val;
             Text = _val.Title;
-            PY = Pinyin.Pinyin.GetPinyin(Text).ToLower();
-            PYS = Pinyin.Pinyin.GetInitials(Text).ToLower();
+            PY = Pinyin.GetPinyin(Text).ToLower();
+            PYS = Pinyin.GetInitials(Text).ToLower();
             ID = _i;
             SetRect(rect, rect_text);
         }
@@ -614,8 +614,8 @@ namespace AntdUI
             OnlineCustom = _val.OnlineCustom;
             Icon = _val.Icon;
             Text = _val.Text;
-            PY = Pinyin.Pinyin.GetPinyin(_val.Text).ToLower();
-            PYS = Pinyin.Pinyin.GetInitials(_val.Text).ToLower();
+            PY = Pinyin.GetPinyin(_val.Text).ToLower();
+            PYS = Pinyin.GetInitials(_val.Text).ToLower();
             ID = _i;
             SetRect(rect, rect_text, gap, gap_y);
         }

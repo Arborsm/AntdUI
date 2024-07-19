@@ -664,7 +664,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, _back_active, rect_read);
+                                PaintTextLoading(g, text, _back_active, rect_read, enabled);
                             }
                             else if (AnimationHover)
                             {
@@ -685,7 +685,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, _back_hover, rect_read);
+                                PaintTextLoading(g, text, _back_hover, rect_read, enabled);
                             }
                             else
                             {
@@ -693,7 +693,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, _fore, rect_read);
+                                PaintTextLoading(g, text, _fore, rect_read, enabled);
                             }
                         }
                         else
@@ -719,7 +719,7 @@ namespace AntdUI
                                     g.FillPath(brush, path);
                                 }
                             }
-                            PaintTextLoading(g, text, _fore, rect_read);
+                            PaintTextLoading(g, text, _fore, rect_read, enabled);
                         }
                     }
                     else
@@ -731,7 +731,7 @@ namespace AntdUI
                                 g.FillPath(brush, path);
                             }
                         }
-                        PaintTextLoading(g, text, Style.Db.TextQuaternary, rect_read);
+                        PaintTextLoading(g, text, Style.Db.TextQuaternary, rect_read, enabled);
                     }
                 }
             }
@@ -817,7 +817,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, _back_active, rect_read);
+                                PaintTextLoading(g, text, _back_active, rect_read, enabled);
                             }
                             else if (AnimationHover)
                             {
@@ -838,7 +838,7 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, _back_hover, rect_read);
+                                PaintTextLoading(g, text, _back_hover, rect_read, enabled);
                             }
                             else
                             {
@@ -846,10 +846,10 @@ namespace AntdUI
                                 {
                                     g.DrawPath(brush, path);
                                 }
-                                PaintTextLoading(g, text, enabled ? _back : Style.Db.TextQuaternary, rect_read);
+                                PaintTextLoading(g, text, enabled ? _back : Style.Db.TextQuaternary, rect_read, enabled);
                             }
                         }
-                        else PaintTextLoading(g, text, enabled ? _back : Style.Db.TextQuaternary, rect_read);
+                        else PaintTextLoading(g, text, enabled ? _back : Style.Db.TextQuaternary, rect_read, enabled);
 
                         #endregion
                     }
@@ -903,7 +903,7 @@ namespace AntdUI
 
                         #endregion
 
-                        PaintTextLoading(g, text, enabled ? _fore : Style.Db.TextQuaternary, rect_read);
+                        PaintTextLoading(g, text, enabled ? _fore : Style.Db.TextQuaternary, rect_read, enabled);
                     }
                 }
             }
@@ -913,7 +913,7 @@ namespace AntdUI
 
         #region 渲染帮助
 
-        void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read)
+        void PaintTextLoading(Graphics g, string? text, Color color, Rectangle rect_read, bool enabled)
         {
             var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
@@ -932,7 +932,7 @@ namespace AntdUI
                 }
                 else
                 {
-                    if (PaintImageNoText(g, color, rect) && showArrow)
+                    if (PaintImage(g, color, rect, false, enabled) && showArrow)
                     {
                         int size = (int)(font_size.Height * IconRatio);
                         var rect_arrow = new Rectangle(rect_read.X + (rect_read.Width - size) / 2, rect_read.Y + (rect_read.Height - size) / 2, size, size);
@@ -993,7 +993,7 @@ namespace AntdUI
                                 g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
                             }
                         }
-                        else PaintImage(g, color, rect_l);
+                        else PaintImage(g, color, rect_l, true, enabled);
 
                         #region ARROW
 
@@ -1038,7 +1038,7 @@ namespace AntdUI
                                 g.DrawArc(brush, rect_l, AnimationLoadingValue, 100);
                             }
                         }
-                        else PaintImage(g, color, rect_l);
+                        else PaintImage(g, color, rect_l, true, enabled);
                     }
                     else
                     {
@@ -1104,7 +1104,7 @@ namespace AntdUI
                 }
                 else
                 {
-                    if (PaintImageNoText(g, color, rect))
+                    if (PaintImage(g, color, rect, false, true))
                     {
                         if (showArrow)
                         {
@@ -1133,7 +1133,7 @@ namespace AntdUI
                             }
                         }
                     }
-                    else PaintImageNoText(g, colorHover, rect);
+                    else PaintImage(g, colorHover, rect, false, true);
                 }
             }
             else
@@ -1179,8 +1179,8 @@ namespace AntdUI
                         }
                         else
                         {
-                            PaintImage(g, color, rect_l);
-                            PaintImage(g, colorHover, rect_l);
+                            PaintImage(g, color, rect_l, true, true);
+                            PaintImage(g, colorHover, rect_l, true, true);
                         }
 
                         #region ARROW
@@ -1236,8 +1236,8 @@ namespace AntdUI
                         }
                         else
                         {
-                            PaintImage(g, color, rect_l);
-                            PaintImage(g, colorHover, rect_l);
+                            PaintImage(g, color, rect_l, true, true);
+                            PaintImage(g, colorHover, rect_l, true, true);
                         }
                     }
                     else
@@ -1296,7 +1296,6 @@ namespace AntdUI
                 }
             }
         }
-
         void PaintTextAlign(Rectangle rect_read, ref Rectangle rect_text)
         {
             switch (textAlign)
@@ -1318,31 +1317,6 @@ namespace AntdUI
         #region 渲染图片
 
         /// <summary>
-        /// 渲染图片（没有文字）
-        /// </summary>
-        /// <param name="g">GDI</param>
-        /// <param name="color">颜色</param>
-        /// <param name="rect">区域</param>
-        bool PaintImageNoText(Graphics g, Color? color, Rectangle rect)
-        {
-            if (AnimationImageHover)
-            {
-                PaintCoreImage(g, rect, color, 1F - AnimationImageHoverValue);
-                PaintCoreImageHover(g, rect, color, AnimationImageHoverValue);
-                return false;
-            }
-            else
-            {
-                if (ExtraMouseHover)
-                {
-                    if (PaintCoreImageHover(g, rect, color)) return false;
-                }
-                if (PaintCoreImage(g, rect, color)) return false;
-            }
-            return true;
-        }
-
-        /// <summary>
         /// 居中的图片绘制区域
         /// </summary>
         /// <param name="font_size">字体大小</param>
@@ -1361,29 +1335,44 @@ namespace AntdUI
             }
         }
 
+
         /// <summary>
         /// 渲染图片
         /// </summary>
         /// <param name="g">GDI</param>
         /// <param name="color">颜色</param>
-        /// <param name="rectl">图标区域</param>
-        void PaintImage(Graphics g, Color? color, Rectangle rectl)
+        /// <param name="rect_o">区域</param>
+        /// <param name="hastxt">包含文本</param>
+        /// <param name="enabled">使能</param>
+        bool PaintImage(Graphics g, Color? color, Rectangle rect_o, bool hastxt, bool enabled)
         {
-            var rect = GetImageRect(rectl);
+            var rect = hastxt ? GetImageRect(rect_o) : rect_o;
             if (AnimationImageHover)
             {
                 PaintCoreImage(g, rect, color, 1F - AnimationImageHoverValue);
                 PaintCoreImageHover(g, rect, color, AnimationImageHoverValue);
-                return;
+                return false;
             }
             else
             {
-                if (ExtraMouseHover)
+                if (enabled)
                 {
-                    if (PaintCoreImageHover(g, rect, color)) return;
+                    if (ExtraMouseHover)
+                    {
+                        if (PaintCoreImageHover(g, rect, color)) return false;
+                    }
+                    if (PaintCoreImage(g, rect, color)) return false;
                 }
-                PaintCoreImage(g, rect, color);
+                else
+                {
+                    if (ExtraMouseHover)
+                    {
+                        if (PaintCoreImageHover(g, rect, color, .3F)) return false;
+                    }
+                    if (PaintCoreImage(g, rect, color, .3F)) return false;
+                }
             }
+            return true;
         }
 
         /// <summary>
@@ -1400,7 +1389,10 @@ namespace AntdUI
             else return rectl;
         }
 
-        bool PaintCoreImage(Graphics g, Rectangle rect, Color? color, float opacity = 1F)
+        bool PaintCoreImage(Graphics g, Rectangle rect, Color? color, float opacity = 1F) => PaintCoreImage(g, image, imageSvg, rect, color, opacity);
+        bool PaintCoreImageHover(Graphics g, Rectangle rect, Color? color, float opacity = 1F) => PaintCoreImage(g, ImageHover, ImageHoverSvg, rect, color, opacity);
+
+        bool PaintCoreImage(Graphics g, Image? image, string? imageSvg, Rectangle rect, Color? color, float opacity = 1F)
         {
             if (imageSvg != null)
             {
@@ -1416,27 +1408,6 @@ namespace AntdUI
             else if (image != null)
             {
                 g.DrawImage(image, rect, opacity);
-                return true;
-            }
-            return false;
-        }
-
-        bool PaintCoreImageHover(Graphics g, Rectangle rect, Color? color, float opacity = 1F)
-        {
-            if (ImageHoverSvg != null)
-            {
-                using (var _bmp = SvgExtend.GetImgExtend(ImageHoverSvg, rect, color))
-                {
-                    if (_bmp != null)
-                    {
-                        g.DrawImage(_bmp, rect, opacity);
-                        return true;
-                    }
-                }
-            }
-            else if (ImageHover != null)
-            {
-                g.DrawImage(ImageHover, rect, opacity);
                 return true;
             }
             return false;

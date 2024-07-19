@@ -252,12 +252,6 @@ namespace AntdUI
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public new ControlCollection Controls => base.Controls;
 
-        /// <summary>
-        /// SelectedIndex 属性值更改时发生
-        /// </summary>
-        [Description("SelectedIndex 属性值更改时发生"), Category("行为")]
-        public event IntEventHandler? SelectedIndexChanged = null;
-
         protected override void Dispose(bool disposing)
         {
             style.Dispose();
@@ -334,10 +328,10 @@ namespace AntdUI
             if (items == null) { base.OnMouseDown(e); return; }
             if (_tabMenuVisible)
             {
-                int i = 0;
+                int i = 0, x = e.X + scroll_x, y = e.Y + scroll_y;
                 foreach (var item in items)
                 {
-                    if (item.Visible && item.Contains(e.X + scroll_x, e.Y + scroll_y))
+                    if (item.Visible && item.Contains(x, y))
                     {
                         item.MDown = true;
                         Invalidate();
@@ -353,13 +347,17 @@ namespace AntdUI
             if (items == null) { base.OnMouseUp(e); return; }
             if (_tabMenuVisible)
             {
-                int i = 0;
+                int i = 0, x = e.X + scroll_x, y = e.Y + scroll_y;
                 foreach (var item in items)
                 {
                     if (item.MDown)
                     {
                         item.MDown = false;
-                        if (item.Contains(e.X + scroll_x, e.Y + scroll_y)) SelectedIndex = i;
+                        if (item.Contains(x, y))
+                        {
+                            if (style.MouseClick(item, i, x, y)) return;
+                            SelectedIndex = i;
+                        }
                         else Invalidate();
                         return;
                     }
@@ -384,17 +382,19 @@ namespace AntdUI
         protected override void OnMouseMove(MouseEventArgs e)
         {
             if (items == null) return;
-            int i = 0;
+            int i = 0, x = e.X + scroll_x, y = e.Y + scroll_y;
             foreach (var item in items)
             {
-                if (item.Contains(e.X + scroll_x, e.Y + scroll_y))
+                if (item.Visible && item.Contains(x, y))
                 {
                     Cursor = Cursors.Hand;
                     Hover_i = i;
+                    style.MouseMove(x, y);
                     return;
                 }
                 i++;
             }
+            style.MouseMove(x, y);
             Cursor = DefaultCursor;
             base.OnMouseMove(e);
         }
@@ -402,6 +402,7 @@ namespace AntdUI
         protected override void OnMouseLeave(EventArgs e)
         {
             Hover_i = -1;
+            style.MouseLeave();
             Cursor = DefaultCursor;
             base.OnMouseLeave(e);
         }
@@ -437,6 +438,23 @@ namespace AntdUI
             style.MouseWheel(e.Delta);
             base.OnMouseWheel(e);
         }
+
+        #endregion
+
+        #region 事件
+
+        /// <summary>
+        /// SelectedIndex 属性值更改时发生
+        /// </summary>
+        [Description("SelectedIndex 属性值更改时发生"), Category("行为")]
+        public event IntEventHandler? SelectedIndexChanged = null;
+
+        public delegate bool ClosingPageEventHandler(object sender, TabPage page);
+        /// <summary>
+        /// 关闭页面前发生
+        /// </summary>
+        [Description("关闭页面前发生"), Category("行为")]
+        public event ClosingPageEventHandler? ClosingPage;
 
         #endregion
     }
