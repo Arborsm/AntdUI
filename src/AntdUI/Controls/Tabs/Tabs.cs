@@ -319,6 +319,69 @@ namespace AntdUI
             base.OnPaint(e);
         }
 
+        void PaintBadge(Graphics g, TabPage page, Rectangle rect)
+        {
+            if (page.Badge != null)
+            {
+                var color = page.BadgeBack ?? AntdUI.Style.Db.Error;
+                using (var brush_fore = new SolidBrush(AntdUI.Style.Db.ErrorColor))
+                {
+                    float borsize = 1F * Config.Dpi;
+                    using (var font = new Font(Font.FontFamily, Font.Size * page.BadgeSize))
+                    {
+                        if (string.IsNullOrEmpty(page.Badge) || page.Badge == "" || page.Badge == " ")
+                        {
+                            var size = (int)Math.Floor(g.MeasureString(Config.NullText, font).Width / 2);
+                            var rect_badge = new RectangleF(rect.Right - size - page.BadgeOffsetX * Config.Dpi, rect.Y + page.BadgeOffsetY * Config.Dpi, size, size);
+                            using (var brush = new SolidBrush(color))
+                            {
+                                g.FillEllipse(brush, rect_badge);
+                                using (var pen = new Pen(brush_fore.Color, borsize))
+                                {
+                                    g.DrawEllipse(pen, rect_badge);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var size = g.MeasureString(page.Badge, font);
+                            var size_badge = size.Height * 1.2F;
+                            if (size.Height > size.Width)
+                            {
+                                var rect_badge = new RectangleF(rect.Right - size_badge - page.BadgeOffsetX * Config.Dpi, rect.Y + page.BadgeOffsetY * Config.Dpi, size_badge, size_badge);
+                                using (var brush = new SolidBrush(color))
+                                {
+                                    g.FillEllipse(brush, rect_badge);
+                                    using (var pen = new Pen(brush_fore.Color, borsize))
+                                    {
+                                        g.DrawEllipse(pen, rect_badge);
+                                    }
+                                }
+                                g.DrawString(page.Badge, font, brush_fore, rect_badge, Helper.stringFormatCenter2);
+                            }
+                            else
+                            {
+                                var w_badge = size.Width * 1.2F;
+                                var rect_badge = new RectangleF(rect.Right - w_badge - page.BadgeOffsetX * Config.Dpi, rect.Y + page.BadgeOffsetY * Config.Dpi, w_badge, size_badge);
+                                using (var brush = new SolidBrush(color))
+                                {
+                                    using (var path = rect_badge.RoundPath(rect_badge.Height))
+                                    {
+                                        g.FillPath(brush, path);
+                                        using (var pen = new Pen(brush_fore.Color, borsize))
+                                        {
+                                            g.DrawPath(pen, path);
+                                        }
+                                    }
+                                }
+                                g.DrawString(page.Badge, font, brush_fore, rect_badge, Helper.stringFormatCenter2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         #endregion
 
         #region 鼠标
@@ -489,7 +552,7 @@ namespace AntdUI
             {
                 if (icon == value) return;
                 icon = value;
-                if (Parent is Tabs tabs) tabs?.LoadLayout();
+                PARENT?.LoadLayout();
             }
         }
 
@@ -505,7 +568,7 @@ namespace AntdUI
             {
                 if (iconSvg == value) return;
                 iconSvg = value;
-                if (Parent is Tabs tabs) tabs?.LoadLayout();
+                PARENT?.LoadLayout();
             }
         }
 
@@ -519,23 +582,61 @@ namespace AntdUI
 
         #region 徽标
 
-        /// <summary>
-        /// 序号
-        /// </summary>
-        [Description("序号"), Category("外观")]
-        public int Index { get; set; }
+        string? badge = null;
+        [Description("徽标内容"), Category("徽标"), DefaultValue(null)]
+        public string? Badge
+        {
+            get => badge;
+            set
+            {
+                if (badge == value) return;
+                badge = value;
+                Invalidate();
+            }
+        }
+
+        float badgeSize = .6F;
+        [Description("徽标比例"), Category("徽标"), DefaultValue(.6F)]
+        public float BadgeSize
+        {
+            get => badgeSize;
+            set
+            {
+                if (badgeSize != value)
+                {
+                    badgeSize = value;
+                    if (badge != null) PARENT?.Invalidate();
+                }
+            }
+        }
+
+        Color? badgeback = null;
+        [Description("徽标背景颜色"), Category("徽标"), DefaultValue(null)]
+        public Color? BadgeBack
+        {
+            get => badgeback;
+            set
+            {
+                if (badgeback == value) return;
+                if (badgeback != value)
+                {
+                    badgeback = value;
+                    if (badge != null) PARENT?.Invalidate();
+                }
+            }
+        }
 
         /// <summary>
-        /// 徽标计数 0是点
+        /// 徽标偏移X
         /// </summary>
-        [Description("徽标计数"), Category("外观")]
-        public int Count { get; set; }
+        [Description("徽标偏移X"), Category("徽标"), DefaultValue(1)]
+        public int BadgeOffsetX { get; set; } = 1;
 
         /// <summary>
-        /// 填充颜色
+        /// 徽标偏移Y
         /// </summary>
-        [Description("填充颜色"), Category("外观")]
-        public Color? Fill { get; set; }
+        [Description("徽标偏移Y"), Category("徽标"), DefaultValue(1)]
+        public int BadgeOffsetY { get; set; } = 1;
 
         #endregion
 
@@ -560,10 +661,16 @@ namespace AntdUI
 
         #region 变更
 
+        internal Tabs? PARENT;
         protected override void OnTextChanged(EventArgs e)
         {
-            if (Parent is Tabs tabs) tabs?.LoadLayout();
+            PARENT?.LoadLayout();
             base.OnTextChanged(e);
+        }
+        protected override void OnVisibleChanged(EventArgs e)
+        {
+            PARENT?.LoadLayout();
+            base.OnVisibleChanged(e);
         }
 
         #endregion

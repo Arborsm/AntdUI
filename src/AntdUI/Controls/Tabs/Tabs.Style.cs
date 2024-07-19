@@ -117,26 +117,30 @@ namespace AntdUI
                     int gap = (int)(tabs.Gap * Config.Dpi), gapI = gap / 2, xy = 0, xy2 = 0;
                     int barSize = (int)(Size * Config.Dpi), barPadding = (int)(Padding * Config.Dpi), barPadding2 = barPadding * 2;
                     var rect_list = new List<TabPageRect>(items.Count);
-                    var rect_dir = GetDir(tabs, g, items, gap, out int ico_size, out xy2);
+                    var rect_dir = GetDir(tabs, g, items, gap, gapI, out int ico_size, out xy2);
                     switch (tabs.Alignment)
                     {
                         case TabAlignment.Bottom:
                             int y = rect.Bottom - xy2;
                             foreach (var it in rect_dir)
                             {
-                                Rectangle rect_it;
-                                if (it.Key.HasIcon)
+                                if (it.Key.Visible)
                                 {
-                                    rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + gap, xy2);
-                                    rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Y, rect_it.Width - barPadding2, barSize), it.Value, ico_size, gap));
+                                    Rectangle rect_it;
+                                    if (it.Key.HasIcon)
+                                    {
+                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + gapI, xy2);
+                                        rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Y, rect_it.Width - barPadding2, barSize), it.Value, ico_size, gap, gapI));
+                                    }
+                                    else
+                                    {
+                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap, xy2);
+                                        rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Y, rect_it.Width - barPadding2, barSize)));
+                                    }
+                                    it.Key.SetRect(rect_it);
+                                    xy += rect_it.Width;
                                 }
-                                else
-                                {
-                                    rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap, xy2);
-                                    rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Y, rect_it.Width - barPadding2, barSize)));
-                                }
-                                it.Key.SetRect(rect_it);
-                                xy += rect_it.Width;
+                                else rect_list.Add(new TabPageRect());
                             }
                             tabs.SetPadding(0, 0, 0, xy2);
                             if (BackSize > 0)
@@ -150,12 +154,16 @@ namespace AntdUI
                         case TabAlignment.Left:
                             foreach (var it in rect_dir)
                             {
-                                Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
-                                if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + xy2 - barSize, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2), it.Value, ico_size, gap));
-                                else rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + xy2 - barSize, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2)));
+                                if (it.Key.Visible)
+                                {
+                                    Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
+                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + xy2 - barSize, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2), it.Value, ico_size, gap, gapI));
+                                    else rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + xy2 - barSize, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2)));
 
-                                it.Key.SetRect(rect_it);
-                                xy += rect_it.Height;
+                                    it.Key.SetRect(rect_it);
+                                    xy += rect_it.Height;
+                                }
+                                else rect_list.Add(new TabPageRect());
                             }
                             tabs.SetPadding(xy2, 0, 0, 0);
                             if (BackSize > 0)
@@ -170,12 +178,16 @@ namespace AntdUI
                             int x = rect.Right - xy2;
                             foreach (var it in rect_dir)
                             {
-                                Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
-                                if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2), it.Value, ico_size, gap));
-                                else rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2)));
+                                if (it.Key.Visible)
+                                {
+                                    Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
+                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2), it.Value, ico_size, gap, gapI));
+                                    else rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X, rect_it.Y + barPadding, barSize, rect_it.Height - barPadding2)));
 
-                                it.Key.SetRect(rect_it);
-                                xy += rect_it.Height;
+                                    it.Key.SetRect(rect_it);
+                                    xy += rect_it.Height;
+                                }
+                                else rect_list.Add(new TabPageRect());
                             }
                             tabs.SetPadding(0, 0, xy2, 0);
                             if (BackSize > 0)
@@ -190,19 +202,23 @@ namespace AntdUI
                         default:
                             foreach (var it in rect_dir)
                             {
-                                Rectangle rect_it;
-                                if (it.Key.HasIcon)
+                                if (it.Key.Visible)
                                 {
-                                    rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + gap, xy2);
-                                    rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Bottom - barSize, rect_it.Width - barPadding2, barSize), it.Value, ico_size, gap));
+                                    Rectangle rect_it;
+                                    if (it.Key.HasIcon)
+                                    {
+                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + gapI, xy2);
+                                        rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Bottom - barSize, rect_it.Width - barPadding2, barSize), it.Value, ico_size, gap, gapI));
+                                    }
+                                    else
+                                    {
+                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap, xy2);
+                                        rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Bottom - barSize, rect_it.Width - barPadding2, barSize)));
+                                    }
+                                    it.Key.SetRect(rect_it);
+                                    xy += rect_it.Width;
                                 }
-                                else
-                                {
-                                    rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap, xy2);
-                                    rect_list.Add(new TabPageRect(rect_it, new Rectangle(rect_it.X + barPadding, rect_it.Bottom - barSize, rect_it.Width - barPadding2, barSize)));
-                                }
-                                it.Key.SetRect(rect_it);
-                                xy += rect_it.Width;
+                                else rect_list.Add(new TabPageRect());
                             }
                             tabs.SetPadding(0, xy2, 0, 0);
                             if (BackSize > 0)
@@ -221,7 +237,7 @@ namespace AntdUI
 
             public void Paint(Tabs owner, Graphics g, TabCollection items)
             {
-                if (rects.Length == items.Count)
+                if (rects.Length > 0)
                 {
                     if (BackSize > 0)
                     {
@@ -242,9 +258,12 @@ namespace AntdUI
                             int i = 0;
                             foreach (var page in items)
                             {
-                                if (owner.SelectedIndex == i) PaintText(g, rects[i], owner, page, brush_fill);
-                                else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, brush_hover);
-                                else PaintText(g, rects[i], owner, page, brush_fore);
+                                if (page.Visible)
+                                {
+                                    if (owner.SelectedIndex == i) PaintText(g, rects[i], owner, page, brush_fill);
+                                    else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, brush_hover);
+                                    else PaintText(g, rects[i], owner, page, brush_fore);
+                                }
                                 i++;
                             }
                         }
@@ -253,13 +272,16 @@ namespace AntdUI
                             int i = 0;
                             foreach (var page in items)
                             {
-                                if (owner.SelectedIndex == i)//是否选中
+                                if (page.Visible)
                                 {
-                                    PaintBar(g, rects[i].Rect_Line, brush_fill);
-                                    PaintText(g, rects[i], owner, page, brush_fill);
+                                    if (owner.SelectedIndex == i)//是否选中
+                                    {
+                                        PaintBar(g, rects[i].Rect_Line, brush_fill);
+                                        PaintText(g, rects[i], owner, page, brush_fill);
+                                    }
+                                    else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                    else PaintText(g, rects[i], owner, page, brush_fore);
                                 }
-                                else if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                else PaintText(g, rects[i], owner, page, brush_fore);
                                 i++;
                             }
                         }
@@ -269,7 +291,7 @@ namespace AntdUI
 
             #region 辅助
 
-            Dictionary<TabPage, Size> GetDir(Tabs owner, Graphics g, TabCollection items, int gap, out int ico_size, out int sizewh)
+            Dictionary<TabPage, Size> GetDir(Tabs owner, Graphics g, TabCollection items, int gap, int gapI, out int ico_size, out int sizewh)
             {
                 sizewh = 0;
                 var size_t = g.MeasureString(Config.NullText, owner.Font).Size();
@@ -284,21 +306,27 @@ namespace AntdUI
                 {
                     case TabAlignment.Left:
                     case TabAlignment.Right:
-                        foreach (var item in rect_dir)
+                        foreach (var it in rect_dir)
                         {
-                            int w;
-                            if (item.Key.HasIcon) w = item.Value.Width + ico_size + gap * 2;
-                            else w = item.Value.Width + gap;
-                            if (sizewh < w) sizewh = w;
+                            if (it.Key.Visible)
+                            {
+                                int w;
+                                if (it.Key.HasIcon) w = it.Value.Width + ico_size + gap + gapI;
+                                else w = it.Value.Width + gap;
+                                if (sizewh < w) sizewh = w;
+                            }
                         }
                         break;
                     case TabAlignment.Top:
                     case TabAlignment.Bottom:
                     default:
-                        foreach (var item in rect_dir)
+                        foreach (var it in rect_dir)
                         {
-                            int h = item.Value.Height + gap;
-                            if (sizewh < h) sizewh = h;
+                            if (it.Key.Visible)
+                            {
+                                int h = it.Value.Height + gap;
+                                if (sizewh < h) sizewh = h;
+                            }
                         }
                         break;
                 }
@@ -319,6 +347,7 @@ namespace AntdUI
                     }
                 }
                 g.DrawString(page.Text, owner.Font, brush, rects.Rect_Text, owner.s_c);
+                owner.PaintBadge(g, page, rects.Rect_Text);
             }
             void PaintBar(Graphics g, RectangleF rect, SolidBrush brush)
             {
@@ -345,17 +374,18 @@ namespace AntdUI
 
             internal class TabPageRect
             {
+                public TabPageRect() { }
                 public TabPageRect(Rectangle rect, Rectangle rect_line)
                 {
                     Rect = Rect_Text = rect;
                     Rect_Line = rect_line;
                 }
-                public TabPageRect(Rectangle rect_it, Rectangle rect_line, Size size, int ico_size, int gap)
+                public TabPageRect(Rectangle rect_it, Rectangle rect_line, Size size, int ico_size, int gap, int gapI)
                 {
                     Rect = rect_it;
                     Rect_Line = rect_line;
-                    Rect_Text = new Rectangle(rect_it.X + ico_size + gap, rect_it.Y, size.Width + gap, rect_it.Height);
-                    Rect_Ico = new Rectangle(rect_it.X + gap, rect_it.Y + (rect_it.Height - ico_size) / 2, ico_size, ico_size);
+                    Rect_Text = new Rectangle(rect_it.X + ico_size + gapI, rect_it.Y, size.Width + gap, rect_it.Height);
+                    Rect_Ico = new Rectangle(rect_it.X + gapI, rect_it.Y + (rect_it.Height - ico_size) / 2, ico_size, ico_size);
                 }
 
                 public Rectangle Rect;
@@ -374,10 +404,9 @@ namespace AntdUI
 
             void SetRect(int old, int value)
             {
-                if (owner == null) return;
-                if (value > -1)
+                if (owner == null || owner.items == null) return;
+                if (value > -1 && rects.Length == owner.items.Count)
                 {
-                    if (owner.items == null) return;
                     if (old > -1 && owner.items.Count > old)
                     {
                         ThreadBar?.Dispose();
@@ -690,19 +719,23 @@ namespace AntdUI
                                 int y = rect.Bottom - xy2;
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it;
-                                    if (it.Key.HasIcon)
+                                    if (it.Key.Visible)
                                     {
-                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + close_size + gap * 2, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        Rectangle rect_it;
+                                        if (it.Key.HasIcon)
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + close_size + gap * 2, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        }
+                                        else
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + close_size + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
+                                        }
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Width + cardgap;
                                     }
-                                    else
-                                    {
-                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + close_size + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
-                                    }
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Width + cardgap;
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, 0, 0, xy2);
@@ -712,11 +745,15 @@ namespace AntdUI
                             case TabAlignment.Left:
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
-                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
-                                    else rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Height + cardgap;
+                                    if (it.Key.Visible)
+                                    {
+                                        Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
+                                        if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        else rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Height + cardgap;
+                                    }
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(xy2, 0, 0, 0);
@@ -727,12 +764,16 @@ namespace AntdUI
                                 int x = rect.Right - xy2;
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
-                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
-                                    else rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
+                                    if (it.Key.Visible)
+                                    {
+                                        Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
+                                        if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        else rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
 
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Height + cardgap;
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Height + cardgap;
+                                    }
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, 0, xy2, 0);
@@ -743,19 +784,23 @@ namespace AntdUI
                             default:
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it;
-                                    if (it.Key.HasIcon)
+                                    if (it.Key.Visible)
                                     {
-                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + close_size + gap * 2, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        Rectangle rect_it;
+                                        if (it.Key.HasIcon)
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + close_size + gap * 2, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, close_size, gap));
+                                        }
+                                        else
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + close_size + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
+                                        }
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Width + cardgap;
                                     }
-                                    else
-                                    {
-                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + close_size + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, false, it.Value, close_size, gap));
-                                    }
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Width + cardgap;
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, xy2, 0, 0);
@@ -876,21 +921,24 @@ namespace AntdUI
                                 if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
-                                    if (select == i) sel = page;
-                                    else
+                                    if (page.Visible)
                                     {
-                                        using (var path = Helper.RoundPath(page.Rect, radius, false, false, true, true))
+                                        if (select == i) sel = page;
+                                        else
                                         {
-                                            g.FillPath(brush_bg, path);
-                                            if (bor > 0)
+                                            using (var path = Helper.RoundPath(page.Rect, radius, false, false, true, true))
                                             {
-                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                g.FillPath(brush_bg, path);
+                                                if (bor > 0)
                                                 {
-                                                    g.DrawPath(pen_bg, path);
+                                                    using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                    {
+                                                        g.DrawPath(pen_bg, path);
+                                                    }
                                                 }
+                                                if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                                else PaintText(g, rects[i], owner, page, brush_fore);
                                             }
-                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
                                     i++;
@@ -932,21 +980,24 @@ namespace AntdUI
                                 if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
-                                    if (owner.SelectedIndex == i) sel = page;
-                                    else
+                                    if (page.Visible)
                                     {
-                                        using (var path = Helper.RoundPath(page.Rect, radius, true, false, false, true))
+                                        if (owner.SelectedIndex == i) sel = page;
+                                        else
                                         {
-                                            g.FillPath(brush_bg, path);
-                                            if (bor > 0)
+                                            using (var path = Helper.RoundPath(page.Rect, radius, true, false, false, true))
                                             {
-                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                g.FillPath(brush_bg, path);
+                                                if (bor > 0)
                                                 {
-                                                    g.DrawPath(pen_bg, path);
+                                                    using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                    {
+                                                        g.DrawPath(pen_bg, path);
+                                                    }
                                                 }
+                                                if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                                else PaintText(g, rects[i], owner, page, brush_fore);
                                             }
-                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
                                     i++;
@@ -989,21 +1040,24 @@ namespace AntdUI
                                 if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
-                                    if (owner.SelectedIndex == i) sel = page;
-                                    else
+                                    if (page.Visible)
                                     {
-                                        using (var path = Helper.RoundPath(page.Rect, radius, false, true, true, false))
+                                        if (owner.SelectedIndex == i) sel = page;
+                                        else
                                         {
-                                            g.FillPath(brush_bg, path);
-                                            if (bor > 0)
+                                            using (var path = Helper.RoundPath(page.Rect, radius, false, true, true, false))
                                             {
-                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                g.FillPath(brush_bg, path);
+                                                if (bor > 0)
                                                 {
-                                                    g.DrawPath(pen_bg, path);
+                                                    using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                    {
+                                                        g.DrawPath(pen_bg, path);
+                                                    }
                                                 }
+                                                if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                                else PaintText(g, rects[i], owner, page, brush_fore);
                                             }
-                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
                                     i++;
@@ -1041,21 +1095,24 @@ namespace AntdUI
                                 if (scroll_show) g.TranslateTransform(-owner.scroll_x, -owner.scroll_y);
                                 foreach (var page in items)
                                 {
-                                    if (owner.SelectedIndex == i) sel = page;
-                                    else
+                                    if (page.Visible)
                                     {
-                                        using (var path = Helper.RoundPath(page.Rect, radius, true, true, false, false))
+                                        if (owner.SelectedIndex == i) sel = page;
+                                        else
                                         {
-                                            g.FillPath(owner.hover_i == i ? brush_bg_hover : brush_bg, path);
-                                            if (bor > 0)
+                                            using (var path = Helper.RoundPath(page.Rect, radius, true, true, false, false))
                                             {
-                                                using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                g.FillPath(owner.hover_i == i ? brush_bg_hover : brush_bg, path);
+                                                if (bor > 0)
                                                 {
-                                                    g.DrawPath(pen_bg, path);
+                                                    using (var pen_bg = new Pen(border ?? AntdUI.Style.Db.BorderSecondary, bor))
+                                                    {
+                                                        g.DrawPath(pen_bg, path);
+                                                    }
                                                 }
+                                                if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
+                                                else PaintText(g, rects[i], owner, page, brush_fore);
                                             }
-                                            if (owner.hover_i == i) PaintText(g, rects[i], owner, page, page.MDown ? brush_active : brush_hover);
-                                            else PaintText(g, rects[i], owner, page, brush_fore);
                                         }
                                     }
                                     i++;
@@ -1117,33 +1174,42 @@ namespace AntdUI
                     case TabAlignment.Right:
                         if (closable)
                         {
-                            foreach (var item in rect_dir)
+                            foreach (var it in rect_dir)
                             {
-                                int w;
-                                if (item.Key.HasIcon) w = item.Value.Width + ico_size + gap * 2;
-                                else w = item.Value.Width + gap;
-                                w += ico_size + gap;
-                                if (sizewh < w) sizewh = w;
+                                if (it.Key.Visible)
+                                {
+                                    int w;
+                                    if (it.Key.HasIcon) w = it.Value.Width + ico_size + gap * 2;
+                                    else w = it.Value.Width + gap;
+                                    w += ico_size + gap;
+                                    if (sizewh < w) sizewh = w;
+                                }
                             }
                         }
                         else
                         {
-                            foreach (var item in rect_dir)
+                            foreach (var it in rect_dir)
                             {
-                                int w;
-                                if (item.Key.HasIcon) w = item.Value.Width + ico_size + gap * 2;
-                                else w = item.Value.Width + gap;
-                                if (sizewh < w) sizewh = w;
+                                if (it.Key.Visible)
+                                {
+                                    int w;
+                                    if (it.Key.HasIcon) w = it.Value.Width + ico_size + gap * 2;
+                                    else w = it.Value.Width + gap;
+                                    if (sizewh < w) sizewh = w;
+                                }
                             }
                         }
                         break;
                     case TabAlignment.Top:
                     case TabAlignment.Bottom:
                     default:
-                        foreach (var item in rect_dir)
+                        foreach (var it in rect_dir)
                         {
-                            int h = item.Value.Height + gap;
-                            if (sizewh < h) sizewh = h;
+                            if (it.Key.Visible)
+                            {
+                                int h = it.Value.Height + gap;
+                                if (sizewh < h) sizewh = h;
+                            }
                         }
                         break;
                 }
@@ -1171,10 +1237,12 @@ namespace AntdUI
                     else g.PaintIconClose(rects.Rect_Close, AntdUI.Style.Db.TextQuaternary);
                 }
                 g.DrawString(page.Text, owner.Font, brush, rects.Rect_Text, owner.s_c);
+                owner.PaintBadge(g, page, rects.Rect_Text);
             }
 
             internal class TabPageRect
             {
+                public TabPageRect() { }
                 public TabPageRect(Rectangle rect)
                 {
                     Rect = Rect_Text = rect;
@@ -1182,13 +1250,13 @@ namespace AntdUI
                 public TabPageRect(Rectangle rect_it, Size size, int ico_size, int gap)
                 {
                     Rect = rect_it;
-                    Rect_Text = new Rectangle(rect_it.X + ico_size + gap, rect_it.Y, size.Width + gap, rect_it.Height);
+                    Rect_Text = new Rectangle(rect_it.X + ico_size + gap, rect_it.Y + gap, size.Width + gap, rect_it.Height - gap * 2);
                     Rect_Ico = new Rectangle(rect_it.X + gap, rect_it.Y + (rect_it.Height - ico_size) / 2, ico_size, ico_size);
                 }
                 public TabPageRect(Rectangle rect_it, Size size, int ico_size, int close_size, int gap)
                 {
                     Rect = rect_it;
-                    Rect_Text = new Rectangle(rect_it.X + ico_size + gap, rect_it.Y, size.Width + gap, rect_it.Height);
+                    Rect_Text = new Rectangle(rect_it.X + ico_size + gap, rect_it.Y + gap, size.Width + gap, rect_it.Height - gap * 2);
                     Rect_Ico = new Rectangle(rect_it.X + gap, rect_it.Y + (rect_it.Height - ico_size) / 2, ico_size, ico_size);
                     Rect_Close = new Rectangle(rect_it.Right - gap - close_size, rect_it.Y + (rect_it.Height - close_size) / 2, close_size, close_size);
                 }
@@ -1196,7 +1264,7 @@ namespace AntdUI
                 {
                     Rect = rect_it;
                     int y = rect_it.Y + (rect_it.Height - close_size) / 2;
-                    Rect_Text = new Rectangle(rect_it.X, rect_it.Y, size.Width + gap, rect_it.Height);
+                    Rect_Text = new Rectangle(rect_it.X, rect_it.Y + gap, size.Width + gap, rect_it.Height - gap * 2);
                     Rect_Close = new Rectangle(rect_it.Right - gap - close_size, y, close_size, close_size);
                 }
                 public Rectangle Rect;

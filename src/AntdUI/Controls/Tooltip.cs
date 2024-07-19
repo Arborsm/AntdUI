@@ -231,7 +231,7 @@ namespace AntdUI
         public TooltipForm(Control control, Rectangle rect, string txt, ITooltipConfig component)
         {
             ocontrol = control;
-            control.Parent.SetTopMost(Handle);
+            control.SetTopMost(Handle);
             Text = txt;
             if (component.Font != null) Font = component.Font;
             else if (Config.Font != null) Font = Config.Font;

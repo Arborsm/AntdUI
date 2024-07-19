@@ -73,6 +73,7 @@ namespace AntdUI
             {
                 item.Dock = DockStyle.Fill;
                 owner.ShowPage();
+                item.PARENT = owner;
             }
 
             void Del(TabPage item, int old, int index)
