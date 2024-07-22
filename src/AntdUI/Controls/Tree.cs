@@ -558,7 +558,6 @@ namespace AntdUI
                 if (item.Enabled) PaintItemText(g, item, fore, brushTextTertiary);
                 else
                 {
-
                     using (var brush = new SolidBrush(Style.Db.TextQuaternary))
                     {
                         PaintItemText(g, item, brush, brushTextTertiary);

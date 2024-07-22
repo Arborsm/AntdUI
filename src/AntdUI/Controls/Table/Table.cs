@@ -307,9 +307,9 @@ namespace AntdUI
 
         Color? borderColor;
         /// <summary>
-        /// 表格边框颜色色
+        /// 表格边框颜色
         /// </summary>
-        [Description("表格边框颜色色"), Category("外观"), DefaultValue(null)]
+        [Description("表格边框颜色"), Category("外观"), DefaultValue(null)]
         [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public Color? BorderColor
         {

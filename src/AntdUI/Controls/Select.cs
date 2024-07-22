@@ -420,7 +420,7 @@ namespace AntdUI
                 return;
             }
             Expand = true;
-            subForm = new LayeredFormSelectDown(this, ReadRectangle, list, filtertext);
+            subForm = new LayeredFormSelectDown(this, list, filtertext);
             subForm.Disposed += (a, b) =>
             {
                 select_x = 0;
@@ -546,6 +546,11 @@ namespace AntdUI
         public string Text { get; set; }
 
         /// <summary>
+        /// 子文本
+        /// </summary>
+        public string? SubText { get; set; }
+
+        /// <summary>
         /// 子选项
         /// </summary>
         public IList<object>? Sub { get; set; }
@@ -614,8 +619,9 @@ namespace AntdUI
             OnlineCustom = _val.OnlineCustom;
             Icon = _val.Icon;
             Text = _val.Text;
-            PY = Pinyin.GetPinyin(_val.Text).ToLower();
-            PYS = Pinyin.GetInitials(_val.Text).ToLower();
+            SubText = _val.SubText;
+            PY = Pinyin.GetPinyin(_val.Text + _val.SubText).ToLower();
+            PYS = Pinyin.GetInitials(_val.Text + _val.SubText).ToLower();
             ID = _i;
             SetRect(rect, rect_text, gap, gap_y);
         }
@@ -649,6 +655,7 @@ namespace AntdUI
 
         string PY { get; set; }
         string PYS { get; set; }
+        public string? SubText { get; set; }
         public string Text { get; set; }
         public bool Contains(string val)
         {
@@ -694,7 +701,6 @@ namespace AntdUI
                     }
                 }
                 else RectText = rect_text;
-
                 arr_rect = new Rectangle(Rect.Right - Rect.Height - gap_y, Rect.Y, Rect.Height, Rect.Height);
             }
             else RectText = rect_text;

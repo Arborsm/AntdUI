@@ -116,6 +116,12 @@ namespace AntdUI
         }
 
         /// <summary>
+        /// 点击时自动改变选中状态
+        /// </summary>
+        [Description("点击时自动改变选中状态"), Category("行为"), DefaultValue(false)]
+        public bool AutoCheck { get; set; } = true;
+
+        /// <summary>
         /// 边距，用于激活动画
         /// </summary>
         [Description("边距，用于激活动画"), Category("外观"), DefaultValue(4)]
@@ -251,7 +257,7 @@ namespace AntdUI
 
         protected override void OnClick(EventArgs e)
         {
-            Checked = !_checked;
+            if (AutoCheck) Checked = !_checked;
             base.OnClick(e);
         }
 

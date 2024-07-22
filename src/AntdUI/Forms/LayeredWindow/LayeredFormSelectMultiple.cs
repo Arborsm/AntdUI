@@ -26,18 +26,16 @@ namespace AntdUI
 {
     internal class LayeredFormSelectMultiple : ILayeredFormOpacityDown
     {
-        Control textBox;
         int MaxCount = 4, MaxChoiceCount = 4;
         internal float Radius = 0;
         internal List<object> selectedValue;
         int r_w = 0;
         readonly List<ObjectItem> Items = new List<ObjectItem>();
-        public LayeredFormSelectMultiple(SelectMultiple control, RectangleF rect_read, List<object> items, string filtertext)
+        public LayeredFormSelectMultiple(SelectMultiple control, Rectangle rect_read, List<object> items, string filtertext)
         {
             control.Parent.SetTopMost(Handle);
             PARENT = control;
             scrollY = new ScrollY(this);
-            textBox = control;
             MaxCount = control.MaxCount;
             MaxChoiceCount = control.MaxChoiceCount;
             Font = control.Font;
@@ -49,9 +47,9 @@ namespace AntdUI
 
         TAlign ArrowAlign = TAlign.None;
         int ArrowSize = 8;
-        void Init(SelectMultiple control, TAlignFrom Placement, bool ShowArrow, bool ListAutoWidth, RectangleF rect_read, List<object> items, string? filtertext = null)
+        void Init(SelectMultiple control, TAlignFrom Placement, bool ShowArrow, bool ListAutoWidth, Rectangle rect_read, List<object> items, string? filtertext = null)
         {
-            int y = 10, w = (int)rect_read.Width;
+            int y = 10, w = rect_read.Width;
             r_w = w;
 
             Helper.GDI(g =>
@@ -99,62 +97,7 @@ namespace AntdUI
             if (filtertext == null || string.IsNullOrEmpty(filtertext)) EndHeight = y + 10;
             else EndHeight = TextChangeCore(filtertext);
             var point = control.PointToScreen(Point.Empty);
-            switch (Placement)
-            {
-                case TAlignFrom.Top:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.Top;
-                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.TL:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.TL;
-                        SetLocation(point.X + (int)rect_read.X - 10, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)rect_read.X - 10, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.TR:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.TR;
-                        SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - r_w - 10, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - r_w - 10, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.Bottom:
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.Bottom;
-                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10);
-                    break;
-                case TAlignFrom.BR:
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.BR;
-                        SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10);
-                    break;
-                case TAlignFrom.BL:
-                default:
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.BL;
-                        SetLocation(point.X + (int)rect_read.X - 10, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)rect_read.X - 10, point.Y + control.Height - 10);
-                    break;
-
-            }
+            MyPoint(point, control, EndHeight, Placement, ShowArrow, rect_read);
 
             KeyCall = keys =>
             {
@@ -204,6 +147,66 @@ namespace AntdUI
             };
         }
 
+        void MyPoint(Point point, Control control, int height, TAlignFrom Placement, bool ShowArrow, Rectangle rect_read)
+        {
+            switch (Placement)
+            {
+                case TAlignFrom.Top:
+                    Inverted = true;
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.Top;
+                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - height + 10 - ArrowSize);
+                    }
+                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - height + 10);
+                    break;
+                case TAlignFrom.TL:
+                    Inverted = true;
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.TL;
+                        SetLocation(point.X + rect_read.X - 10, point.Y - height + 10 - ArrowSize);
+                    }
+                    else SetLocation(point.X + rect_read.X - 10, point.Y - height + 10);
+                    break;
+                case TAlignFrom.TR:
+                    Inverted = true;
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.TR;
+                        SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y - height + 10 - ArrowSize);
+                    }
+                    else SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y - height + 10);
+                    break;
+                case TAlignFrom.Bottom:
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.Bottom;
+                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10 + ArrowSize);
+                    }
+                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10);
+                    break;
+                case TAlignFrom.BR:
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.BR;
+                        SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10 + ArrowSize);
+                    }
+                    else SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10);
+                    break;
+                case TAlignFrom.BL:
+                default:
+                    if (ShowArrow)
+                    {
+                        ArrowAlign = TAlign.BL;
+                        SetLocation(point.X + rect_read.X - 10, point.Y + control.Height - 10 + ArrowSize);
+                    }
+                    else SetLocation(point.X + rect_read.X - 10, point.Y + control.Height - 10);
+                    break;
+
+            }
+        }
+
         void ReadList(object obj, int i, int w, int y2, int gap_x, int gap_y, int gap, int font_size, int text_height, ref int item_count, ref int divider_count, ref int y, ref int selY, bool NoIndex = true)
         {
             if (obj is SelectItem it)
@@ -242,7 +245,7 @@ namespace AntdUI
         {
             if (obj is SelectItem it)
             {
-                string text = it.Text;
+                string text = it.Text + it.SubText;
                 if (text.Length > btext.Length) btext = text;
                 if (it.Online > -1) ui_online = true;
                 if (it.Icon != null) ui_icon = true;
@@ -329,7 +332,12 @@ namespace AntdUI
             }
             if (count > 0)
             {
-                if (nodata) SetSizeH(80);
+                int height;
+                if (nodata)
+                {
+                    height = 80;
+                    SetSizeH(height);
+                }
                 else
                 {
                     scrollY.val = 0;
@@ -367,9 +375,15 @@ namespace AntdUI
                             y = 10 + gap_y * 2 + vr;
                             scrollY.Show = false;
                         }
-                        SetSizeH(y + 10);
+                        y += 10;
+                        SetSizeH(y);
                     });
+                    height = y;
                 }
+                EndHeight = height;
+                if (PARENT is SelectMultiple control) MyPoint(control, height);
+                shadow_temp?.Dispose();
+                shadow_temp = null;
                 Print();
             }
         }
@@ -446,6 +460,8 @@ namespace AntdUI
                 return y + 10;
             }
         }
+
+        void MyPoint(SelectMultiple control, int height) => MyPoint(control.PointToScreen(Point.Empty), control, height, control.Placement, control.DropDownArrow, control.ReadRectangle);
 
         #endregion
 
@@ -565,6 +581,10 @@ namespace AntdUI
                         g.SetClip(path);
                         g.TranslateTransform(0, -scrollY.Value);
                         using (var brush = new SolidBrush(Style.Db.Text))
+                        using (var brush_back_hover = new SolidBrush(Style.Db.FillTertiary))
+                        using (var brush_sub = new SolidBrush(Style.Db.TextQuaternary))
+                        using (var brush_fore = new SolidBrush(Style.Db.TextTertiary))
+                        using (var brush_split = new SolidBrush(Style.Db.Split))
                         {
                             if (Radius > 0)
                             {
@@ -579,7 +599,7 @@ namespace AntdUI
                                         {
                                             if (it.Group)
                                             {
-                                                DrawItem(g, brush, it);
+                                                DrawItem(g, brush, brush_sub, brush_back_hover, brush_fore, brush_split, it);
                                                 oldsel = -1;
                                             }
                                             else
@@ -590,20 +610,20 @@ namespace AntdUI
                                                     if (isn)
                                                     {
                                                         oldsel = i;
-                                                        DrawItemSelect(g, it, true, true, false, false);
+                                                        DrawItemSelect(g, brush, brush_sub, brush_split, it, true, true, false, false);
                                                     }
-                                                    else DrawItemSelect(g, it, true, true, true, true);
+                                                    else DrawItemSelect(g, brush, brush_sub, brush_split, it, true, true, true, true);
                                                 }
                                                 else
                                                 {
-                                                    if (isn) DrawItemSelect(g, it, false, false, false, false);
-                                                    else DrawItemSelect(g, it, false, false, true, true);
+                                                    if (isn) DrawItemSelect(g, brush, brush_sub, brush_split, it, false, false, false, false);
+                                                    else DrawItemSelect(g, brush, brush_sub, brush_split, it, false, false, true, true);
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            DrawItem(g, brush, it);
+                                            DrawItem(g, brush, brush_sub, brush_back_hover, brush_fore, brush_split, it);
                                             oldsel = -1;
                                         }
                                     }
@@ -613,7 +633,7 @@ namespace AntdUI
                             {
                                 foreach (var it in Items)
                                 {
-                                    if (it.Show) DrawItemR(g, brush, it);
+                                    if (it.Show) DrawItemR(g, brush, brush_back_hover, brush_split, it);
                                 }
                             }
                         }
@@ -639,15 +659,9 @@ namespace AntdUI
             return false;
         }
 
-        void DrawItemSelect(Graphics g, ObjectItem it, bool TL, bool TR, bool BR, bool BL)
+        void DrawItemSelect(Graphics g, SolidBrush brush, SolidBrush subbrush, SolidBrush brush_split, ObjectItem it, bool TL, bool TR, bool BR, bool BL)
         {
-            if (it.ID == -1)
-            {
-                using (var brush_back = new SolidBrush(Style.Db.Split))
-                {
-                    g.FillRectangle(brush_back, it.Rect);
-                }
-            }
+            if (it.ID == -1) g.FillRectangle(brush_split, it.Rect);
             else
             {
                 using (var brush_back = new SolidBrush(Style.Db.PrimaryBg))
@@ -656,6 +670,12 @@ namespace AntdUI
                     {
                         g.FillPath(brush_back, path);
                     }
+                }
+                if (it.SubText != null)
+                {
+                    var size = g.MeasureString(it.Text, Font);
+                    var rectSubText = new RectangleF(it.RectText.X + size.Width, it.RectText.Y, it.RectText.Width - size.Width, it.RectText.Height);
+                    g.DrawString(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
                 }
                 using (var brush_select = new SolidBrush(Style.Db.TextBase))
                 {
@@ -674,41 +694,26 @@ namespace AntdUI
             }
         }
 
-        void DrawItem(Graphics g, SolidBrush brush, ObjectItem it)
+        void DrawItem(Graphics g, SolidBrush brush, SolidBrush subbrush, SolidBrush brush_back_hover, SolidBrush brush_fore, SolidBrush brush_split, ObjectItem it)
         {
-            if (it.ID == -1)
-            {
-                using (var brush_back = new SolidBrush(Style.Db.Split))
-                {
-                    g.FillRectangle(brush_back, it.Rect);
-                }
-            }
-            else if (it.Group)
-            {
-                using (var brush_fore = new SolidBrush(Style.Db.TextTertiary))
-                {
-                    g.DrawString(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
-                }
-            }
+            if (it.ID == -1) g.FillRectangle(brush_split, it.Rect);
+            else if (it.Group) g.DrawString(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
             else
             {
-                if (MaxChoiceCount > 0 && selectedValue.Count >= MaxChoiceCount)
+                if (it.SubText != null)
                 {
-                    using (var brush_fore = new SolidBrush(Style.Db.TextQuaternary))
-                    {
-                        g.DrawString(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
-                    }
+                    var size = g.MeasureString(it.Text, Font);
+                    var rectSubText = new RectangleF(it.RectText.X + size.Width, it.RectText.Y, it.RectText.Width - size.Width, it.RectText.Height);
+                    g.DrawString(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
                 }
+                if (MaxChoiceCount > 0 && selectedValue.Count >= MaxChoiceCount) g.DrawString(it.Text, Font, subbrush, it.RectText, stringFormatLeft);
                 else
                 {
                     if (it.Hover)
                     {
-                        using (var brush_back = new SolidBrush(Style.Db.FillTertiary))
+                        using (var path = it.Rect.RoundPath(Radius))
                         {
-                            using (var path = it.Rect.RoundPath(Radius))
-                            {
-                                g.FillPath(brush_back, path);
-                            }
+                            g.FillPath(brush_back_hover, path);
                         }
                     }
                     g.DrawString(it.Text, Font, brush, it.RectText, stringFormatLeft);
@@ -724,15 +729,9 @@ namespace AntdUI
                 if (it.has_sub) PanintArrow(g, it, Style.Db.TextBase);
             }
         }
-        void DrawItemR(Graphics g, SolidBrush brush, ObjectItem it)
+        void DrawItemR(Graphics g, SolidBrush brush, SolidBrush brush_back_hover, SolidBrush brush_split, ObjectItem it)
         {
-            if (it.ID == -1)
-            {
-                using (var brush_back = new SolidBrush(Style.Db.Split))
-                {
-                    g.FillRectangle(brush_back, it.Rect);
-                }
-            }
+            if (it.ID == -1) g.FillRectangle(brush_split, it.Rect);
             else if (selectedValue.Contains(it.Val) || it.Val is SelectItem item && selectedValue.Contains(item.Tag))
             {
                 using (var brush_back = new SolidBrush(Style.Db.PrimaryBg))
@@ -747,13 +746,7 @@ namespace AntdUI
             }
             else
             {
-                if (it.Hover)
-                {
-                    using (var brush_back = new SolidBrush(Style.Db.FillTertiary))
-                    {
-                        g.FillRectangle(brush_back, it.Rect);
-                    }
-                }
+                if (it.Hover) g.FillRectangle(brush_back_hover, it.Rect);
                 g.DrawString(it.Text, Font, brush, it.RectText, stringFormatLeft);
             }
             if (it.Online.HasValue)
