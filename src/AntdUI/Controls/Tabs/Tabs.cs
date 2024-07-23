@@ -522,6 +522,7 @@ namespace AntdUI
         #endregion
     }
 
+    [ToolboxItem(false)]
     [Designer(typeof(IControlDesigner))]
     public class TabPage : ScrollableControl
     {

@@ -1824,7 +1824,7 @@ namespace AntdUI
             }
             else if (control is Tabs tabs)
             {
-                foreach (var page in tabs.Pages) DpiLSS(dpi, page);
+                foreach (var page in tabs.Pages) DpiLS(dpi, page);
                 if (last)
                 {
                     control.Size = size;

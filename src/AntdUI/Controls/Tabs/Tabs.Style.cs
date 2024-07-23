@@ -817,19 +817,23 @@ namespace AntdUI
                                 int y = rect.Bottom - xy2;
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it;
-                                    if (it.Key.HasIcon)
+                                    if (it.Key.Visible)
                                     {
-                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        Rectangle rect_it;
+                                        if (it.Key.HasIcon)
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap + ico_size + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        }
+                                        else
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it));
+                                        }
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Width + cardgap;
                                     }
-                                    else
-                                    {
-                                        rect_it = new Rectangle(rect.X + xy, y, it.Value.Width + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it));
-                                    }
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Width + cardgap;
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, 0, 0, xy2);
@@ -839,11 +843,15 @@ namespace AntdUI
                             case TabAlignment.Left:
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
-                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
-                                    else rect_list.Add(new TabPageRect(rect_it));
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Height + cardgap;
+                                    if (it.Key.Visible)
+                                    {
+                                        Rectangle rect_it = new Rectangle(rect.X, rect.Y + xy, xy2, it.Value.Height + gap);
+                                        if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        else rect_list.Add(new TabPageRect(rect_it));
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Height + cardgap;
+                                    }
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(xy2, 0, 0, 0);
@@ -854,12 +862,16 @@ namespace AntdUI
                                 int x = rect.Right - xy2;
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
-                                    if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
-                                    else rect_list.Add(new TabPageRect(rect_it));
+                                    if (it.Key.Visible)
+                                    {
+                                        Rectangle rect_it = new Rectangle(x, rect.Y + xy, xy2, it.Value.Height + gap);
+                                        if (it.Key.HasIcon) rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        else rect_list.Add(new TabPageRect(rect_it));
 
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Height + cardgap;
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Height + cardgap;
+                                    }
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, 0, xy2, 0);
@@ -870,19 +882,23 @@ namespace AntdUI
                             default:
                                 foreach (var it in rect_dir)
                                 {
-                                    Rectangle rect_it;
-                                    if (it.Key.HasIcon)
+                                    if (it.Key.Visible)
                                     {
-                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        Rectangle rect_it;
+                                        if (it.Key.HasIcon)
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap + ico_size + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it, it.Value, ico_size, gap));
+                                        }
+                                        else
+                                        {
+                                            rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap, xy2);
+                                            rect_list.Add(new TabPageRect(rect_it));
+                                        }
+                                        it.Key.SetRect(rect_it);
+                                        xy += rect_it.Width + cardgap;
                                     }
-                                    else
-                                    {
-                                        rect_it = new Rectangle(rect.X + xy, rect.Y, it.Value.Width + gap, xy2);
-                                        rect_list.Add(new TabPageRect(rect_it));
-                                    }
-                                    it.Key.SetRect(rect_it);
-                                    xy += rect_it.Width + cardgap;
+                                    else rect_list.Add(new TabPageRect());
                                 }
                                 xy -= cardgap;
                                 tabs.SetPadding(0, xy2, 0, 0);
