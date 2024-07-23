@@ -271,7 +271,7 @@ namespace AntdUI
                             if (bmp != null) g.DrawImage(bmp, column.rect_down);
                         }
                     }
-                    if (column.column is ColumnCheck) PaintCheck(g, row, column);
+                    if (column.column is ColumnCheck columnCheck && columnCheck.NoTitle) PaintCheck(g, column, columnCheck);
                     else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
 
                     if (dragHeader.i == column.INDEX)
@@ -325,7 +325,7 @@ namespace AntdUI
                             if (bmp != null) g.DrawImage(bmp, column.rect_down);
                         }
                     }
-                    if (column.column is ColumnCheck) PaintCheck(g, row, column);
+                    if (column.column is ColumnCheck columnCheck && columnCheck.NoTitle) PaintCheck(g, column, columnCheck);
                     else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
                 }
             }
@@ -344,13 +344,13 @@ namespace AntdUI
                     g.FillRectangle(brush, row.row.RECT);
                 }
             }
-            if (selectedIndex == row.row.INDEX || row.row.Checked)
+            if (selectedIndex == row.row.INDEX || row.row.Select)
             {
                 using (var brush = rowSelectedBg.Brush(Style.Db.PrimaryBg))
                 {
                     g.FillRectangle(brush, row.row.RECT);
                 }
-                if (selectedIndex == row.row.INDEX && row.row.Checked)
+                if (selectedIndex == row.row.INDEX && row.row.Select)
                 {
                     using (var brush = new SolidBrush(Style.Db.FillSecondary))
                     {
@@ -595,14 +595,14 @@ namespace AntdUI
 
         #region 复选框
 
-        void PaintCheck(Graphics g, RowTemplate it, TCellColumn check)
+        void PaintCheck(Graphics g, TCellColumn check, ColumnCheck columnCheck)
         {
             using (var path_check = Helper.RoundPath(check.rect, check_radius, false))
             {
-                if (it.AnimationCheck)
+                if (columnCheck.AnimationCheck)
                 {
-                    var alpha = 255 * it.AnimationCheckValue;
-                    if (it.CheckState == CheckState.Indeterminate || (it.checkStateOld == CheckState.Indeterminate && !it.Checked))
+                    var alpha = 255 * columnCheck.AnimationCheckValue;
+                    if (columnCheck.CheckState == CheckState.Indeterminate || (columnCheck.checkStateOld == CheckState.Indeterminate && !columnCheck.Checked))
                     {
                         using (var brush = new Pen(Style.Db.BorderColor, check_border))
                         {
@@ -626,9 +626,9 @@ namespace AntdUI
                             g.DrawLines(brush, PaintArrow(check.rect));
                         }
 
-                        if (it.Checked)
+                        if (columnCheck.Checked)
                         {
-                            float max = check.rect.Height + check.rect.Height * it.AnimationCheckValue, alpha2 = 100 * (1F - it.AnimationCheckValue);
+                            float max = check.rect.Height + check.rect.Height * columnCheck.AnimationCheckValue, alpha2 = 100 * (1F - columnCheck.AnimationCheckValue);
                             using (var brush = new SolidBrush(Helper.ToColor(alpha2, Style.Db.Primary)))
                             {
                                 g.FillEllipse(brush, new RectangleF(check.rect.X + (check.rect.Width - max) / 2F, check.rect.Y + (check.rect.Height - max) / 2F, max, max));
@@ -640,7 +640,7 @@ namespace AntdUI
                         }
                     }
                 }
-                else if (it.CheckState == CheckState.Indeterminate)
+                else if (columnCheck.CheckState == CheckState.Indeterminate)
                 {
                     using (var brush = new Pen(Style.Db.BorderColor, check_border))
                     {
@@ -651,7 +651,7 @@ namespace AntdUI
                         g.FillRectangle(brush, PaintBlock(check.rect));
                     }
                 }
-                else if (it.Checked)
+                else if (columnCheck.Checked)
                 {
                     using (var brush = new SolidBrush(Style.Db.Primary))
                     {
