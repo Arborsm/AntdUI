@@ -124,6 +124,32 @@ namespace AntdUI
         [Description("间距"), Category("外观"), DefaultValue(2)]
         public int Gap { get; set; } = 2;
 
+        private string _checkedChildren = "";
+        private string _unCheckedChildren = "";
+
+        [Description("选中时显示的文本"), Category("外观"), DefaultValue("")]
+        public string CheckedChildren
+        {
+            get => _checkedChildren;
+            set
+            {
+                if (_checkedChildren == value) return;
+                _checkedChildren = value;
+                Invalidate();
+            }
+        }
+
+        [Description("未选中时显示的文本"), Category("外观"), DefaultValue("")]
+        public string UnCheckedChildren
+        {
+            get => _unCheckedChildren;
+            set
+            {
+                if (_unCheckedChildren == value) return;
+                _unCheckedChildren = value;
+                Invalidate();
+            }
+        }
         #endregion
 
         #region 事件
@@ -140,10 +166,10 @@ namespace AntdUI
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            var rect = ClientRectangle;
+            var rect = ClientRectangle;//绘制控件尺寸
             var g = e.Graphics.High();
 
-            var rect_read = ReadRectangle;
+            var rect_read = ReadRectangle;//读取控件尺寸
             bool enabled = Enabled;
             using (var path = rect_read.RoundPath(rect_read.Height))
             {
@@ -210,7 +236,19 @@ namespace AntdUI
                         g.FillEllipse(brush, dot_rect);
                     }
                 }
+                // 绘制文本
+                string textToRender = Checked ? CheckedChildren : UnCheckedChildren;
+                using (var brush = new SolidBrush(enabled ? Style.Db.BgBase : Color.FromArgb(200, Style.Db.BgBase)))
+                {
+                    var textSize = g.MeasureString(textToRender, Font);
+                    //如果文本宽度大于控件宽度，则文本居左绘制
+                    var textRect = Checked
+                    ? new RectangleF(rect_read.X + ((rect_read.Width - gap - rect_read.Height - textSize.Width) > 0 ? (rect_read.Width / 2 - rect_read.Height / 2 - textSize.Width / 2) : gap), rect.Y + (rect.Height - textSize.Height) / 2, textSize.Width, textSize.Height)
+                    : new RectangleF(rect_read.X + rect_read.Height - gap + ((rect_read.Width - gap - rect_read.Height - textSize.Width) > 0 ? (rect_read.Width / 2 - rect_read.Height / 2 - textSize.Width / 2) : gap), rect.Y + (rect.Height - textSize.Height) / 2, rect.Width - rect_read.Height - rect_read.X, textSize.Height);
+                    g.DrawString(textToRender, Font, brush, textRect);
+                }
             }
+
             this.PaintBadge(g);
             base.OnPaint(e);
         }
