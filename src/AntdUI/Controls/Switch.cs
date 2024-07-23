@@ -37,6 +37,42 @@ namespace AntdUI
     {
         #region 属性
 
+        #region 系统
+        /// <summary>
+        /// 文字颜色
+        /// </summary>
+        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
+        public new Color? ForeColor
+        {
+            get => fore;
+            set
+            {
+                if (fore == value) fore = value;
+                fore = value;
+                Invalidate();
+            }
+        }
+        #endregion
+
+        Color? fore;
+        /// <summary>
+        /// 文字颜色
+        /// </summary>
+        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
+        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Color? Fore
+        {
+            get => fore;
+            set
+            {
+                if (fore == value) fore = value;
+                fore = value;
+                Invalidate();
+            }
+        }
+
         Color? fill;
         /// <summary>
         /// 颜色
@@ -124,29 +160,29 @@ namespace AntdUI
         [Description("间距"), Category("外观"), DefaultValue(2)]
         public int Gap { get; set; } = 2;
 
-        private string _checkedChildren = "";
-        private string _unCheckedChildren = "";
+        private string _checkedText = "";
+        private string _unCheckedText = "";
 
         [Description("选中时显示的文本"), Category("外观"), DefaultValue("")]
-        public string CheckedChildren
+        public string CheckedText
         {
-            get => _checkedChildren;
+            get => _checkedText;
             set
             {
-                if (_checkedChildren == value) return;
-                _checkedChildren = value;
+                if (_checkedText == value) return;
+                _checkedText = value;
                 Invalidate();
             }
         }
 
         [Description("未选中时显示的文本"), Category("外观"), DefaultValue("")]
-        public string UnCheckedChildren
+        public string UnCheckedText
         {
-            get => _unCheckedChildren;
+            get => _unCheckedText;
             set
             {
-                if (_unCheckedChildren == value) return;
-                _unCheckedChildren = value;
+                if (_unCheckedText == value) return;
+                _unCheckedText = value;
                 Invalidate();
             }
         }
@@ -237,14 +273,14 @@ namespace AntdUI
                     }
                 }
                 // 绘制文本
-                string textToRender = Checked ? CheckedChildren : UnCheckedChildren;
-                using (var brush = new SolidBrush(enabled ? Style.Db.BgBase : Color.FromArgb(200, Style.Db.BgBase)))
+                string textToRender = Checked ? CheckedText : UnCheckedText;
+                Color _fore = fore ?? Style.Db.PrimaryColor;
+                using (var brush = new SolidBrush(_fore))
                 {
                     var textSize = g.MeasureString(textToRender, Font);
-                    //如果文本宽度大于控件宽度，则文本居左绘制
                     var textRect = Checked
-                    ? new RectangleF(rect_read.X + ((rect_read.Width - gap - rect_read.Height - textSize.Width) > 0 ? (rect_read.Width / 2 - rect_read.Height / 2 - textSize.Width / 2) : gap), rect.Y + (rect.Height - textSize.Height) / 2, textSize.Width, textSize.Height)
-                    : new RectangleF(rect_read.X + rect_read.Height - gap + ((rect_read.Width - gap - rect_read.Height - textSize.Width) > 0 ? (rect_read.Width / 2 - rect_read.Height / 2 - textSize.Width / 2) : gap), rect.Y + (rect.Height - textSize.Height) / 2, rect.Width - rect_read.Height - rect_read.X, textSize.Height);
+                        ? new RectangleF(rect_read.X + (rect_read.Width - rect_read.Height + gap2) / 2 - textSize.Width / 2, rect_read.Y + rect_read.Height / 2 - textSize.Height / 2, textSize.Width, textSize.Height)
+                        : new RectangleF(rect_read.X + (rect_read.Height - gap + (rect_read.Width - rect_read.Height + gap) / 2 - textSize.Width / 2), rect_read.Y + rect_read.Height / 2 - textSize.Height / 2, textSize.Width, textSize.Height);
                     g.DrawString(textToRender, Font, brush, textRect);
                 }
             }

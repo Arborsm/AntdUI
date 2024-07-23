@@ -81,8 +81,8 @@ namespace Overview.Controls
             // 
             switch4.Location = new Point(109, 167);
             switch4.Name = "switch4";
-            switch4.CheckedChildren = "on";
-            switch4.UnCheckedChildren = "off";
+            switch4.CheckedText = "on";
+            switch4.UnCheckedText = "off";
             switch4.Size = new Size(90, 38);
             switch4.TabIndex = 6;
             // 
@@ -116,8 +116,8 @@ namespace Overview.Controls
             switch3.Checked = true;
             switch3.Location = new Point(109, 96);
             switch3.Name = "switch3";
-            switch3.CheckedChildren = "开启";
-            switch3.UnCheckedChildren = "关闭";
+            switch3.CheckedText = "开启";
+            switch3.UnCheckedText = "关闭";
             switch3.Size = new Size(90, 38);
             switch3.TabIndex = 10;
             // 
@@ -149,7 +149,7 @@ namespace Overview.Controls
             Controls.Add(switch5);
             Controls.Add(switch1);
             Controls.Add(header1);
-            Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Microsoft YaHei UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
             Name = "Switch";
             Size = new Size(543, 275);
             ResumeLayout(false);
