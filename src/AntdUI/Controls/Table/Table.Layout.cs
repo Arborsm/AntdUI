@@ -226,11 +226,12 @@ namespace AntdUI
             Helper.GDI(g =>
             {
                 var dpi = Config.Dpi;
-                check_radius = _checksize * 0.25F * dpi;
-                check_border = _checksize * 0.125F * dpi;
                 int check_size = (int)(_checksize * dpi), gap = (int)(_gap * dpi), gap2 = gap * 2,
                 split = (int)(1F * dpi), split2 = split / 2,
                 split_move = (int)(6F * dpi), split_move2 = split_move / 2;
+
+                check_radius = check_size * 0.12F * dpi;
+                check_border = check_size * 0.04F * dpi;
 
                 #region 布局高宽
 
@@ -550,7 +551,7 @@ namespace AntdUI
 
         #endregion
 
-        float check_radius = 0F, check_border = 2F;
+        float check_radius = 0F, check_border = 1F;
         void AddRows(ref List<TCell> cells, ref int processing, Column column, object ov, PropertyDescriptor prop)
         {
             if (column is ColumnCheck columnCheck)
