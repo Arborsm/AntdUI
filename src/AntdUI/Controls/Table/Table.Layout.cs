@@ -713,17 +713,32 @@ namespace AntdUI
                             {
                                 if (cel is Template template)
                                 {
-                                    foreach (ITemplate it in template.value)
+                                    int count = 0;
+                                    var value = cel.PROPERTY.GetValue(data);
+                                    if (value == null) count++;
+                                    else if (value is IList<ICell> cells)
                                     {
-                                        var value = cel.PROPERTY.GetValue(data);
-                                        if (value != null)
+                                        if (template.value.Count == cells.Count)
                                         {
-                                            if (it.SValue(value))
+                                            for (int i = 0; i < template.value.Count; i++)
                                             {
-                                                LoadLayout();
-                                                Invalidate();
+                                                if (template.value[i].SValue(cells[i])) count++;
                                             }
                                         }
+                                        else count++;
+                                    }
+                                    else if (value is ICell cell)
+                                    {
+                                        if (template.value.Count == 1)
+                                        {
+                                            if (template.value[0].SValue(cel)) count++;
+                                        }
+                                        else count++;
+                                    }
+                                    if (count > 0)
+                                    {
+                                        LoadLayout();
+                                        Invalidate();
                                     }
                                 }
                                 else if (cel is TCellText text)

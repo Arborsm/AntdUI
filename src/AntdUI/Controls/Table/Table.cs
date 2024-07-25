@@ -48,15 +48,15 @@ namespace AntdUI
             {
                 if (columns == value) return;
                 SortHeader = null;
-                if (!EmptyHeader && dataSource == null)
-                {
-                    columns = value;
-                    ExtractHeaderFixed();
-                    return;
-                }
                 columns = value;
                 if (value == null) fixedColumnL = fixedColumnR = null;
                 else ExtractHeaderFixed();
+
+                if (EmptyHeader && dataSource == null && value != null)
+                {
+                    ExtractData();
+                    return;
+                }
 
                 LoadLayout();
                 Invalidate();
