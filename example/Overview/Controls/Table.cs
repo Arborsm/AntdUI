@@ -31,9 +31,8 @@ namespace Overview.Controls
             table1.Columns = new AntdUI.ColumnCollection {
                 new AntdUI.ColumnCheck("check"){ Fixed=true},
                 new AntdUI.Column("name","姓名"){ Fixed=true},
-                new AntdUI.ColumnCheck("check2"){ Fixed=true},
-                new AntdUI.ColumnCheck("check4","不全选标题"){ColAlign=AntdUI.ColumnAlign.Center},
-                new AntdUI.ColumnRadio("check3","单选"),
+                new AntdUI.ColumnCheck("checkTitle","不全选标题"){ColAlign=AntdUI.ColumnAlign.Center},
+                new AntdUI.ColumnRadio("radio","单选"),
                 new AntdUI.Column("online","状态",AntdUI.ColumnAlign.Center),
                 new AntdUI.ColumnSwitch("enable","启用",AntdUI.ColumnAlign.Center){ Call=(value,record, i_row, i_col)=>{
                     Thread.Sleep(2000);
@@ -44,13 +43,16 @@ namespace Overview.Controls
                 new AntdUI.Column("tag","Tag"),
                 new AntdUI.Column("imgs","图片"),
                 new AntdUI.Column("btns","操作"){ Fixed=true,Width="auto"},
-            };// 添加表头，绑定模型名称
+            };
+
+            // 添加表头，绑定模型名称
             var list = new List<TestClass>(10) {
                 new TestClass(1,"1","胡彦斌",32,"西湖区湖底公园1号"),
                 new TestClass(2,"2","胡彦祖",22,"西湖区湖底公园1号") {
                     tag=new AntdUI.CellTag[]{ new AntdUI.CellTag("NICE", AntdUI.TTypeMini.Success), new AntdUI.CellTag("DEVELOPER", AntdUI.TTypeMini.Info) }
                 },
-            };// 添加数据
+            };
+            // 添加数据
             for (int i = 2; i < 10; i++) list.Add(new TestClass(i, i.ToString(), "胡彦斌", 31 + i, "西湖区湖底公园" + (i + 10) + "号"));
 
             table1.DataSource = list;
@@ -65,14 +67,10 @@ namespace Overview.Controls
                 new AntdUI.Column("address","住址"),
                 new AntdUI.Column("tag","Tag"){ Width="auto"}
             };
-
-            var list2 = new List<TestClass2>(100);
-            for (int i = 0; i < 100; i++) list2.Add(new TestClass2(i, "王健林" + i, (i + 20), "西湖区湖底公园" + (i + 1) + "号"));
             table2.DataSource = GetPageData(pagination1.Current, pagination1.PageSize);
             pagination1.PageSizeOptions = new int[] { 10, 20, 30, 50, 100 };
 
             #endregion
-
         }
 
         #region 示例
@@ -138,8 +136,8 @@ namespace Overview.Controls
         {
             if (record is TestClass data)
             {
-                if (rowIndex > 0 && columnIndex == 7) AntdUI.Popover.open(new AntdUI.Popover.Config(table1, "演示一下能弹出自定义") { Offset = rect });
-                else if (rowIndex > 0 && columnIndex == 9)
+                if (rowIndex > 0 && columnIndex == 6) AntdUI.Popover.open(new AntdUI.Popover.Config(table1, "演示一下能弹出自定义") { Offset = rect });
+                else if (rowIndex > 0 && columnIndex == 8)
                 {
                     if (data.tag == null) data.tag = new AntdUI.CellTag[] { new AntdUI.CellTag("NICE", AntdUI.TTypeMini.Success), new AntdUI.CellTag("DEVELOPER", AntdUI.TTypeMini.Info) };
                     else
@@ -188,29 +186,18 @@ namespace Overview.Controls
 
         object GetPageData(int current, int pageSize)
         {
-            var list2 = new List<TestClass2>();
+            var list = new List<TestClass2>();
             int start = Math.Abs(current - 1) * pageSize;
             for (int i = 0; i < pageSize; i++)
             {
                 int index = start + i;
-                list2.Add(new TestClass2(index, "王健林" + index, (index + 20), "西湖区湖底公园" + (index + 1) + "号"));
+                list.Add(new TestClass2(index, "王健林" + index, (index + 20), "西湖区湖底公园" + (index + 1) + "号"));
             }
-            return list2;
+            return list;
         }
 
         void pagination1_ValueChanged(int current, int total, int pageSize, int pageTotal)
         {
-            var list = new List<TestClass> {
-                new TestClass(1,"1","胡彦斌",32,"西湖区湖底公园1号"),
-                new TestClass(2,"2","胡彦祖",43,"西湖区湖底公园1号") {
-                    tag=new AntdUI.CellTag[]{ new AntdUI.CellTag("NICE", AntdUI.TTypeMini.Success), new AntdUI.CellTag("DEVELOPER", AntdUI.TTypeMini.Info) }
-                },
-            };// 添加数据
-            for (int i = 2; i < 10; i++) list.Add(new TestClass(i, i.ToString(), "胡彦斌", 100, "西湖区湖底公园" + (i + 10) + "号"));
-
-            list[0].check = list[4].check = true;
-            table1.DataSource = list;
-
             table2.DataSource = GetPageData(current, pageSize);
         }
         string pagination1_ShowTotalChanged(int current, int total, int pageSize, int pageTotal)
@@ -291,39 +278,27 @@ namespace Overview.Controls
                 }
             }
 
-            bool _check2 = false;
-            public bool check2
+            bool _radio = false;
+            public bool radio
             {
-                get => _check2;
+                get => _radio;
                 set
                 {
-                    if (_check2 == value) return;
-                    _check2 = value;
-                    OnPropertyChanged("check2");
+                    if (_radio == value) return;
+                    _radio = value;
+                    OnPropertyChanged("radio");
                 }
             }
 
-            bool _check3 = false;
-            public bool check3
+            bool _checkTitle = false;
+            public bool checkTitle
             {
-                get => _check3;
+                get => _checkTitle;
                 set
                 {
-                    if (_check3 == value) return;
-                    _check3 = value;
-                    OnPropertyChanged("check3");
-                }
-            }
-
-            bool _check4 = false;
-            public bool check4
-            {
-                get => _check4;
-                set
-                {
-                    if (_check4 == value) return;
-                    _check4 = value;
-                    OnPropertyChanged("check4");
+                    if (_checkTitle == value) return;
+                    _checkTitle = value;
+                    OnPropertyChanged("checkTitle");
                 }
             }
 
