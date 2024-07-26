@@ -16,6 +16,11 @@
 // CSDN: https://blog.csdn.net/v_132
 // QQ: 17379620
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace Overview.Controls
 {
     public partial class TableAOT : UserControl
@@ -25,6 +30,7 @@ namespace Overview.Controls
         {
             form = _form;
             InitializeComponent();
+            table1.EditMode = table2.EditMode = AntdUI.TEditMode.DoubleClick;
 
             #region Table 1
 
@@ -35,7 +41,7 @@ namespace Overview.Controls
                 new AntdUI.ColumnRadio("radio","单选"),
                 new AntdUI.Column("online","状态",AntdUI.ColumnAlign.Center),
                 new AntdUI.ColumnSwitch("enable","启用",AntdUI.ColumnAlign.Center){ Call=(value,record, i_row, i_col)=>{
-                    Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(2000);
                     return value;
                 } },
                 new AntdUI.Column("age","年龄",AntdUI.ColumnAlign.Center),
@@ -194,7 +200,7 @@ namespace Overview.Controls
             else table1.SetRowStyle -= table1_SetRowStyle;
             table1.Invalidate();
         }
-        AntdUI.Table.CellStyleInfo? table1_SetRowStyle(object sender, object? record, int rowIndex)
+        AntdUI.Table.CellStyleInfo table1_SetRowStyle(object sender, object mrecord, int rowIndex)
         {
             if (rowIndex % 2 == 0)
             {
@@ -270,7 +276,7 @@ namespace Overview.Controls
                 {
                     table1.Spin("正在加载中...", () =>
                     {
-                        Thread.Sleep(2000);
+                        System.Threading.Thread.Sleep(2000);
                     }, () =>
                     {
                         System.Diagnostics.Debug.WriteLine("加载结束");

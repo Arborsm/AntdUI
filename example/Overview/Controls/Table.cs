@@ -16,6 +16,11 @@
 // CSDN: https://blog.csdn.net/v_132
 // QQ: 17379620
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
+
 namespace Overview.Controls
 {
     public partial class Table : UserControl
@@ -35,7 +40,7 @@ namespace Overview.Controls
                 new AntdUI.ColumnRadio("radio","单选"),
                 new AntdUI.Column("online","状态",AntdUI.ColumnAlign.Center),
                 new AntdUI.ColumnSwitch("enable","启用",AntdUI.ColumnAlign.Center){ Call=(value,record, i_row, i_col)=>{
-                    Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(2000);
                     return value;
                 } },
                 new AntdUI.Column("age","年龄",AntdUI.ColumnAlign.Center),
@@ -98,7 +103,7 @@ namespace Overview.Controls
             else table1.SetRowStyle -= table1_SetRowStyle;
             table1.Invalidate();
         }
-        AntdUI.Table.CellStyleInfo? table1_SetRowStyle(object sender, object? record, int rowIndex)
+        AntdUI.Table.CellStyleInfo table1_SetRowStyle(object sender, object record, int rowIndex)
         {
             if (rowIndex % 2 == 0)
             {
@@ -172,7 +177,7 @@ namespace Overview.Controls
                 });
                 table1.Spin("正在加载中...", () =>
                 {
-                    Thread.Sleep(2000);
+                    System.Threading.Thread.Sleep(2000);
                 }, () =>
                 {
                     System.Diagnostics.Debug.WriteLine("加载结束");
@@ -326,8 +331,8 @@ namespace Overview.Controls
                 }
             }
 
-            AntdUI.CellBadge? _online;
-            public AntdUI.CellBadge? online
+            AntdUI.CellBadge _online;
+            public AntdUI.CellBadge online
             {
                 get => _online;
                 set
@@ -374,8 +379,8 @@ namespace Overview.Controls
                 }
             }
 
-            AntdUI.CellTag[]? _tag;
-            public AntdUI.CellTag[]? tag
+            AntdUI.CellTag[] _tag;
+            public AntdUI.CellTag[] tag
             {
                 get => _tag;
                 set
@@ -385,8 +390,8 @@ namespace Overview.Controls
                 }
             }
 
-            AntdUI.CellImage[]? _imgs;
-            public AntdUI.CellImage[]? imgs
+            AntdUI.CellImage[] _imgs;
+            public AntdUI.CellImage[] imgs
             {
                 get => _imgs;
                 set
@@ -396,8 +401,8 @@ namespace Overview.Controls
                 }
             }
 
-            AntdUI.CellLink[]? _btns;
-            public AntdUI.CellLink[]? btns
+            AntdUI.CellLink[] _btns;
+            public AntdUI.CellLink[] btns
             {
                 get => _btns;
                 set
@@ -455,8 +460,8 @@ namespace Overview.Controls
                 }
             }
 
-            AntdUI.CellTag? _tag;
-            public AntdUI.CellTag? tag
+            AntdUI.CellTag _tag;
+            public AntdUI.CellTag tag
             {
                 get => _tag;
                 set
