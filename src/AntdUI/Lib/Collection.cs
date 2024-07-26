@@ -576,6 +576,13 @@ namespace AntdUI
                 OnPropertyChanged(key);
             }
         }
+
+        public bool Try<T>(out T val)
+        {
+            if (_value is T v) { val = v; return true; }
+            val = default;
+            return false;
+        }
     }
 
     public class NotifyProperty : INotifyPropertyChanged
