@@ -198,7 +198,7 @@ namespace AntdUI
                             if (checkCell.AutoCheck && checkCell.Contains(r_x, r_y))
                             {
                                 checkCell.Checked = !checkCell.Checked;
-                                cell.PROPERTY?.SetValue(cell.VALUE, checkCell.Checked);
+                                SetValue(cell, checkCell.Checked);
                                 CheckedChanged?.Invoke(this, checkCell.Checked, it.RECORD, i_r, i_c);
                             }
                         }
@@ -212,17 +212,17 @@ namespace AntdUI
                                     {
                                         if (i != i_r)
                                         {
-                                            var cell2 = rows[i].cells[i_c];
-                                            if (cell2 is TCellRadio radioCell2 && radioCell2.Checked)
+                                            var cell_selno = rows[i].cells[i_c];
+                                            if (cell_selno is TCellRadio radioCell2 && radioCell2.Checked)
                                             {
                                                 radioCell2.Checked = false;
-                                                cell2.PROPERTY?.SetValue(cell2.VALUE, radioCell2.Checked);
+                                                SetValue(cell_selno, false);
                                             }
                                         }
                                     }
                                 }
                                 radioCell.Checked = true;
-                                cell.PROPERTY?.SetValue(cell.VALUE, radioCell.Checked);
+                                SetValue(cell, radioCell.Checked);
                                 CheckedChanged?.Invoke(this, radioCell.Checked, it.RECORD, i_r, i_c);
                             }
                         }
@@ -238,7 +238,7 @@ namespace AntdUI
                                         var value = switchCell.column.Call(!switchCell.Checked, it.RECORD, i_r, i_c);
                                         if (switchCell.Checked == value) return;
                                         switchCell.Checked = value;
-                                        cell.PROPERTY?.SetValue(cell.VALUE, value);
+                                        SetValue(cell, value);
                                     }).ContinueWith(action =>
                                     {
                                         switchCell.Loading = false;
@@ -247,7 +247,7 @@ namespace AntdUI
                                 else if (switchCell.AutoCheck)
                                 {
                                     switchCell.Checked = !switchCell.Checked;
-                                    cell.PROPERTY?.SetValue(cell.VALUE, switchCell.Checked);
+                                    SetValue(cell, switchCell.Checked);
                                     CheckedChanged?.Invoke(this, switchCell.Checked, it.RECORD, i_r, i_c);
                                 }
                             }

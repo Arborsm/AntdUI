@@ -74,8 +74,12 @@ namespace AntdUI
                     var row = list[i];
                     if (row != null)
                     {
-                        var cells = GetRowAuto(row, ref columns);
-                        if (cells.Count > 0) rows.Add(new IRow(i, row, cells));
+                        if (row is IList<AntItem> arows) rows.Add(new IRow(i, row, arows));
+                        else
+                        {
+                            var cells = GetRowAuto(row, ref columns);
+                            if (cells.Count > 0) rows.Add(new IRow(i, row, cells));
+                        }
                     }
                 }
                 data_temp = new TempTable(columns.ToArray(), rows.ToArray());
@@ -286,6 +290,14 @@ namespace AntdUI
                 i = index;
                 record = _record;
                 cells = _cells;
+            }
+
+            public IRow(int index, object _record, IList<AntItem> _cells)
+            {
+                i = index;
+                record = _record;
+                cells = new Dictionary<string, object?>(_cells.Count);
+                foreach (var it in _cells) cells.Add(it.key, it);
             }
 
             /// <summary>
