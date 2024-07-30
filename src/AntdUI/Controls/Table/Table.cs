@@ -561,7 +561,7 @@ namespace AntdUI
                 OnCheck();
                 CheckState = value ? CheckState.Checked : CheckState.Unchecked;
 
-                PARENT?.CheckAll(INDEX, value);
+                PARENT?.CheckAll(INDEX, this, value);
             }
         }
 
@@ -812,6 +812,11 @@ namespace AntdUI
                 Invalidate();
             }
         }
+
+        /// <summary>
+        /// 树形列
+        /// </summary>
+        public string? KeyTree { get; set; }
 
         #region 内部
 

@@ -61,7 +61,7 @@ namespace AntdUI
                         {
                             if (e.Button == MouseButtons.Left && cell.Contains(r_x, r_y))
                             {
-                                CheckAll(i_cel, !columnCheck.Checked);
+                                CheckAll(i_cel, columnCheck, !columnCheck.Checked);
                                 return;
                             }
                         }
@@ -75,7 +75,18 @@ namespace AntdUI
                             return;
                         }
                     }
-                    else MouseDownRow(e, it.cells[i_cel], r_x, r_y);
+                    else
+                    {
+                        if (cel_sel.ROW.CanExpand && cel_sel.ROW.RECORD != null && cel_sel.ROW.RectExpand.Contains(r_x, r_y))
+                        {
+                            if (cel_sel.ROW.Expand) rows_Expand.Remove(cel_sel.ROW.RECORD);
+                            else rows_Expand.Add(cel_sel.ROW.RECORD);
+                            LoadLayout();
+                            Invalidate();
+                            return;
+                        }
+                        MouseDownRow(e, it.cells[i_cel], r_x, r_y);
+                    }
                 }
             }
         }
@@ -465,6 +476,7 @@ namespace AntdUI
                                 }
                             }
                         }
+                        if (cel_sel.ROW.CanExpand && cel_sel.ROW.RectExpand.Contains(r_x, r_y)) { SetCursor(true); return; }
                         SetCursor(MouseMoveRow(cel_sel, r_x, r_y, offset_x, offset_xi, offset_y));
                     }
                 }

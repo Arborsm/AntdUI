@@ -40,6 +40,7 @@ namespace AntdUI
             }
             if (dataSource == null)
             {
+                rows_Expand = null;
                 if (EmptyHeader && columns != null && columns.Count > 0) data_temp = new TempTable(new TempiColumn[0], new IRow[0]);
                 // 空数据
                 scrollBar.ValueX = scrollBar.ValueY = 0;
