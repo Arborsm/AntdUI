@@ -47,7 +47,7 @@ namespace AntdUI
                 }
             }
             else PaintTable(g, rows, rect, columnfont);
-            if (EmptyHeader && Empty && rows.Length == 1) PaintEmpty(g, rect);
+            if (emptyHeader && Empty && rows.Length == 1) PaintEmpty(g, rect);
             scrollBar.Paint(g);
             base.OnPaint(e);
         }
