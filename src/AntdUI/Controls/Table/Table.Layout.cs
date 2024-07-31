@@ -36,7 +36,7 @@ namespace AntdUI
         protected override void OnSizeChanged(EventArgs e)
         {
             var rect = ClientRectangle;
-            if (rect.Width > 1 && rect.Height > 1)
+            if (IsHandleCreated && rect.Width > 1 && rect.Height > 1)
             {
                 string show_rect = rect.Width + "_" + rect.Height;
                 if (show_oldrect == show_rect) return;
@@ -53,9 +53,12 @@ namespace AntdUI
 
         public void LoadLayout()
         {
-            var rect = ClientRectangle;
-            if (rect.Width > 1 && rect.Height > 1) LoadLayout(rect);
-            else show_oldrect = null;
+            if (IsHandleCreated)
+            {
+                var rect = ClientRectangle;
+                if (rect.Width > 1 && rect.Height > 1) LoadLayout(rect);
+                else show_oldrect = null;
+            }
         }
 
         void LoadLayout(Rectangle rect_t)
@@ -202,6 +205,7 @@ namespace AntdUI
             Processing = processing;
             ColWidth = col_width;
             KeyTreeIndex = KeyTreeINDEX;
+            dataOne = false;
             return _rows;
         }
         RowTemplate[] LayoutDesign(Rectangle rect, List<RowTemplate> _rows, List<Column> _columns, Dictionary<int, object> col_width, int KeyTreeINDEX, out int _x, out int _y, out bool _is_exceed)
@@ -502,11 +506,16 @@ namespace AntdUI
         }
         bool ForTree(ref List<RowTemplate> _rows, ref int processing, RowTemplate row_new, IRow row, List<Column> _columns, string KeyTree, int KeyTreeINDEX, int depth, bool show)
         {
+            if (DefaultExpand && dataOne)
+            {
+                if (!rows_Expand.Contains(row.record)) rows_Expand.Add(row.record);
+            }
             row_new.ShowExpand = show;
             row_new.ExpandDepth = depth;
             row_new.KeyTreeINDEX = KeyTreeINDEX;
             row_new.Expand = rows_Expand.Contains(row.record);
             int count = 0;
+
             var ov_tree = row.cells[KeyTree];
             if (ov_tree is PropertyDescriptor prop)
             {
