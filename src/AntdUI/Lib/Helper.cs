@@ -377,6 +377,20 @@ namespace AntdUI
 
         #endregion
 
+        public static Brush BrushEx(this string? code, Rectangle rect, Color def)
+        {
+            if (code != null)
+            {
+                var arr = code.Split(',');
+                if (arr.Length > 1)
+                {
+                    if (arr.Length > 2 && float.TryParse(arr[0], out float deg)) return new LinearGradientBrush(rect, arr[1].Trim().ToColor(), arr[2].Trim().ToColor(), 270 + deg);
+                    else return new LinearGradientBrush(rect, arr[0].Trim().ToColor(), arr[1].Trim().ToColor(), 270F);
+                }
+            }
+            return new SolidBrush(def);
+        }
+
         public static Graphics High(this Graphics g)
         {
             Config.SetDpi(g);
