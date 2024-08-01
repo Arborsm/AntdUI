@@ -95,7 +95,7 @@ namespace AntdUI
 
         public static float Dpi { get; private set; } = 1F;
 
-        internal const string NullText = "Qq";
+        internal const string NullText = "龍Qq";
 
         internal static void SetDpi(float dpi)
         {

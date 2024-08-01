@@ -72,7 +72,7 @@ namespace AntdUI
         /// <param name="lr">水平（前后）</param>
         public static StringFormat SF_ALL(StringAlignment tb = StringAlignment.Center, StringAlignment lr = StringAlignment.Center)
         {
-            var sf = new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter, };
+            var sf = new StringFormat(StringFormat.GenericTypographic) { LineAlignment = tb, Alignment = lr, Trimming = StringTrimming.EllipsisCharacter };
             sf.FormatFlags |= StringFormatFlags.NoWrap;
             return sf;
         }
