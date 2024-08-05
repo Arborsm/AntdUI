@@ -187,7 +187,7 @@ namespace AntdUI
                 ForRow(dataTmp, row =>
                 {
                     var cells = new List<TCell>(_columns.Count);
-                    foreach (var column in _columns) AddRows(ref cells, ref processing, column, row, row.cells[column.Key]);
+                    foreach (var column in _columns) AddRows(ref cells, ref processing, column, row, column.Key);
                     if (cells.Count > 0) AddRows(ref _rows, cells.ToArray(), row.record);
                 });
             }
@@ -196,7 +196,7 @@ namespace AntdUI
                 ForRow(dataTmp, row =>
                 {
                     var cells = new List<TCell>(_columns.Count);
-                    foreach (var column in _columns) AddRows(ref cells, ref processing, column, row, row.cells[column.Key]);
+                    foreach (var column in _columns) AddRows(ref cells, ref processing, column, row, column.Key);
                     if (cells.Count > 0) ForTree(ref _rows, ref processing, AddRows(ref _rows, cells.ToArray(), row.record), row, _columns, KeyTree, KeyTreeINDEX, 0, true);
                 });
             }
@@ -393,7 +393,13 @@ namespace AntdUI
                 List<Rectangle> _dividerHs = new List<Rectangle>(), _dividers = new List<Rectangle>();
                 var MoveHeaders = new List<MoveHeader>();
 
-                var last_row = _rows[_rows.Count - 1];
+                int last_index = _rows.Count - 1;
+                var last_row = _rows[last_index];
+                while (!last_row.ShowExpand)
+                {
+                    last_index--;
+                    last_row = _rows[last_index];
+                }
                 var last = last_row.cells[last_row.cells.Length - 1];
 
                 bool iseg = emptyHeader && _rows.Count == 1;
@@ -515,32 +521,51 @@ namespace AntdUI
             row_new.KeyTreeINDEX = KeyTreeINDEX;
             row_new.Expand = rows_Expand.Contains(row.record);
             int count = 0;
-
-            var ov_tree = row.cells[KeyTree];
-            if (ov_tree is PropertyDescriptor prop)
+            var list_tree = ForTreeValue(row, KeyTree);
+            if (list_tree != null)
             {
-                var value_tree = prop.GetValue(row.record);
-                if (value_tree is IList<object> list_tree && list_tree.Count > 0)
+                show = show && row_new.Expand;
+                row_new.CanExpand = true;
+                count++;
+                for (int i = 0; i < list_tree.Count; i++)
                 {
-                    show = show && row_new.Expand;
-                    row_new.CanExpand = true;
-                    count++;
-                    var rows_tree = new List<IRow>(list_tree.Count);
-                    for (int i = 0; i < list_tree.Count; i++)
+                    var item_tree = GetRow(list_tree[i], _columns.Count);
+                    if (item_tree.Count > 0)
                     {
-                        var item_tree = GetRow(list_tree[i], _columns.Count);
-                        if (item_tree.Count > 0)
-                        {
-                            var row_tree = new IRow(i, list_tree[i], item_tree);
-                            var cells_tree = new List<TCell>(_columns.Count);
-                            foreach (var column in _columns) AddRows(ref cells_tree, ref processing, column, row_tree, row_tree.cells[column.Key]);
-                            if (ForTree(ref _rows, ref processing, AddRows(ref _rows, cells_tree.ToArray(), row_tree.record), row_tree, _columns, KeyTree, KeyTreeINDEX, depth + 1, show)) count++;
-                        }
+                        var row_tree = new IRow(i, list_tree[i], item_tree);
+                        var cells_tree = new List<TCell>(_columns.Count);
+                        foreach (var column in _columns) AddRows(ref cells_tree, ref processing, column, row_tree, column.Key);
+                        if (ForTree(ref _rows, ref processing, AddRows(ref _rows, cells_tree.ToArray(), row_tree.record), row_tree, _columns, KeyTree, KeyTreeINDEX, depth + 1, show)) count++;
                     }
                 }
             }
             return count > 0;
         }
+
+        IList<object>? ForTreeValue(IRow row, string KeyTree)
+        {
+            if (row.cells.ContainsKey(KeyTree))
+            {
+                var ov_tree = row.cells[KeyTree];
+                if (ov_tree is AntItem item)
+                {
+                    var value_tree = item.value;
+                    if (value_tree is IList<AntItem[]> list_tree && list_tree.Count > 0)
+                    {
+                        var value = new List<object>(list_tree.Count);
+                        foreach (var it in list_tree) value.Add(it);
+                        return value.ToArray();
+                    }
+                }
+                else if (ov_tree is PropertyDescriptor prop)
+                {
+                    var value_tree = prop.GetValue(row.record);
+                    if (value_tree is IList<object> list_tree && list_tree.Count > 0) return list_tree;
+                }
+            }
+            return null;
+        }
+
 
         #endregion
 
@@ -571,7 +596,7 @@ namespace AntdUI
                 else max_width += it.Value.value;
             }
 
-            var width_cell = new Dictionary<int, int>();
+            var width_cell = new Dictionary<int, int>(read_width.Count);
             if (max_width > rect.Width)
             {
                 is_exceed = true;
@@ -664,7 +689,12 @@ namespace AntdUI
         #endregion
 
         float check_radius = 0F, check_border = 1F;
-        void AddRows(ref List<TCell> cells, ref int processing, Column column, IRow row, object? ov)
+        void AddRows(ref List<TCell> cells, ref int processing, Column column, IRow row, string key)
+        {
+            if (row.cells.TryGetValue(key, out var ov)) AddRows(ref cells, ref processing, column, row, ov);
+            else AddRows(ref cells, ref processing, column, row);
+        }
+        void AddRows(ref List<TCell> cells, ref int processing, Column column, IRow row, object? ov = null)
         {
             if (ov is PropertyDescriptor prop) AddRows(ref cells, ref processing, column, row.record, prop);
             else
@@ -787,54 +817,11 @@ namespace AntdUI
             {
                 foreach (var it in template.value)
                 {
-                    if (it is TemplateBadge badge)
+                    it.Value.Changed = layout =>
                     {
-                        badge.Value.Changed = key =>
-                        {
-                            if (key == "SProcessing" || key == "EProcessing" || key == "Text") LoadLayout();
-                            Invalidate();
-                        };
-                    }
-                    else if (it is TemplateTag tag)
-                    {
-                        tag.Value.Changed = key =>
-                        {
-                            if (key == "Text") LoadLayout();
-                            Invalidate();
-                        };
-                    }
-                    else if (it is TemplateProgress progress)
-                    {
-                        progress.Value.Changed = key =>
-                        {
-                            if (key == "Shape") LoadLayout();
-                            Invalidate();
-                        };
-                    }
-                    else if (it is TemplateImage image)
-                    {
-                        image.Value.Changed = key =>
-                        {
-                            if (key == "Size") LoadLayout();
-                            Invalidate();
-                        };
-                    }
-                    else if (it is TemplateButton link)
-                    {
-                        link.Value.Changed = key =>
-                        {
-                            if (key == "Text" || key == "Image" || key == "ImageSvg" || key == "IconRatio" || key == "Shape" || key == "ShowArrow") LoadLayout();
-                            Invalidate();
-                        };
-                    }
-                    else if (it is TemplateText text)
-                    {
-                        text.Value.Changed = key =>
-                        {
-                            if (key == "IconRatio" || key == "Prefix" || key == "PrefixSvg" || key == "Suffix" || key == "SuffixSvg") LoadLayout();
-                            Invalidate();
-                        };
-                    }
+                        if (layout) LoadLayout();
+                        Invalidate();
+                    };
                 }
             }
             if (data.VALUE is INotifyPropertyChanged notify)
