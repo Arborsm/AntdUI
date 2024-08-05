@@ -53,7 +53,7 @@ namespace AntdUI
             {
                 if (_back == value) return;
                 _back = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -68,7 +68,7 @@ namespace AntdUI
             {
                 if (_fore == value) return;
                 _fore = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -83,7 +83,7 @@ namespace AntdUI
             {
                 if (_font == value) return;
                 _font = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 

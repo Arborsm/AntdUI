@@ -55,7 +55,7 @@ namespace AntdUI
             {
                 if (_mouseDown == value) return;
                 _mouseDown = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -69,7 +69,7 @@ namespace AntdUI
             {
                 if (_mouseHover == value) return;
                 _mouseHover = value;
-                if (Enabled) OnPropertyChanged(false);
+                if (Enabled) OnPropertyChanged();
             }
         }
 

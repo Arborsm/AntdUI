@@ -154,7 +154,7 @@ namespace AntdUI
             else
             {
                 int x = 0;
-                ForColumn(dataTmp, columns, it =>
+                ForColumn(columns, it =>
                 {
                     int INDEX = _columns.Count;
                     _columns.Add(it);
@@ -473,7 +473,7 @@ namespace AntdUI
 
         #region 通用循环
 
-        void ForColumn(TempTable data_temp, ColumnCollection columns, Func<Column, int> action)
+        void ForColumn(ColumnCollection columns, Func<Column, int> action)
         {
             if (SortHeader == null)
             {
@@ -542,7 +542,7 @@ namespace AntdUI
             return count > 0;
         }
 
-        IList<object>? ForTreeValue(IRow row, string KeyTree)
+        static IList<object>? ForTreeValue(IRow row, string KeyTree)
         {
             if (row.cells.ContainsKey(KeyTree))
             {
@@ -691,122 +691,56 @@ namespace AntdUI
         float check_radius = 0F, check_border = 1F;
         void AddRows(ref List<TCell> cells, ref int processing, Column column, IRow row, string key)
         {
-            if (row.cells.TryGetValue(key, out var ov)) AddRows(ref cells, ref processing, column, row, ov);
-            else AddRows(ref cells, ref processing, column, row);
-        }
-        void AddRows(ref List<TCell> cells, ref int processing, Column column, IRow row, object? ov = null)
-        {
-            if (ov is PropertyDescriptor prop) AddRows(ref cells, ref processing, column, row.record, prop);
-            else
+            if (row.cells.TryGetValue(key, out var ov))
             {
-                if (ov == null) cells.Add(new TCellText(this, null, ov, column, null));
-                else
-                {
-                    if (ov is AntItem cell)
-                    {
-                        if (column is ColumnCheck columnCheck)
-                        {
-                            //复选框
-                            has_check = true;
-                            bool value = false;
-                            if (cell.value is bool check) value = check;
-                            AddRows(ref cells, new TCellCheck(this, null, ov, value, columnCheck));
-                        }
-                        else if (column is ColumnRadio columnRadio)
-                        {
-                            //单选框
-                            has_check = true;
-                            bool value = false;
-                            if (cell.value is bool check) value = check;
-                            AddRows(ref cells, new TCellRadio(this, null, ov, value, columnRadio));
-                        }
-                        else if (column is ColumnSwitch columnSwitch)
-                        {
-                            //开关
-                            bool value = false;
-                            if (cell.value is bool check) value = check;
-                            AddRows(ref cells, new TCellSwitch(this, null, ov, value, columnSwitch));
-                        }
-                        else
-                        {
-                            if (cell.value is IList<ICell> icells) AddRows(ref cells, new Template(this, null, ov, column, ref processing, icells));
-                            else if (cell.value is ICell icell) AddRows(ref cells, new Template(this, null, ov, column, ref processing, new ICell[] { icell }));
-                            else AddRows(ref cells, new TCellText(this, null, ov, column, cell.value?.ToString()));
-                        }
-                    }
-                    else cells.Add(new TCellText(this, null, ov, column, ov.ToString()));
-                }
-                //cells.Add(new TCellText(this, null, ov, column, ov?.ToString()));
+                var value = OGetValue(ov, row.record, out var property, out var rv);
+                if (column.Render == null) AddRows(ref cells, ref processing, column, rv, value, property);
+                else AddRows(ref cells, ref processing, column, rv, column.Render?.Invoke(value, row.record, row.i), property);
             }
-        }
-        void AddRows(ref List<TCell> cells, ref int processing, Column column, object ov, PropertyDescriptor prop)
-        {
-            if (column is ColumnCheck columnCheck)
-            {
-                //复选框
-                has_check = true;
-                bool value = false;
-                if (prop.GetValue(ov) is bool check) value = check;
-                AddRows(ref cells, new TCellCheck(this, prop, ov, value, columnCheck));
-            }
-            else if (column is ColumnRadio columnRadio)
-            {
-                //单选框
-                has_check = true;
-                bool value = false;
-                if (prop.GetValue(ov) is bool check) value = check;
-                AddRows(ref cells, new TCellRadio(this, prop, ov, value, columnRadio));
-            }
-            else if (column is ColumnSwitch columnSwitch)
-            {
-                //开关
-                bool value = false;
-                if (prop.GetValue(ov) is bool check) value = check;
-                AddRows(ref cells, new TCellSwitch(this, prop, ov, value, columnSwitch));
-            }
-            else
-            {
-                var value = prop.GetValue(ov);
-                if (value is IList<ICell> icells) AddRows(ref cells, new Template(this, prop, ov, column, ref processing, icells));
-                else if (value is ICell icell) AddRows(ref cells, new Template(this, prop, ov, column, ref processing, new ICell[] { icell }));
-                else AddRows(ref cells, new TCellText(this, prop, ov, column, value?.ToString()));
-            }
+            else AddRows(ref cells, ref processing, column, null, column.Render?.Invoke(null, row.record, row.i), null);
         }
 
-        string? OGetValue(TempTable data_temp, int i_r, string key)
+        /// <summary>
+        /// 添加行
+        /// </summary>
+        /// <param name="cells">列</param>
+        /// <param name="processing">动画</param>
+        /// <param name="column">表头</param>
+        /// <param name="ov">原始值</param>
+        /// <param name="value">真值</param>
+        /// <param name="prop">反射</param>
+        void AddRows(ref List<TCell> cells, ref int processing, Column column, object? ov, object? value, PropertyDescriptor? prop)
         {
-            var value = data_temp.rows[i_r].cells[key];
-            if (value is AntItem item)
+            if (value == null) cells.Add(new TCellText(this, prop, ov, column, null));
+            else
             {
-                var val = item.value;
-                if (val is IList<ICell> icells)
+                if (column is ColumnCheck columnCheck)
                 {
-                    var vals = new List<string>(icells.Count);
-                    foreach (var cell in icells)
-                    {
-                        var str = cell.ToString();
-                        if (!string.IsNullOrEmpty(str)) vals.Add(str);
-                    }
-                    return string.Join(" ", vals);
+                    //复选框
+                    has_check = true;
+                    bool value_check = false;
+                    if (value is bool check) value_check = check;
+                    AddRows(ref cells, new TCellCheck(this, prop, ov, value_check, columnCheck));
                 }
-                else return val?.ToString();
-            }
-            else if (value is PropertyDescriptor prop)
-            {
-                var val = prop.GetValue(data_temp.rows[i_r].record);
-                if (val is IList<ICell> icells)
+                else if (column is ColumnRadio columnRadio)
                 {
-                    var vals = new List<string>(icells.Count);
-                    foreach (var cell in icells)
-                    {
-                        var str = cell.ToString();
-                        if (!string.IsNullOrEmpty(str)) vals.Add(str);
-                    }
-                    return string.Join(" ", vals);
+                    //单选框
+                    has_check = true;
+                    bool value_check = false;
+                    if (value is bool check) value_check = check;
+                    AddRows(ref cells, new TCellRadio(this, prop, ov, value_check, columnRadio));
                 }
-                else return val?.ToString();
+                else if (column is ColumnSwitch columnSwitch)
+                {
+                    //开关
+                    bool value_check = false;
+                    if (value is bool check) value_check = check;
+                    AddRows(ref cells, new TCellSwitch(this, prop, ov, value_check, columnSwitch));
+                }
+                else if (value is IList<ICell> icells) AddRows(ref cells, new Template(this, prop, ov, column, ref processing, icells));
+                else if (value is ICell icell) AddRows(ref cells, new Template(this, prop, ov, column, ref processing, new ICell[] { icell }));
+                else cells.Add(new TCellText(this, prop, ov, column, value.ToString()));
             }
-            else return value?.ToString();
         }
 
         void AddRows(ref List<TCell> cells, TCell data)
@@ -867,6 +801,56 @@ namespace AntdUI
             }
             rows.Insert(0, row);
             return row;
+        }
+
+        string? OGetValue(TempTable data_temp, int i_r, string key)
+        {
+            var value = data_temp.rows[i_r].cells[key];
+            if (value is AntItem item)
+            {
+                var val = item.value;
+                if (val is IList<ICell> icells)
+                {
+                    var vals = new List<string>(icells.Count);
+                    foreach (var cell in icells)
+                    {
+                        var str = cell.ToString();
+                        if (!string.IsNullOrEmpty(str)) vals.Add(str);
+                    }
+                    return string.Join(" ", vals);
+                }
+                else return val?.ToString();
+            }
+            else if (value is PropertyDescriptor prop)
+            {
+                var val = prop.GetValue(data_temp.rows[i_r].record);
+                if (val is IList<ICell> icells)
+                {
+                    var vals = new List<string>(icells.Count);
+                    foreach (var cell in icells)
+                    {
+                        var str = cell.ToString();
+                        if (!string.IsNullOrEmpty(str)) vals.Add(str);
+                    }
+                    return string.Join(" ", vals);
+                }
+                else return val?.ToString();
+            }
+            else return value?.ToString();
+        }
+
+        object? OGetValue(object? ov, object record, out PropertyDescriptor? property, out object? value)
+        {
+            value = ov;
+            property = null;
+            if (ov is AntItem cell) return cell.value;
+            else if (ov is PropertyDescriptor prop)
+            {
+                value = record;
+                property = prop;
+                return prop.GetValue(record);
+            }
+            return ov;
         }
 
         #region MVVM
@@ -934,10 +918,11 @@ namespace AntdUI
                 {
                     if (template.value.Count == 1)
                     {
-                        if (template.value[0].SValue(cel)) count++;
+                        if (template.value[0].SValue(cell)) count++;
                     }
                     else count++;
                 }
+                else count++;
                 if (count > 0)
                 {
                     LoadLayout();

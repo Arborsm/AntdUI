@@ -164,7 +164,15 @@ namespace AntdUI
         /// </summary>
         class TCellCheck : TCell
         {
-            public TCellCheck(Table table, PropertyDescriptor? prop, object ov, bool value, ColumnCheck column) : base(table, prop, ov)
+            /// <summary>
+            /// 复选框
+            /// </summary>
+            /// <param name="table">表格</param>
+            /// <param name="prop">反射</param>
+            /// <param name="ov">行数据</param>
+            /// <param name="value">值</param>
+            /// <param name="column">表头</param>
+            public TCellCheck(Table table, PropertyDescriptor? prop, object? ov, bool value, ColumnCheck column) : base(table, prop, ov)
             {
                 _checked = value;
                 AnimationCheckValue = _checked ? 1F : 0F;
@@ -268,7 +276,15 @@ namespace AntdUI
         /// </summary>
         class TCellRadio : TCell
         {
-            public TCellRadio(Table table, PropertyDescriptor? prop, object ov, bool value, ColumnRadio column) : base(table, prop, ov)
+            /// <summary>
+            /// 单选框
+            /// </summary>
+            /// <param name="table">表格</param>
+            /// <param name="prop">反射</param>
+            /// <param name="ov">行数据</param>
+            /// <param name="value">值</param>
+            /// <param name="column">表头</param>
+            public TCellRadio(Table table, PropertyDescriptor? prop, object? ov, bool value, ColumnRadio column) : base(table, prop, ov)
             {
                 _checked = value;
                 AnimationCheckValue = _checked ? 1F : 0F;
@@ -370,7 +386,15 @@ namespace AntdUI
         /// </summary>
         class TCellSwitch : TCell
         {
-            public TCellSwitch(Table table, PropertyDescriptor? prop, object ov, bool value, ColumnSwitch _column) : base(table, prop, ov)
+            /// <summary>
+            /// 开关
+            /// </summary>
+            /// <param name="table">表格</param>
+            /// <param name="prop">反射</param>
+            /// <param name="ov">行数据</param>
+            /// <param name="value">值</param>
+            /// <param name="_column">表头</param>
+            public TCellSwitch(Table table, PropertyDescriptor? prop, object? ov, bool value, ColumnSwitch _column) : base(table, prop, ov)
             {
                 column = _column;
                 _checked = value;
@@ -575,6 +599,14 @@ namespace AntdUI
         /// </summary>
         class TCellText : TCell
         {
+            /// <summary>
+            /// 普通文本
+            /// </summary>
+            /// <param name="table">表格</param>
+            /// <param name="prop">反射</param>
+            /// <param name="ov">行数据</param>
+            /// <param name="_column">表头</param>
+            /// <param name="_value">文本</param>
             public TCellText(Table table, PropertyDescriptor? prop, object? ov, Column _column, string? _value) : base(table, prop, ov)
             {
                 column = _column;
@@ -671,9 +703,7 @@ namespace AntdUI
 
         internal abstract class TCell
         {
-#pragma warning disable CS8618
-            public TCell(Table table, PropertyDescriptor? prop, object ov)
-#pragma warning restore CS8618
+            public TCell(Table table, PropertyDescriptor? prop, object? ov)
             {
                 PARENT = table;
                 PROPERTY = prop;
@@ -711,7 +741,7 @@ namespace AntdUI
         /// </summary>
         internal class Template : TCell
         {
-            public Template(Table table, PropertyDescriptor? prop, object ov, Column _column, ref int processing, IList<ICell> _value) : base(table, prop, ov)
+            public Template(Table table, PropertyDescriptor? prop, object? ov, Column _column, ref int processing, IList<ICell> _value) : base(table, prop, ov)
             {
                 column = _column;
                 var list = new List<ITemplate>(_value.Count);

@@ -59,9 +59,9 @@ namespace AntdUI
         #endregion
 
         internal Action<bool>? Changed { get; set; }
-        public void OnPropertyChanged(bool key)
+        public void OnPropertyChanged(bool layout = false)
         {
-            Changed?.Invoke(key);
+            Changed?.Invoke(layout);
         }
     }
 }

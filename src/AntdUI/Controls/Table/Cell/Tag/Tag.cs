@@ -53,7 +53,7 @@ namespace AntdUI
             {
                 if (fore == value) return;
                 fore = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -68,7 +68,7 @@ namespace AntdUI
             {
                 if (back == value) return;
                 back = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -83,7 +83,7 @@ namespace AntdUI
             {
                 if (borderwidth == value) return;
                 borderwidth = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -98,7 +98,7 @@ namespace AntdUI
             {
                 if (_type == value) return;
                 _type = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 

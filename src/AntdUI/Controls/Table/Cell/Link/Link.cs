@@ -68,7 +68,7 @@ namespace AntdUI
                 if (textAlign == value) return;
                 textAlign = value;
                 textAlign.SetAlignment(ref stringFormat);
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -82,7 +82,7 @@ namespace AntdUI
             {
                 if (enabled == value) enabled = value;
                 enabled = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 

@@ -38,10 +38,10 @@ namespace AntdUI
             }
             else
             {
-                var size = g.MeasureString(Text ?? Config.NullText, font);
-                if (HasImage && ShowArrow) return new Size((int)Math.Ceiling(size.Width + size.Height * 2) + gap2 * 3, (int)Math.Ceiling(size.Height) + gap);
-                else if (HasImage || ShowArrow) return new Size((int)Math.Ceiling(size.Width + size.Height + gap) + gap2 * 2, (int)Math.Ceiling(size.Height) + gap);
-                return new Size((int)Math.Ceiling(size.Width) + gap2 * 2, (int)Math.Ceiling(size.Height) + gap);
+                var size = g.MeasureString(Text ?? Config.NullText, font).Size();
+                if (HasImage && ShowArrow) return new Size(size.Width + size.Height * 2 + gap2 * 3, size.Height + gap);
+                else if (HasImage || ShowArrow) return new Size(size.Width + size.Height + gap + gap2 * 2, size.Height + gap);
+                return new Size(size.Width + gap2 * 2, size.Height + gap);
             }
         }
 
@@ -95,13 +95,13 @@ namespace AntdUI
                                 ThreadImageHover = new ITask((i) =>
                                 {
                                     AnimationImageHoverValue = Animation.Animate(i, t, 1F, AnimationType.Ball);
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                     return true;
                                 }, 10, t, () =>
                                 {
                                     AnimationImageHoverValue = 1F;
                                     AnimationImageHover = false;
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                 });
                             }
                             else
@@ -109,13 +109,13 @@ namespace AntdUI
                                 ThreadImageHover = new ITask((i) =>
                                 {
                                     AnimationImageHoverValue = 1F - Animation.Animate(i, t, 1F, AnimationType.Ball);
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                     return true;
                                 }, 10, t, () =>
                                 {
                                     AnimationImageHoverValue = 0F;
                                     AnimationImageHover = false;
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                 });
                             }
                         }
@@ -130,12 +130,12 @@ namespace AntdUI
                                 {
                                     AnimationHoverValue += addvalue;
                                     if (AnimationHoverValue > _back_hover.A) { AnimationHoverValue = _back_hover.A; return false; }
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                     return true;
                                 }, 10, () =>
                                 {
                                     AnimationHover = false;
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                 });
                             }
                             else
@@ -144,23 +144,23 @@ namespace AntdUI
                                 {
                                     AnimationHoverValue -= addvalue;
                                     if (AnimationHoverValue < 1) { AnimationHoverValue = 0; return false; }
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                     return true;
                                 }, 10, () =>
                                 {
                                     AnimationHover = false;
-                                    OnPropertyChanged(false);
+                                    OnPropertyChanged();
                                 });
                             }
                         }
                         else
                         {
                             AnimationHoverValue = _back_hover.A;
-                            OnPropertyChanged(false);
+                            OnPropertyChanged();
                         }
                     }
                     else AnimationHoverValue = _back_hover.A;
-                    OnPropertyChanged(false);
+                    OnPropertyChanged();
                 }
             }
         }
@@ -178,12 +178,12 @@ namespace AntdUI
                     if (AnimationClickValue > 0.6) AnimationClickValue = AnimationClickValue.Calculate(0.04F);
                     else AnimationClickValue += AnimationClickValue = AnimationClickValue.Calculate(0.1F);
                     if (AnimationClickValue > 1) { AnimationClickValue = 0F; return false; }
-                    OnPropertyChanged(false);
+                    OnPropertyChanged();
                     return true;
                 }, 50, () =>
                 {
                     AnimationClick = false;
-                    OnPropertyChanged(false);
+                    OnPropertyChanged();
                 });
             }
         }

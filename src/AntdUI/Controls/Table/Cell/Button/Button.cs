@@ -54,7 +54,7 @@ namespace AntdUI
             {
                 if (fore == value) fore = value;
                 fore = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -71,7 +71,7 @@ namespace AntdUI
             {
                 if (back == value) return;
                 back = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -84,6 +84,21 @@ namespace AntdUI
         /// 激活背景颜色
         /// </summary>
         public Color? BackActive { get; set; }
+
+        string? backExtend = null;
+        /// <summary>
+        /// 背景渐变色
+        /// </summary>
+        public string? BackExtend
+        {
+            get => backExtend;
+            set
+            {
+                if (backExtend == value) return;
+                backExtend = value;
+                OnPropertyChanged();
+            }
+        }
 
         #endregion
 
@@ -100,7 +115,7 @@ namespace AntdUI
             {
                 if (defaultback == value) return;
                 defaultback = value;
-                if (type == TTypeMini.Default) OnPropertyChanged(false);
+                if (type == TTypeMini.Default) OnPropertyChanged();
             }
         }
 
@@ -115,7 +130,7 @@ namespace AntdUI
             {
                 if (defaultbordercolor == value) return;
                 defaultbordercolor = value;
-                if (type == TTypeMini.Default) OnPropertyChanged(false);
+                if (type == TTypeMini.Default) OnPropertyChanged();
             }
         }
 
@@ -134,7 +149,7 @@ namespace AntdUI
             {
                 if (borderWidth == value) return;
                 borderWidth = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -223,7 +238,7 @@ namespace AntdUI
             {
                 if (radius == value) return;
                 radius = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -253,7 +268,7 @@ namespace AntdUI
             {
                 if (type == value) return;
                 type = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -268,7 +283,7 @@ namespace AntdUI
             {
                 if (ghost == value) return;
                 ghost = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -299,7 +314,7 @@ namespace AntdUI
             {
                 if (isLink == value) return;
                 isLink = value;
-                if (showArrow) OnPropertyChanged(false);
+                if (showArrow) OnPropertyChanged();
             }
         }
 

@@ -270,9 +270,22 @@ namespace AntdUI
                             }
                             else
                             {
-                                using (var brush = new Pen(btn.Enabled ? _back : Style.Db.FillTertiary, border))
+                                if (btn.Enabled)
                                 {
-                                    g.DrawPath(brush, path);
+                                    using (var brushback = btn.BackExtend.BrushEx(rect_read, _back))
+                                    {
+                                        using (var brush = new Pen(brushback, border))
+                                        {
+                                            g.DrawPath(brush, path);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    using (var brush = new Pen(Style.Db.FillTertiary, border))
+                                    {
+                                        g.DrawPath(brush, path);
+                                    }
                                 }
                                 PaintButton(g, font, btn, btn.Enabled ? _back : Style.Db.TextQuaternary, rect_read);
                             }
@@ -301,9 +314,19 @@ namespace AntdUI
 
                         #region 绘制背景
 
-                        using (var brush = new SolidBrush(btn.Enabled ? _back : Style.Db.FillTertiary))
+                        if (btn.Enabled)
                         {
-                            g.FillPath(brush, path);
+                            using (var brush = btn.BackExtend.BrushEx(rect_read, _back))
+                            {
+                                g.FillPath(brush, path);
+                            }
+                        }
+                        else
+                        {
+                            using (var brush = new SolidBrush(Style.Db.FillTertiary))
+                            {
+                                g.FillPath(brush, path);
+                            }
                         }
 
                         if (btn.ExtraMouseDown)
@@ -427,7 +450,6 @@ namespace AntdUI
 
                         rect_text = new Rectangle(read_x + sps + icon_size + sp, rect_read.Y + sps, font_width, rect_read.Height - sps2);
                         var rect_l = new Rectangle(read_x + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
-
                         PaintButtonPaintImage(g, btn, color, rect_l);
                     }
                     else

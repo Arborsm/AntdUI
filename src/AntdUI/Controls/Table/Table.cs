@@ -433,7 +433,7 @@ namespace AntdUI
 
         #region 初始化
 
-        ScrollBar scrollBar;
+        readonly ScrollBar scrollBar;
         public Table() { scrollBar = new ScrollBar(this, true, true, radius, !visibleHeader); }
 
         protected override void Dispose(bool disposing)
@@ -659,6 +659,11 @@ namespace AntdUI
         internal CheckState checkStateOld = CheckState.Unchecked;
 
         internal bool NoTitle { get; set; } = true;
+
+        /// <summary>
+        /// 插槽
+        /// </summary>
+        public new Func<object?, object, int, object?>? Render { get; }
     }
 
     /// <summary>
@@ -680,6 +685,11 @@ namespace AntdUI
         /// 点击时自动改变选中状态
         /// </summary>
         public bool AutoCheck { get; set; } = true;
+
+        /// <summary>
+        /// 插槽
+        /// </summary>
+        public new Func<object?, object, int, object?>? Render { get; }
     }
 
     /// <summary>
@@ -708,6 +718,55 @@ namespace AntdUI
         public bool AutoCheck { get; set; } = true;
 
         public Func<bool, object?, int, int, bool>? Call { get; set; }
+
+        /// <summary>
+        /// 插槽
+        /// </summary>
+        public new Func<object?, object, int, object?>? Render { get; }
+    }
+
+    public class Column<T> : Column
+    {
+        /// <summary>
+        /// 表头
+        /// </summary>
+        /// <param name="key">绑定名称</param>
+        /// <param name="title">显示文字</param>
+        public Column(string key, string title) : base(key, title) { }
+
+        /// <summary>
+        /// 表头
+        /// </summary>
+        /// <param name="key">绑定名称</param>
+        /// <param name="title">显示文字</param>
+        /// <param name="align">对齐方式</param>
+        public Column(string key, string title, ColumnAlign align) : base(key, title, align) { }
+
+        Func<object?, T, int, object?>? render;
+        /// <summary>
+        /// 插槽
+        /// </summary>
+        public new Func<object?, T, int, object?>? Render
+        {
+            set
+            {
+                if (render == value) return;
+                render = value;
+                if (render == null) base.Render = null;
+                else
+                {
+                    base.Render = (val, record, index) =>
+                    {
+                        if (record is T recordT)
+                        {
+                            var value = render(val, recordT, index);
+                            return value;
+                        }
+                        return null;
+                    };
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -848,6 +907,11 @@ namespace AntdUI
         }
 
         #endregion
+
+        /// <summary>
+        /// 插槽
+        /// </summary>
+        public Func<object?, object, int, object?>? Render { get; set; }
     }
 
     #endregion

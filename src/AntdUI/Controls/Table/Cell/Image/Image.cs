@@ -64,7 +64,7 @@ namespace AntdUI
             {
                 if (bordercolor == value) return;
                 bordercolor = value;
-                if (borderwidth > 0) OnPropertyChanged(false);
+                if (borderwidth > 0) OnPropertyChanged();
             }
         }
 
@@ -79,7 +79,7 @@ namespace AntdUI
             {
                 if (borderwidth == value) return;
                 borderwidth = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -96,7 +96,7 @@ namespace AntdUI
             {
                 if (radius == value) return;
                 radius = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -111,7 +111,7 @@ namespace AntdUI
             {
                 if (round == value) return;
                 round = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -141,7 +141,7 @@ namespace AntdUI
             {
                 if (imageFit == value) return;
                 imageFit = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -156,7 +156,7 @@ namespace AntdUI
             {
                 if (image == value) return;
                 image = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -171,7 +171,7 @@ namespace AntdUI
             {
                 if (imageSvg == value) return;
                 imageSvg = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -186,7 +186,7 @@ namespace AntdUI
             {
                 if (fillSvg == value) fillSvg = value;
                 fillSvg = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 

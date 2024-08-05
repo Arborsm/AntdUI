@@ -59,7 +59,7 @@ namespace AntdUI
             {
                 if (fore == value) return;
                 fore = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -74,7 +74,7 @@ namespace AntdUI
             {
                 if (fill == value) return;
                 fill = value;
-                OnPropertyChanged(false);
+                OnPropertyChanged();
             }
         }
 
@@ -92,7 +92,7 @@ namespace AntdUI
                 _state = value;
                 if (value == TState.Processing) OnPropertyChanged(true);
                 else if (old == TState.Processing) OnPropertyChanged(true);
-                else OnPropertyChanged(false);
+                else OnPropertyChanged();
             }
         }
 
