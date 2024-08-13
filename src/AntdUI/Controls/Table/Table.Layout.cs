@@ -32,6 +32,13 @@ namespace AntdUI
             base.OnFontChanged(e);
         }
 
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            if (dataSource == null) return;
+            if (dataOne) LoadLayout();
+        }
+
         string? show_oldrect = null;
         protected override void OnSizeChanged(EventArgs e)
         {
