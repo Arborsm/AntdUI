@@ -175,10 +175,10 @@ namespace AntdUI
         [Description("每次单击箭头键时增加/减少的数量"), Category("数据"), DefaultValue(typeof(decimal), "1")]
         public decimal Increment { get; set; } = 1;
 
-        protected override void CreateHandle()
+        protected override void OnHandleCreated(EventArgs e)
         {
             Text = GetNumberText(currentValue);
-            base.CreateHandle();
+            base.OnHandleCreated(e);
         }
 
         #endregion

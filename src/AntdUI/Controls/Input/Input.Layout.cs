@@ -26,10 +26,10 @@ namespace AntdUI
 {
     partial class Input
     {
-        protected override void OnCreateControl()
+        protected override void OnHandleCreated(EventArgs e)
         {
             FixFontWidth(true);
-            base.OnCreateControl();
+            base.OnHandleCreated(e);
         }
 
         #region 确定字体宽度

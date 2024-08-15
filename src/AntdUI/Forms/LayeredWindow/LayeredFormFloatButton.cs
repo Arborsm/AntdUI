@@ -85,7 +85,7 @@ namespace AntdUI
             Print();
         }
 
-        void SetPoint()
+        bool SetPoint()
         {
             if (config.Control == null)
             {
@@ -94,9 +94,15 @@ namespace AntdUI
             }
             else
             {
+                if (config.Control.IsDisposed)
+                {
+                    IClose();
+                    return false;
+                }
                 var point = config.Control.PointToScreen(Point.Empty);
                 SetPoint(point.X, point.Y, config.Control.Width, config.Control.Height);
             }
+            return true;
         }
 
         void SetPoint(int x, int y, int w, int h)
@@ -139,8 +145,7 @@ namespace AntdUI
 
         private void Form_LSChanged(object? sender, EventArgs e)
         {
-            SetPoint();
-            Print();
+            if (SetPoint()) Print();
         }
 
         #region 渲染
@@ -394,13 +399,16 @@ namespace AntdUI
 
         #region 主题
 
-        protected override void CreateHandle()
+        protected override void OnHandleCreated(EventArgs e)
         {
-            base.CreateHandle();
+            base.OnHandleCreated(e);
             this.AddListener();
         }
+
         protected override void Dispose(bool disposing)
         {
+            config.Form.LocationChanged -= Form_LSChanged;
+            config.Form.SizeChanged -= Form_LSChanged;
             foreach (var it in config.Btns) it.PropertyChanged -= Notify_PropertyChanged;
             base.Dispose(disposing);
         }

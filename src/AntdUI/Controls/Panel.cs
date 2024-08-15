@@ -486,9 +486,9 @@ namespace AntdUI
 
         #endregion
 
-        protected override void CreateHandle()
+        protected override void OnHandleCreated(EventArgs e)
         {
-            base.CreateHandle();
+            base.OnHandleCreated(e);
             Application.AddMessageFilter(this);
             this.AddListener();
         }

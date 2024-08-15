@@ -673,9 +673,9 @@ namespace AntdUI
 
         #region 主题变化
 
-        protected override void CreateHandle()
+        protected override void OnHandleCreated(EventArgs e)
         {
-            base.CreateHandle();
+            base.OnHandleCreated(e);
             this.AddListener();
         }
         public void HandleEvent(EventType id, object? tag)

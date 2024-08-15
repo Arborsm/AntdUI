@@ -27,7 +27,7 @@ namespace AntdUI
     internal class LayeredFormModal : Window
     {
         Modal.Config config;
-        Panel panel_main;
+        Panel? panel_main;
         public LayeredFormModal(Modal.Config _config)
         {
             SetStyle(
@@ -57,76 +57,81 @@ namespace AntdUI
             if (config.Form == null) StartPosition = FormStartPosition.CenterScreen;
             else StartPosition = FormStartPosition.CenterParent;
 
-            btn_ok = new Button
+            if (config.BtnHeight > 0)
             {
-                AutoSizeMode = TAutoSize.Width,
-                Dock = DockStyle.Right,
-                Location = new Point(304, 0),
-                Name = "btn_ok",
-                Size = new Size(64, config.BtnHeight),
-                TabIndex = 0,
-                Type = config.OkType,
-                Text = config.OkText
-            };
-            btn_ok.Click += btn_ok_Click;
-            if (config.OkFont != null) btn_ok.Font = config.OkFont;
-
-            if (config.CancelText != null)
-            {
-                btn_no = new Button
+                btn_ok = new Button
                 {
                     AutoSizeMode = TAutoSize.Width,
-                    BorderWidth = 1F,
                     Dock = DockStyle.Right,
-                    Location = new Point(240, 0),
-                    Name = "btn_no",
+                    Location = new Point(304, 0),
+                    Name = "btn_ok",
                     Size = new Size(64, config.BtnHeight),
-                    TabIndex = 1,
-                    Text = config.CancelText
+                    TabIndex = 0,
+                    Type = config.OkType,
+                    Text = config.OkText
                 };
-                btn_no.Click += btn_no_Click;
-                if (config.CancelFont != null) btn_no.Font = config.CancelFont;
-            }
+                btn_ok.Click += btn_ok_Click;
+                if (config.OkFont != null) btn_ok.Font = config.OkFont;
 
-            panel_main = new Panel
-            {
-                Dock = DockStyle.Bottom,
-                Back = Style.Db.BgElevated,
-                Size = new Size(368, config.BtnHeight)
-            };
-            if (btn_no != null) panel_main.Controls.Add(btn_no);
-            panel_main.Controls.Add(btn_ok);
-            if (config.Btns != null)
-            {
-                var btns = new List<Button>(config.Btns.Length);
-                foreach (var btn in config.Btns)
+                if (config.CancelText != null)
                 {
-                    var _btn = new Button
+                    btn_no = new Button
                     {
                         AutoSizeMode = TAutoSize.Width,
+                        BorderWidth = 1F,
                         Dock = DockStyle.Right,
+                        Location = new Point(240, 0),
+                        Name = "btn_no",
                         Size = new Size(64, config.BtnHeight),
-                        Name = btn.Name,
-                        Text = btn.Text,
-                        Type = btn.Type,
-                        BackColor = btn.Back,
-                        ForeColor = btn.Fore,
-                        Tag = btn.Tag
+                        TabIndex = 1,
+                        Text = config.CancelText
                     };
-                    panel_main.Controls.Add(_btn);
-                    btns.Insert(0, _btn);
+                    btn_no.Click += btn_no_Click;
+                    if (config.CancelFont != null) btn_no.Font = config.CancelFont;
                 }
-                foreach (var btn in btns)
+
+                panel_main = new Panel
                 {
-                    btn.BringToFront();
-                    btn.Click += (a, b) =>
+                    Dock = DockStyle.Bottom,
+                    Back = Style.Db.BgElevated,
+                    Size = new Size(368, config.BtnHeight)
+                };
+                if (btn_no != null) panel_main.Controls.Add(btn_no);
+                panel_main.Controls.Add(btn_ok);
+
+                if (config.Btns != null)
+                {
+                    var btns = new List<Button>(config.Btns.Length);
+                    foreach (var btn in config.Btns)
                     {
-                        config.OnBtns?.Invoke(btn);
-                        Close();
-                    };
+                        var _btn = new Button
+                        {
+                            AutoSizeMode = TAutoSize.Width,
+                            Dock = DockStyle.Right,
+                            Size = new Size(64, config.BtnHeight),
+                            Name = btn.Name,
+                            Text = btn.Text,
+                            Type = btn.Type,
+                            BackColor = btn.Back,
+                            ForeColor = btn.Fore,
+                            Tag = btn.Tag
+                        };
+                        panel_main.Controls.Add(_btn);
+                        btns.Insert(0, _btn);
+                    }
+                    foreach (var btn in btns)
+                    {
+                        btn.BringToFront();
+                        btn.Click += (a, b) =>
+                        {
+                            config.OnBtns?.Invoke(btn);
+                            Close();
+                        };
+                    }
                 }
+                Controls.Add(panel_main);
+                panel_main.MouseMove += Window_MouseDown;
             }
-            Controls.Add(panel_main);
             var tmp = new System.Windows.Forms.Panel
             {
                 Location = new Point(386, 62 + config.BtnHeight),
@@ -153,8 +158,7 @@ namespace AntdUI
                 int butt_h = (int)Math.Round(config.BtnHeight * dpi), gap = (int)Math.Round(8F * dpi), paddingx = (int)Math.Round(24 * dpi), paddingy = (int)Math.Round(20 * dpi),
                     w = (int)Math.Round(config.Width * dpi), wp = w - paddingx * 2;
                 Padding = new Padding(paddingx, paddingy, paddingx, paddingy);
-
-                panel_main.Height = butt_h;
+                if (panel_main != null) panel_main.Height = butt_h;
 
                 using (var fontTitle = new Font(Font.FontFamily, Font.Size * 1.14F, FontStyle.Bold))
                 {
@@ -299,7 +303,6 @@ namespace AntdUI
             });
             tmp.Location = new Point(Width - 30, Height - 30);
             ResumeLayout();
-            panel_main.MouseMove += Window_MouseDown;
             config.Layered = this;
         }
 
@@ -516,13 +519,13 @@ namespace AntdUI
             }
         }
 
-        Button btn_ok;
-        Button? btn_no;
+        Button? btn_ok, btn_no;
 
         #endregion
 
         public void SetOkText(string value)
         {
+            if (btn_ok == null) return;
             btn_ok.Text = value;
         }
 
@@ -530,6 +533,7 @@ namespace AntdUI
         {
             if (btn_no == null)
             {
+                if (panel_main == null) return;
                 if (!string.IsNullOrEmpty(value))
                 {
                     btn_no = new Button
