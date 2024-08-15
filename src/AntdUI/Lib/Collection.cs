@@ -404,9 +404,15 @@ namespace AntdUI
     {
         public AntList() { }
 
-        public AntList(int count)
+        public AntList(int capacity)
         {
-            EnsureSpace(count);
+            EnsureSpace(capacity);
+        }
+
+        public AntList(IList<T> collection)
+        {
+            EnsureSpace(collection.Count);
+            AddRange(collection);
         }
 
         #region 通知

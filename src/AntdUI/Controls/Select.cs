@@ -146,7 +146,7 @@ namespace AntdUI
             {
                 if (selectedValue == value) return;
                 if (value == null || items == null || items.Count == 0) ChangeValueNULL();
-                else ChangeValue(items.IndexOf(value), value);
+                else SetChangeValue(items, value);
                 if (_list) Invalidate();
             }
         }
@@ -179,6 +179,40 @@ namespace AntdUI
             }
             SelectedValueChanged?.Invoke(this, selectedValue);
             SelectedIndexChanged?.Invoke(this, selectedIndex);
+        }
+        void SetChangeValue(BaseCollection items, object val)
+        {
+            for (var i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                if (val.Equals(item))
+                {
+                    ChangeValue(i, item);
+                    return;
+                }
+                else if (item is SelectItem it && it.Tag.Equals(val))
+                {
+                    ChangeValue(i, item);
+                    return;
+                }
+                else if (item is GroupSelectItem group && group.Sub != null && group.Sub.Count > 0)
+                {
+                    foreach (var sub in group.Sub)
+                    {
+                        if (val.Equals(sub))
+                        {
+                            ChangeValue(i, sub);
+                            return;
+                        }
+                        else if (sub is SelectItem it2 && it2.Tag.Equals(val))
+                        {
+                            ChangeValue(i, sub);
+                            return;
+                        }
+                    }
+                }
+            }
+            ChangeValue(items.IndexOf(val), val);
         }
         void ChangeValue(int x, int y, object obj)
         {

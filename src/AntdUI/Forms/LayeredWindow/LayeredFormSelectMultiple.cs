@@ -505,7 +505,8 @@ namespace AntdUI
                 int count = 0;
                 foreach (var item in group.Sub)
                 {
-                    if (selectedValue.Contains(item))
+                    var value = ReadValue(item);
+                    if (selectedValue.Contains(value))
                     {
                         count++;
                         break;
@@ -515,26 +516,34 @@ namespace AntdUI
                 {
                     foreach (var item in group.Sub)
                     {
-                        if (selectedValue.Contains(item)) selectedValue.Remove(item);
+                        var value = ReadValue(item);
+                        if (selectedValue.Contains(value)) selectedValue.Remove(value);
                     }
                 }
                 else
                 {
                     foreach (var item in group.Sub)
                     {
-                        if (!selectedValue.Contains(item)) selectedValue.Add(item);
+                        var value = ReadValue(item);
+                        if (!selectedValue.Contains(value)) selectedValue.Add(value);
                     }
                 }
             }
-            else if (selectedValue.Contains(it.Val)) selectedValue.Remove(it.Val);
+            else if (selectedValue.Contains(ReadValue(it.Val))) selectedValue.Remove(ReadValue(it.Val));
             else
             {
                 if (MaxChoiceCount > 0 && selectedValue.Count >= MaxChoiceCount) return;
-                selectedValue.Add(it.Val);
+                selectedValue.Add(ReadValue(it.Val));
             }
             if (PARENT is SelectMultiple select) select.SelectedValue = selectedValue.ToArray();
             down = false;
             Print();
+        }
+
+        object ReadValue(object obj)
+        {
+            if (obj is SelectItem it) return it.Tag;
+            return obj;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

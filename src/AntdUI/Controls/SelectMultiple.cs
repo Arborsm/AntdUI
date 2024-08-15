@@ -135,6 +135,8 @@ namespace AntdUI
             }
         }
 
+        internal override bool showplaceholder { get => selectedValue.Length == 0; }
+
         /// <summary>
         /// 全选项目
         /// </summary>
