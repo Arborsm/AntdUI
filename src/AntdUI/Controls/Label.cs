@@ -25,7 +25,7 @@ using System.Windows.Forms;
 namespace AntdUI
 {
     /// <summary>
-    /// Label 标签
+    /// Label 文本
     /// </summary>
     /// <remarks>显示一段文本。</remarks>
     [Description("Label 文本")]

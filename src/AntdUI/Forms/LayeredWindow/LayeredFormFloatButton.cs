@@ -299,14 +299,15 @@ namespace AntdUI
         /// <param name="g">GDI</param>
         GraphicsPath DrawShadow(Graphics g, FloatButton.ConfigBtn it)
         {
-            float radius = it.Shape == TShape.Circle ? it.rect_read.Height : it.Radius * Config.Dpi;
-            var path = Helper.RoundPath(it.rect_read, radius, it.Shape);
+            bool round = it.Round || it.Shape == TShape.Circle;
+            float radius = round ? it.rect_read.Height : it.Radius * Config.Dpi;
+            var path = Helper.RoundPath(it.rect_read, radius, round);
             if (Config.ShadowEnabled)
             {
                 if (it.shadow_temp == null || (it.shadow_temp.Width != it.rect.Width || it.shadow_temp.Height != it.rect.Height))
                 {
                     it.shadow_temp?.Dispose();
-                    using (var path2 = Helper.RoundPath(new Rectangle(ShadowXY, ShadowXY, it.rect_read.Width, it.rect_read.Height), radius, it.Shape))
+                    using (var path2 = Helper.RoundPath(new Rectangle(ShadowXY, ShadowXY, it.rect_read.Width, it.rect_read.Height), radius, round))
                     {
                         it.shadow_temp = path2.PaintShadow(it.rect.Width, it.rect.Height, 14);
                     }

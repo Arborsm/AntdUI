@@ -579,7 +579,13 @@ namespace AntdUI
         /// </summary>
         public Color? OnlineCustom { get; set; }
         public Image? Icon { get; set; }
+        public string? IconSvg { get; set; }
         public string Text { get; set; }
+
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        public bool Enable { get; set; } = true;
 
         /// <summary>
         /// 子文本
@@ -654,8 +660,10 @@ namespace AntdUI
             Online = _val.Online;
             OnlineCustom = _val.OnlineCustom;
             Icon = _val.Icon;
+            IconSvg = _val.IconSvg;
             Text = _val.Text;
             SubText = _val.SubText;
+            Enable = _val.Enable;
             PY = Pinyin.GetPinyin(_val.Text + _val.SubText).ToLower();
             PYS = Pinyin.GetInitials(_val.Text + _val.SubText).ToLower();
             ID = _i;
@@ -669,6 +677,11 @@ namespace AntdUI
             Show = true;
         }
         public object Val { get; set; }
+
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        public bool Enable { get; set; } = true;
 
         /// <summary>
         /// 子选项
@@ -686,6 +699,16 @@ namespace AntdUI
         public Color? OnlineCustom { get; set; }
 
         public Image? Icon { get; set; }
+        public string? IconSvg { get; set; }
+
+        /// <summary>
+        /// 是否包含图标
+        /// </summary>
+        public bool HasIcon
+        {
+            get => IconSvg != null || Icon != null;
+        }
+
         public Rectangle RectIcon { get; set; }
         public Rectangle RectOnline { get; set; }
 
@@ -716,9 +739,9 @@ namespace AntdUI
             Rect = rect;
             if (Val is SelectItem)
             {
-                if (Online > -1 || Icon != null)
+                if (Online > -1 || HasIcon)
                 {
-                    if (Online > -1 && Icon != null)
+                    if (Online > -1 && HasIcon)
                     {
                         int h2 = (int)(rect_text.Height * 0.7F);
                         RectOnline = new Rectangle(rect_text.X + (h2 - gap_y) / 2, rect_text.Y + gap, gap_y, gap_y);
