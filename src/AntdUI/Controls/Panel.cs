@@ -245,11 +245,21 @@ namespace AntdUI
 
         #region 箭头
 
+        int arrwoSize = 8;
         /// <summary>
         /// 箭头大小
         /// </summary>
         [Description("箭头大小"), Category("箭头"), DefaultValue(8)]
-        public int ArrowSize { get; set; } = 8;
+        public int ArrowSize
+        {
+            get => arrwoSize;
+            set
+            {
+                if (arrwoSize == value) return;
+                arrwoSize = value;
+                Invalidate();
+            }
+        }
 
         TAlign arrowAlign = TAlign.None;
         /// <summary>

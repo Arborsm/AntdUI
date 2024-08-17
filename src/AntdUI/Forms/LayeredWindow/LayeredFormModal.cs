@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -306,13 +305,11 @@ namespace AntdUI
             config.Layered = this;
         }
 
-        bool min = true;
-
         public override bool AutoHandDpi { get; set; } = false;
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void DestroyHandle()
         {
-            base.OnClosing(e);
+            base.DestroyHandle();
             close_button.Dispose();
             if (config.Content is Control control) control.Dispose();
             Dispose();
@@ -428,17 +425,7 @@ namespace AntdUI
             }
             base.OnMouseMove(e);
         }
-        protected override void OnMouseEnter(EventArgs e)
-        {
-            min = false;
-            base.OnMouseEnter(e);
-        }
 
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            min = true;
-            base.OnMouseLeave(e);
-        }
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left && config.CloseIcon && rect_close.Contains(e.Location))
@@ -471,6 +458,7 @@ namespace AntdUI
             if (config.OnOk == null) DialogResult = DialogResult.OK;
             else
             {
+                if (btn_ok == null) return;
                 isclose = false;
                 btn_ok.Loading = true;
                 bool DisableCancel = false;

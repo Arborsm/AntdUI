@@ -46,36 +46,35 @@ namespace AntdUI
             set { base.AllowClear = false; }
         }
 
-        decimal minimum = decimal.Zero;
-        [Description("最小值"), Category("数据"), DefaultValue(typeof(decimal), "0")]
-        public decimal Minimum
+        decimal? minimum = null, maximum = null;
+        [Description("最小值"), Category("数据"), DefaultValue(null)]
+        public decimal? Minimum
         {
             get => minimum;
             set
             {
                 minimum = value;
-                if (minimum > maximum) maximum = value;
+                if (minimum.HasValue && maximum.HasValue && minimum.Value > maximum.Value) maximum = minimum.Value;
                 Value = Constrain(currentValue);
             }
         }
 
-        decimal maximum = 100;
-        [Description("最大值"), Category("数据"), DefaultValue(typeof(decimal), "100")]
-        public decimal Maximum
+        [Description("最大值"), Category("数据"), DefaultValue(null)]
+        public decimal? Maximum
         {
             get => maximum;
             set
             {
                 maximum = value;
-                if (minimum > maximum) minimum = maximum;
+                if (minimum.HasValue && maximum.HasValue && minimum.Value > maximum.Value) minimum = maximum.Value;
                 Value = Constrain(currentValue);
             }
         }
 
         decimal Constrain(decimal value)
         {
-            if (value < minimum) value = minimum;
-            if (value > maximum) value = maximum;
+            if (minimum.HasValue && value < minimum.Value) value = minimum.Value;
+            if (maximum.HasValue && value > maximum.Value) value = maximum.Value;
             return value;
         }
 
