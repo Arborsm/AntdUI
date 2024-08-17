@@ -604,9 +604,9 @@ namespace AntdUI
             }
             return false;
         }
-        string? oldmove = null;
-        TooltipForm? tooltipForm = null;
-        void CloseTip(bool clear = false)
+        public string? oldmove = null;
+        public TooltipForm? tooltipForm = null;
+        public void CloseTip(bool clear = false)
         {
             tooltipForm?.IClose();
             tooltipForm = null;
@@ -617,7 +617,7 @@ namespace AntdUI
 
         #region 判断是否在内部
 
-        TCell? CellContains(RowTemplate[] rows, int ex, int ey, out int r_x, out int r_y, out int offset_x, out int offset_xi, out int offset_y, out int i_row, out int i_cel, out int mode)
+        public TCell? CellContains(RowTemplate[] rows, int ex, int ey, out int r_x, out int r_y, out int offset_x, out int offset_xi, out int offset_y, out int i_row, out int i_cel, out int mode)
         {
             mode = 0;
             int sx = scrollBar.ValueX, sy = scrollBar.ValueY;

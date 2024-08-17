@@ -197,7 +197,7 @@ namespace AntdUI
         #endregion
     }
 
-    internal class TooltipForm : ILayeredFormOpacity, ITooltip
+    public class TooltipForm : ILayeredFormOpacity, ITooltip
     {
         readonly Control? ocontrol = null;
         bool multiline = false;
@@ -525,7 +525,7 @@ namespace AntdUI
         public int? CustomWidth { get; set; }
     }
 
-    internal interface ITooltipConfig
+    public interface ITooltipConfig
     {
         /// <summary>
         /// 字体

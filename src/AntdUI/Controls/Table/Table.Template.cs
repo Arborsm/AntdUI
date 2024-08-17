@@ -28,7 +28,7 @@ namespace AntdUI
         /// <summary>
         /// 行数据
         /// </summary>
-        internal class RowTemplate
+        public class RowTemplate
         {
             Table PARENT;
             public RowTemplate(Table table, TCell[] cell, object? value)
@@ -701,7 +701,7 @@ namespace AntdUI
             }
         }
 
-        internal abstract class TCell
+        public abstract class TCell
         {
             public TCell(Table table, PropertyDescriptor? prop, object? ov)
             {

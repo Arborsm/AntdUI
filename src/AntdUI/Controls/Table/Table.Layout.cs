@@ -53,7 +53,7 @@ namespace AntdUI
             }
         }
 
-        internal RowTemplate[]? rows = null;
+        public RowTemplate[]? rows = null;
         internal List<object> rows_Expand = new List<object>();
         Rectangle[] dividers = new Rectangle[0], dividerHs = new Rectangle[0];
         MoveHeader[] moveheaders = new MoveHeader[0];

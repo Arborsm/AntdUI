@@ -27,7 +27,7 @@ namespace AntdUI
     {
         #region 编辑模式
 
-        bool inEditMode = false;
+        public bool inEditMode = false;
         void EditModeClose()
         {
             if (inEditMode)
