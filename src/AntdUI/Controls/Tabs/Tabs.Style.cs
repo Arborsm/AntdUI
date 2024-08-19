@@ -703,7 +703,7 @@ namespace AntdUI
                 }
                 return false;
             }
-            public bool MouseClick(TabPage page, int i, int x, int y) { return false; }
+            public bool MouseClick(TabPage page, int i, int x, int y) => false;
             public void MouseLeave() { }
         }
 
@@ -1516,7 +1516,7 @@ namespace AntdUI
                     }
                 }
             }
-            public bool MouseMovePre(int x, int y) { return false; }
+            public bool MouseMovePre(int x, int y) => false;
 
             public void MouseLeave()
             {
@@ -2359,7 +2359,7 @@ namespace AntdUI
                     }
                 }
             }
-            public bool MouseMovePre(int x, int y) { return false; }
+            public bool MouseMovePre(int x, int y) => false;
 
             public void MouseLeave()
             {

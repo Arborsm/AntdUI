@@ -94,7 +94,7 @@ namespace AntdUI
         [Description("位置"), Category("外观"), DefaultValue(TabAlignment.Top)]
         public TabAlignment Alignment
         {
-            get { return alignment; }
+            get => alignment;
             set
             {
                 if (alignment == value) return;
@@ -110,7 +110,7 @@ namespace AntdUI
         [Description("标签居中展示"), Category("外观"), DefaultValue(false)]
         public bool Centered
         {
-            get { return centered; }
+            get => centered;
             set
             {
                 if (centered == value) return;
