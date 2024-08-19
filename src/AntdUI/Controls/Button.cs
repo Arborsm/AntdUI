@@ -34,13 +34,13 @@ namespace AntdUI
     [DefaultProperty("Text")]
     public class Button : IControl, IButtonControl
     {
-        Render.IButton button;
+        IButton button;
 
         public Button()
         {
             SetStyle(ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
             base.BackColor = Color.Transparent;
-            button = new Render.IButton(this, () => BeforeAutoSize());
+            button = new IButton(this, () => BeforeAutoSize());
         }
 
         #region 属性
