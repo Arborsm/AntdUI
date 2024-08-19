@@ -475,8 +475,8 @@ namespace AntdUI
                 {
                     int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
                     rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
+                    PaintButtonTextAlign(btn, rect_read, ref rect_text);
                 }
-                PaintButtonTextAlign(btn, rect_read, ref rect_text);
                 using (var brush = new SolidBrush(color))
                 {
                     g.DrawString(btn.Text, font, brush, rect_text, btn.stringFormat);
@@ -609,8 +609,8 @@ namespace AntdUI
                 {
                     int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
                     rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
+                    PaintButtonTextAlign(btn, rect_read, ref rect_text);
                 }
-                PaintButtonTextAlign(btn, rect_read, ref rect_text);
                 using (var brush = new SolidBrush(color))
                 using (var brushHover = new SolidBrush(colorHover))
                 {

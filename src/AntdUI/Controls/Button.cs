@@ -2118,8 +2118,8 @@ namespace AntdUI
                 {
                     int sps = (int)(font_size.Height * .4F), sps2 = sps * 2;
                     rect_text = new Rectangle(rect_read.X + sps, rect_read.Y + sps, rect_read.Width - sps2, rect_read.Height - sps2);
+                    PaintTextAlign(rect_read, ref rect_text);
                 }
-                PaintTextAlign(rect_read, ref rect_text);
                 using (var brush = new SolidBrush(color))
                 using (var brushHover = new SolidBrush(colorHover))
                 {
@@ -2201,22 +2201,23 @@ namespace AntdUI
         {
             int font_Height = font_size.Height;
             if (textLine && (iconPosition == TAlignMini.Top || iconPosition == TAlignMini.Bottom)) font_Height = g.MeasureString(Config.NullText, font).Size().Height;
-            int icon_size = (int)(font_Height * iconratio), sp = (int)(font_Height * .25F), sps = (int)(font_size.Height * .4F);
+            int icon_size = (int)(font_Height * iconratio), sp = (int)(font_Height * .25F), sps = (int)(font_size.Height * .4F), rsps = icon_size + sp;
+            Rectangle rect_text;
             switch (iconPosition)
             {
                 case TAlignMini.Bottom:
                 case TAlignMini.Right:
+                    rect_text = new Rectangle(rect_read.X + rsps, rect_read.Y, rect_read.Width - rsps, rect_read.Height);
                     rect_r = new Rectangle(rect_read.X + sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
                     break;
                 case TAlignMini.Top:
                 case TAlignMini.Left:
                 default:
-                    int l_x = rect_read.X + ((rect_read.Width - (font_size.Width + icon_size + sp)) / 2);
+                    rect_text = new Rectangle(rect_read.X, rect_read.Y, rect_read.Width - rsps, rect_read.Height);
                     rect_r = new Rectangle(rect_read.Right - icon_size - sps, rect_read.Y + (rect_read.Height - icon_size) / 2, icon_size, icon_size);
                     break;
             }
-
-            return rect_read;
+            return rect_text;
         }
 
         void PaintTextAlign(Rectangle rect_read, ref Rectangle rect_text)
