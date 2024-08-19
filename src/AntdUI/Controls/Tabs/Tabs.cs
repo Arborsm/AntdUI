@@ -156,6 +156,9 @@ namespace AntdUI
                 case TabType.Card:
                     if (style is StyleCard stylec) return stylec;
                     return new StyleCard(this);
+                case TabType.Card2:
+                    if (style is StyleCard2 stylec2) return stylec2;
+                    return new StyleCard2(this);
                 case TabType.Line:
                 default:
                     if (style is StyleLine stylel) return stylel;
