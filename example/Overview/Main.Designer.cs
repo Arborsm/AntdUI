@@ -62,7 +62,7 @@ namespace Overview
             // 
             btn_back.Dock = DockStyle.Left;
             btn_back.Ghost = true;
-            btn_back.ImageSvg = Properties.Resources.app_back;
+            btn_back.IconSvg = Properties.Resources.app_back;
             btn_back.Location = new Point(0, 0);
             btn_back.Name = "btn_back";
             btn_back.Size = new Size(90, 40);
@@ -76,7 +76,7 @@ namespace Overview
             btn_mode.Dock = DockStyle.Right;
             btn_mode.Font = new Font("Microsoft YaHei UI", 18F);
             btn_mode.Ghost = true;
-            btn_mode.ImageSvg = Properties.Resources.app_light;
+            btn_mode.IconSvg = Properties.Resources.app_light;
             btn_mode.Location = new Point(1106, 0);
             btn_mode.Name = "btn_mode";
             btn_mode.Radius = 0;
