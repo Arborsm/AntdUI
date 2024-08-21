@@ -396,7 +396,7 @@ namespace AntdUI
             {
                 for (int i = 0; i < selectedValue.Length; i++)
                 {
-                    if (rect_left_dels[i].Contains(e)) { return true; }
+                    if (rect_left_dels[i].Contains(e)) return true;
                 }
             }
             return false;
@@ -407,7 +407,7 @@ namespace AntdUI
         #region 动画
 
         LayeredFormSelectMultiple? subForm = null;
-        public ILayeredForm? SubForm() { return subForm; }
+        public ILayeredForm? SubForm() => subForm;
 
         ITask? ThreadExpand = null;
         float ArrowProg = -1F;

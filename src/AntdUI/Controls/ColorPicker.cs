@@ -576,7 +576,7 @@ namespace AntdUI
 
 
         LayeredFormColorPicker? subForm = null;
-        public ILayeredForm? SubForm() { return subForm; }
+        public ILayeredForm? SubForm() => subForm;
         protected override void OnMouseClick(MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -664,6 +664,9 @@ namespace AntdUI
 
         public override Size GetPreferredSize(Size proposedSize)
         {
+            if (autoSize == TAutoSize.None) return base.GetPreferredSize(proposedSize);
+            else if (autoSize == TAutoSize.Width) return new Size(PSize.Width, base.GetPreferredSize(proposedSize).Height);
+            else if (autoSize == TAutoSize.Height) return new Size(base.GetPreferredSize(proposedSize).Width, PSize.Height);
             return PSize;
         }
 
@@ -700,26 +703,28 @@ namespace AntdUI
             if (autoSize == TAutoSize.None) return true;
             if (InvokeRequired)
             {
+                bool flag = false;
                 Invoke(new Action(() =>
                 {
-                    BeforeAutoSize();
+                    flag = BeforeAutoSize();
                 }));
-                return false;
+                return flag;
             }
+            var PS = PSize;
             switch (autoSize)
             {
                 case TAutoSize.Width:
-                    if (Width == PSize.Width) return true;
-                    Width = PSize.Width;
+                    if (Width == PS.Width) return true;
+                    Width = PS.Width;
                     break;
                 case TAutoSize.Height:
-                    if (Height == PSize.Height) return true;
-                    Height = PSize.Height;
+                    if (Height == PS.Height) return true;
+                    Height = PS.Height;
                     break;
                 case TAutoSize.Auto:
                 default:
-                    if (Width == PSize.Width && Height == PSize.Height) return true;
-                    Size = PSize;
+                    if (Width == PS.Width && Height == PS.Height) return true;
+                    Size = PS;
                     break;
             }
             return false;

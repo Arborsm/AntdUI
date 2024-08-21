@@ -367,7 +367,7 @@ namespace AntdUI
         #region 动画
 
         LayeredFormSelectDown? subForm = null;
-        public ILayeredForm? SubForm() { return subForm; }
+        public ILayeredForm? SubForm() => subForm;
 
         ITask? ThreadExpand = null;
         float ArrowProg = -1F;

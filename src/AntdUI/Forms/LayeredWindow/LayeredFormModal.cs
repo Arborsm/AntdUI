@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace AntdUI
 {
-    internal class LayeredFormModal : Window
+    internal class LayeredFormModal : Window, IEventListener
     {
         Modal.Config config;
         Panel? panel_main;
@@ -69,6 +69,7 @@ namespace AntdUI
                     Type = config.OkType,
                     Text = config.OkText
                 };
+                config.OnButtonStyle?.Invoke("OK", btn_ok);
                 btn_ok.Click += btn_ok_Click;
                 if (config.OkFont != null) btn_ok.Font = config.OkFont;
 
@@ -85,6 +86,7 @@ namespace AntdUI
                         TabIndex = 1,
                         Text = config.CancelText
                     };
+                    config.OnButtonStyle?.Invoke("Cancel", btn_no);
                     btn_no.Click += btn_no_Click;
                     if (config.CancelFont != null) btn_no.Font = config.CancelFont;
                 }
@@ -115,6 +117,7 @@ namespace AntdUI
                             ForeColor = btn.Fore,
                             Tag = btn.Tag
                         };
+                        config.OnButtonStyle?.Invoke(btn.Name, _btn);
                         panel_main.Controls.Add(_btn);
                         btns.Insert(0, _btn);
                     }
@@ -331,11 +334,7 @@ namespace AntdUI
                         old_now = now.AddSeconds(1);
                     }
                     count++;
-                    if (count > 2)
-                    {
-                        DialogResult = DialogResult.No;
-                        return;
-                    }
+                    if (count > 2) DialogResult = DialogResult.No;
                 }
             }
             base.WndProc(ref m);
@@ -569,5 +568,27 @@ namespace AntdUI
                 }
             }
         }
+
+        #region 主题
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            this.AddListener();
+        }
+
+        public void HandleEvent(EventType id, object? tag)
+        {
+            switch (id)
+            {
+                case EventType.THEME:
+                    BackColor = Style.Db.BgElevated;
+                    ForeColor = Style.Db.TextBase;
+                    if (panel_main != null) panel_main.Back = Style.Db.BgElevated;
+                    break;
+            }
+        }
+
+        #endregion
     }
 }

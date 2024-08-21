@@ -159,7 +159,14 @@ namespace AntdUI
             {
                 if (_event.Wait() || !IsHandleCreated || target_rect.Width == 0 && target_rect.Height == 0) return;
                 Render();
-                _event.Reset();
+                try
+                {
+                    _event.Reset();
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
 
