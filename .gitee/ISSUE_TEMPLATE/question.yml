@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        注意看看Wiki文档或者有没有重复问题 (https://gitee.com/antdui/AntdUI/issues)
+        注意看看 [Wiki文档](https://gitee.com/antdui/AntdUI/wikis) 或者有没有重复 [问题](https://gitee.com/antdui/AntdUI/issues)
   - type: input
     attributes:
       label: 版本号
