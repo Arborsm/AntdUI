@@ -28,7 +28,6 @@ namespace AntdUI
     {
         FloatButton.Config config;
         int BadgeSize = 6, ShadowXY = 20, ShadowS = 40;
-        public override bool MessageClose => false;
         public LayeredFormFloatButton(FloatButton.Config _config)
         {
             maxalpha = 255;
