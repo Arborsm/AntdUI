@@ -676,13 +676,7 @@ namespace AntdUI
                 string tips = Localization.Provider?.GetLocalizedString("ItemsPerPage") ?? "条/页";
                 var placeholder = pageSize.ToString() + " " + tips;
                 bool r = rightToLeft == RightToLeft.Yes;
-                int width;
-                if (sizeChangerWidth > 0) width = (int)(sizeChangerWidth * Config.Dpi);
-                else width = Helper.GDI(g =>
-                {
-                    var size = g.MeasureString(placeholder, Font).Size();
-                    return size.Width + (int)Math.Ceiling(size.Height * 1.72F);
-                });
+                int width = GetSizeChangerWidth(placeholder);
                 if (pageSizeOptions == null || pageSizeOptions.Length == 0)
                 {
                     var input = new Input
@@ -734,11 +728,7 @@ namespace AntdUI
                 {
                     string tips = Localization.Provider?.GetLocalizedString("ItemsPerPage") ?? "条/页";
                     var placeholder = pageSize.ToString() + " " + tips;
-                    int width = Helper.GDI(g =>
-                    {
-                        var size = g.MeasureString(placeholder, Font).Size();
-                        return size.Width + (int)Math.Ceiling(size.Height * 1.72F);
-                    });
+                    int width = GetSizeChangerWidth(placeholder);
                     if (InvokeRequired)
                     {
                         Invoke(new Action(() =>
@@ -750,6 +740,28 @@ namespace AntdUI
                     return width;
                 }
                 return input_SizeChanger.Width;
+            }
+        }
+
+        int GetSizeChangerWidth(string placeholder)
+        {
+            if (sizeChangerWidth > 0) return (int)(sizeChangerWidth * Config.Dpi);
+            int wsize = (int)(4 * Config.Dpi) * 2;
+            if (pageSizeOptions == null || pageSizeOptions.Length == 0)
+            {
+                return Helper.GDI(g =>
+                {
+                    var size = g.MeasureString(placeholder, Font).Size();
+                    return size.Width + wsize + (int)Math.Ceiling(size.Height * 0.6F);
+                });
+            }
+            else
+            {
+                return Helper.GDI(g =>
+                {
+                    var size = g.MeasureString(placeholder, Font).Size();
+                    return size.Width + wsize + (int)Math.Ceiling(size.Height * 1.32F);
+                });
             }
         }
 
