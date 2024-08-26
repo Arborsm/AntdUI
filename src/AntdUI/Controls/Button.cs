@@ -491,7 +491,7 @@ namespace AntdUI
         /// <summary>
         /// 切换类型
         /// </summary>
-        [Description("切换类型"), Category("切换"), DefaultValue(TTypeMini.Default)]
+        [Description("切换类型"), Category("切换"), DefaultValue(null)]
         public TTypeMini? ToggleType
         {
             get => button.ToggleType;

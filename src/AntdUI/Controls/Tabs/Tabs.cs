@@ -327,7 +327,7 @@ namespace AntdUI
                 int old = _select;
                 _select = value;
                 style.SelectedIndexChanged(value, old);
-                SelectedIndexChanged?.Invoke(this, value);
+                SelectedIndexChanged?.Invoke(this, new IntEventArgs(value));
                 Invalidate();
                 ShowPage();
             }
@@ -622,7 +622,6 @@ namespace AntdUI
         [Description("SelectedIndex 属性值更改时发生"), Category("行为")]
         public event IntEventHandler? SelectedIndexChanged = null;
 
-        public delegate bool ClosingPageEventHandler(object sender, TabPage page);
         /// <summary>
         /// 关闭页面前发生
         /// </summary>

@@ -301,7 +301,7 @@ namespace AntdUI
                 if (_select == value) return;
                 var old = _select;
                 _select = value;
-                SelectIndexChanged?.Invoke(this, value);
+                SelectIndexChanged?.Invoke(this, new IntEventArgs(value));
                 SetRect(old, _select);
             }
         }
@@ -465,14 +465,7 @@ namespace AntdUI
         /// 点击项时发生
         /// </summary>
         [Description("点击项时发生"), Category("行为")]
-        public event ItemClickEventHandler? ItemClick = null;
-
-        /// <summary>
-        /// 点击项时发生
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="value">数值</param>
-        public delegate void ItemClickEventHandler(object sender, MouseEventArgs e, SegmentedItem value);
+        public event SegmentedItemEventHandler? ItemClick = null;
 
         #region Change
 
@@ -988,7 +981,7 @@ namespace AntdUI
                 if (it != null && it.Rect.Contains(e.Location))
                 {
                     SelectIndex = i;
-                    ItemClick?.Invoke(this, e, it);
+                    ItemClick?.Invoke(this, new SegmentedItemEventArgs(it, e));
                     return;
                 }
             }

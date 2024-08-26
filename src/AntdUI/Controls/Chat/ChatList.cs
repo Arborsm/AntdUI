@@ -289,7 +289,7 @@ namespace AntdUI.Chat
                                 mouseDown = text;
                             }
                         }
-                        ItemClick?.Invoke(this, e, it);
+                        ItemClick?.Invoke(this, new ChatItemEventArgs(it, e));
                     }
                     else if (it is TextChatItem text) text.SelectionLength = 0;
                 }
@@ -400,14 +400,6 @@ namespace AntdUI.Chat
         #endregion
 
         #region 事件
-
-        /// <summary>
-        /// 点击事件
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="args">点击</param>
-        /// <param name="item">消息框</param>
-        public delegate void ClickEventHandler(object sender, MouseEventArgs args, IChatItem item);
 
         /// <summary>
         /// 单击时发生

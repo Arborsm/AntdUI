@@ -98,7 +98,7 @@ namespace AntdUI
 
         internal void DropDownChange(object value)
         {
-            SelectedValueChanged?.Invoke(this, value);
+            SelectedValueChanged?.Invoke(this, new ObjectNEventArgs(value));
             select_x = 0;
             subForm = null;
         }
