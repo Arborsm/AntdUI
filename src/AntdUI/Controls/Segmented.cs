@@ -516,7 +516,13 @@ namespace AntdUI
 
         internal void ChangeItems()
         {
-            if (pauseLayout || items == null || items.Count == 0) return;
+            if (items == null || items.Count == 0)
+            {
+                _select = -1;
+                return;
+            }
+            else if (_select >= items.Count) _select = items.Count - 1;
+            if (pauseLayout) return;
             var _rect = ClientRectangle.PaddingRect(Padding);
             if (_rect.Width == 0 || _rect.Height == 0) return;
             var rect = _rect.PaddingRect(Margin);
@@ -751,7 +757,6 @@ namespace AntdUI
             if (_select > -1)
             {
                 var _new = items[_select];
-                if (_new == null) return;
                 AnimationBarValue = TabSelectRect = _new.Rect;
             }
         }

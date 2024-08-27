@@ -231,6 +231,20 @@ namespace AntdUI
 
     #endregion
 
+    #region VirtualPanel
+
+    public class VirtualItemEventArgs : VMEventArgs<VirtualItem>
+    {
+        public VirtualItemEventArgs(VirtualItem item, MouseEventArgs e) : base(item, e) { }
+    }
+
+    /// <summary>
+    /// 点击事件
+    /// </summary>
+    public delegate void VirtualItemEventHandler(object sender, VirtualItemEventArgs e);
+
+    #endregion
+
     #region Select
 
     public class IntXYEventArgs : EventArgs
