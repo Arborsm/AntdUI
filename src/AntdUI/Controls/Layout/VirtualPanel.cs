@@ -236,6 +236,94 @@ namespace AntdUI
             }
         }
 
+        #region 布局
+
+        bool wrap = true;
+        /// <summary>
+        /// 换行
+        /// </summary>
+        [Description("换行"), Category("布局"), DefaultValue(true)]
+        public bool Wrap
+        {
+            get => wrap;
+            set
+            {
+                if (wrap == value) return;
+                wrap = value;
+                LoadLayout();
+                Invalidate();
+            }
+        }
+
+        bool waterfall = false;
+        /// <summary>
+        /// 瀑布流
+        /// </summary>
+        [Description("瀑布流"), Category("布局"), DefaultValue(false)]
+        public bool Waterfall
+        {
+            get => waterfall;
+            set
+            {
+                if (waterfall == value) return;
+                waterfall = value;
+                LoadLayout();
+                Invalidate();
+            }
+        }
+
+        TAlignItems alignitems = TAlignItems.Start;
+        /// <summary>
+        /// 侧轴(纵轴)对齐方式
+        /// </summary>
+        [Description("侧轴(纵轴)对齐方式"), Category("布局"), DefaultValue(TAlignItems.Start)]
+        public TAlignItems AlignItems
+        {
+            get => alignitems;
+            set
+            {
+                if (alignitems == value) return;
+                alignitems = value;
+                LoadLayout();
+                Invalidate();
+            }
+        }
+
+        TJustifyContent justifycontent = TJustifyContent.Start;
+        /// <summary>
+        /// 主轴(横轴)对齐方式
+        /// </summary>
+        [Description("主轴(横轴)对齐方式"), Category("布局"), DefaultValue(TJustifyContent.Start)]
+        public TJustifyContent JustifyContent
+        {
+            get => justifycontent;
+            set
+            {
+                if (justifycontent == value) return;
+                justifycontent = value;
+                LoadLayout();
+                Invalidate();
+            }
+        }
+
+        TAlignContent aligncontent = TAlignContent.Start;
+        /// <summary>
+        /// 没有占用交叉轴上所有可用的空间时对齐容器内的各项(垂直)
+        /// </summary>
+        [Description("没有占用交叉轴上所有可用的空间时对齐容器内的各项(垂直)"), Category("布局"), DefaultValue(TAlignContent.Start)]
+        public TAlignContent AlignContent
+        {
+            get => aligncontent;
+            set
+            {
+                if (aligncontent == value) return;
+                aligncontent = value;
+                LoadLayout();
+                Invalidate();
+            }
+        }
+
+        #endregion
 
         bool pauseLayout = false;
         [Browsable(false), Description("暂停布局"), Category("行为"), DefaultValue(false)]
@@ -292,27 +380,24 @@ namespace AntdUI
             var rect = _rect.PaddingRect(Padding);
             return Helper.GDI(g =>
             {
-                int gap = (int)Math.Round(Gap * Config.Dpi), use_x = 0, use_y = gap, last_len = 0, last_x = 0;
-                int shadow = (int)(Shadow * Config.Dpi), shadow2 = shadow * 2;
-
+                int gap = (int)Math.Round(Gap * Config.Dpi), use_x = rect.X, use_y = rect.Y + gap, last_len = 0, max_height = 0;
+                int shadow = (int)(Shadow * Config.Dpi), shadow2 = shadow * 2, r = (int)(radius * Config.Dpi);
+                var rows = new List<RItem>();
                 var tmps = new List<VirtualItem>(items.Count);
                 foreach (var it in items)
                 {
-                    var size = it.Size(g);
+                    var size = it.Size(g, new VirtualPanelArgs(this, rect, r));
+                    it.WIDTH = size.Width;
+                    it.HEIGHT = size.Height;
                     if (use_x + size.Width > rect.Width)
                     {
-                        int x = ((rect.Width - use_x + gap) / 2);
-                        last_x = x;
-                        foreach (var item in tmps)
-                        {
-                            if (item is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(last_x, 0);
-                            item.RECT.Offset(last_x, 0);
-                        }
+                        rows.Add(new RItem(use_x, use_y, max_height, tmps, true));
                         tmps.Clear();
-
-                        use_x = 0;
-                        use_y += size.Height + gap;
+                        use_x = rect.X;
+                        use_y += max_height + gap;
+                        max_height = 0;
                     }
+                    if (max_height < it.HEIGHT) max_height = it.HEIGHT;
                     if (it is VirtualShadowItem virtualShadow)
                     {
                         it.RECT.Width = size.Width - shadow2;
@@ -335,21 +420,277 @@ namespace AntdUI
                     it.SHOW = true;
                     tmps.Add(it);
                 }
-                if (tmps.Count > 0)
+                if (tmps.Count > 0) rows.Add(new RItem(use_x, use_y, max_height, tmps));
+                tmps.Clear();
+
+                #region 布局
+
+                if (last_len > rect.Height) rect.Height = last_len;
+
+                switch (justifycontent)
                 {
-                    if (last_x == 0)
+                    case TJustifyContent.Start:
+                        break;
+                    case TJustifyContent.End:
+                        foreach (var row in rows)
+                        {
+                            int x = (rect.Width - row.use_x + gap);
+                            HandLayout(row.cel, x, 0);
+                        }
+                        break;
+                    case TJustifyContent.SpaceBetween:
+                        foreach (var row in rows)
+                        {
+                            if (row.cel.Count > 1)
+                            {
+                                int totalWidth = 0;
+                                foreach (var cell in row.cel) totalWidth += cell.RECT.Width;
+                                int sp = (rect.Width - totalWidth) / (row.cel.Count - 1);
+                                int ux = rect.X;
+                                foreach (var item in row.cel)
+                                {
+                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    ux += item.RECT.Width + sp;
+                                }
+                            }
+                        }
+                        break;
+                    case TJustifyContent.SpaceEvenly:
+                        foreach (var row in rows)
+                        {
+                            if (row.cel.Count > 1)
+                            {
+                                int totalWidth = 0;
+                                foreach (var cell in row.cel) totalWidth += cell.RECT.Width;
+                                int sp = (rect.Width - totalWidth) / (row.cel.Count + 1),
+                                ux = rect.X + sp;
+                                foreach (var item in row.cel)
+                                {
+                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    ux += item.RECT.Width + sp;
+                                }
+                            }
+                            else
+                            {
+                                int x = (rect.Width - row.use_x + gap) / 2;
+                                HandLayout(row.cel, x, 0);
+                            }
+                        }
+                        break;
+                    case TJustifyContent.SpaceAround:
+                        foreach (var row in rows)
+                        {
+                            if (row.cel.Count > 1)
+                            {
+                                int totalWidth = 0;
+                                foreach (var cell in row.cel) totalWidth += cell.RECT.Width;
+                                int availableSpace = rect.Width - totalWidth, spaceBetweenItems = availableSpace / row.cel.Count, spaceAroundItems = availableSpace / (row.cel.Count + 1),
+                                ux = rect.X + spaceAroundItems / 2;
+                                foreach (var item in row.cel)
+                                {
+                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    ux += item.RECT.Width + spaceBetweenItems;
+                                }
+                            }
+                            else
+                            {
+                                int x = (rect.Width - row.use_x + gap) / 2;
+                                HandLayout(row.cel, x, 0);
+                            }
+                        }
+                        break;
+                    case TJustifyContent.Center:
+                    default:
+                        foreach (var row in rows)
+                        {
+                            int x = (rect.Width - row.use_x + gap) / 2;
+                            HandLayout(row.cel, x, 0);
+                        }
+                        break;
+                }
+
+                switch (aligncontent)
+                {
+                    case TAlignContent.Start:
+                        break;
+                    case TAlignContent.End:
+                        int yEnd = rect.Height - GetTotalHeight(rows);
+                        foreach (var row in rows) HandLayout(row.cel, 0, yEnd);
+                        break;
+                    case TAlignContent.SpaceBetween:
+                        if (rows.Count > 1)
+                        {
+                            int totalHeight = GetTotalHeight(rows);
+                            int sp = (rect.Height - totalHeight) / (rows.Count - 1);
+                            int uy = rect.Y;
+                            foreach (var row in rows)
+                            {
+                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                uy += row.h + sp;
+                            }
+                        }
+                        break;
+                    case TAlignContent.SpaceEvenly:
+                        if (rows.Count > 1)
+                        {
+                            int totalHeight = GetTotalHeight(rows);
+                            int sp = (rect.Height - totalHeight) / (rows.Count + 1),
+                            uy = rect.Y + sp;
+                            foreach (var row in rows)
+                            {
+                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                uy += row.h + sp;
+                            }
+                        }
+                        else
+                        {
+                            int yCenter2 = (rect.Height - GetTotalHeight(rows)) / 2;
+                            foreach (var row in rows) HandLayout(row.cel, 0, yCenter2);
+                        }
+                        break;
+                    case TAlignContent.SpaceAround:
+                        if (rows.Count > 1)
+                        {
+                            int Height = GetTotalHeight(rows);
+                            int availableSpace = rect.Height - Height, spaceBetweenItems = availableSpace / rows.Count, spaceAroundItems = availableSpace / (rows.Count + 1),
+                            uy = rect.Y + spaceAroundItems / 2;
+                            foreach (var row in rows)
+                            {
+                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                uy += row.h + spaceBetweenItems;
+                            }
+                        }
+                        else
+                        {
+                            int yCenter2 = (rect.Height - GetTotalHeight(rows)) / 2;
+                            foreach (var row in rows) HandLayout(row.cel, 0, yCenter2);
+                        }
+                        break;
+                    case TAlignContent.Center:
+                    default:
+                        int yCenter = (rect.Height - GetTotalHeight(rows)) / 2;
+                        foreach (var row in rows) HandLayout(row.cel, 0, yCenter);
+                        break;
+                }
+
+                if (waterfall)
+                {
+                    var celdir = new Dictionary<int, int>(rows[0].cel.Count);
+                    for (int i = 1; i < rows.Count; i++)
                     {
-                        int x = ((rect.Width - use_x + gap) / 2);
-                        last_x = x;
-                    }
-                    foreach (var it in tmps)
-                    {
-                        if (it is VirtualShadowItem virtualShadow) virtualShadow.RECT_S.Offset(last_x, 0);
-                        it.RECT.Offset(last_x, 0);
+                        var rowold = rows[i - 1];
+                        var row = rows[i];
+                        if (rowold.cel.Count >= row.cel.Count)
+                        {
+                            for (int j = 0; j < row.cel.Count; j++)
+                            {
+                                int rj = j;
+                                if (rowold.cel.Count > row.cel.Count)
+                                {
+                                    switch (justifycontent)
+                                    {
+                                        case TJustifyContent.Start:
+                                            break;
+                                        case TJustifyContent.End:
+                                            rj = rowold.cel.Count - 1 - j;
+                                            break;
+                                        case TJustifyContent.Center:
+                                            rj = rowold.cel.Count / 2;
+                                            break;
+                                        default:
+                                            HandLayout(row.cel[j], rowold.cel[j].RECT.X - row.cel[j].RECT.X, 0);
+                                            break;
+                                    }
+                                }
+
+                                var item = rowold.cel[rj];
+                                if (item.HEIGHT < rowold.h)
+                                {
+                                    int xc = rowold.h - item.HEIGHT;
+                                    celdir.TryGetValue(rj, out int tmpY);
+                                    HandLayout(row.cel[j], 0, -xc - tmpY);
+                                    if (celdir.ContainsKey(rj)) celdir[rj] += xc;
+                                    else celdir.Add(rj, xc);
+                                }
+                                else if (celdir.TryGetValue(rj, out int tmpY)) HandLayout(row.cel[j], 0, -tmpY);
+                            }
+                        }
                     }
                 }
-                return last_len;
+                else
+                {
+                    switch (alignitems)
+                    {
+                        case TAlignItems.Start:
+                            break;
+                        case TAlignItems.End:
+                            foreach (var row in rows)
+                            {
+                                foreach (var cel in row.cel)
+                                {
+                                    int y = row.h - cel.RECT.Height;
+                                    HandLayout(cel, 0, y);
+                                }
+                            }
+                            break;
+                        case TAlignItems.Center:
+                        default:
+                            foreach (var row in rows)
+                            {
+                                foreach (var cel in row.cel)
+                                {
+                                    int y = (row.h - cel.RECT.Height) / 2;
+                                    HandLayout(cel, 0, y);
+                                }
+                            }
+                            break;
+                    }
+                }
+
+                #endregion
+
+                return last_len + gap * 2;
             });
+        }
+
+        int GetTotalHeight(List<RItem> rows)
+        {
+            int totalHeight = 0;
+            foreach (var row in rows) totalHeight += row.h;
+            return totalHeight;
+        }
+        void HandLayout(List<VirtualItem> d, int x, int y)
+        {
+            if (x == 0 && y == 0) return;
+            foreach (var item in d)
+            {
+                if (item is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(x, y);
+                item.RECT.Offset(x, y);
+            }
+        }
+        void HandLayout(VirtualItem d, int x, int y)
+        {
+            if (x == 0 && y == 0) return;
+            if (d is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(x, y);
+            d.RECT.Offset(x, y);
+        }
+
+        class RItem
+        {
+            public RItem(int usex, int usey, int height, List<VirtualItem> cell, bool _wrap = false)
+            {
+                use_x = usex;
+                use_y = usey;
+                h = height;
+                cel = new List<VirtualItem>(cell);
+                wrap = _wrap;
+            }
+
+            public bool wrap { get; set; }
+            public int use_x { get; set; }
+            public int use_y { get; set; }
+            public int h { get; set; }
+            public List<VirtualItem> cel { get; set; }
         }
 
         #endregion
@@ -368,7 +709,7 @@ namespace AntdUI
                 if (it.SHOW)
                 {
                     if (it is VirtualShadowItem virtualShadow) DrawShadow(virtualShadow, g, r);
-                    it.Paint(g, Font, it.RECT, r);
+                    it.Paint(g, new VirtualPanelArgs(this, it.RECT, r));
                 }
             }
             g.ResetTransform();
@@ -566,7 +907,6 @@ namespace AntdUI
         #endregion
     }
 
-
     public class VirtualCollection : iCollection<VirtualItem>
     {
         public VirtualCollection(VirtualPanel it)
@@ -598,10 +938,25 @@ namespace AntdUI
         public bool CanClick { get; set; } = true;
         public bool Hover { get; set; }
         public object? Tag { get; set; }
-        public abstract Size Size(Graphics g);
-        public abstract void Paint(Graphics g, Font font, Rectangle rect, int radius);
+        public abstract Size Size(Graphics g, VirtualPanelArgs e);
+        public abstract void Paint(Graphics g, VirtualPanelArgs e);
 
         internal bool SHOW = false;
         internal Rectangle RECT;
+        internal int WIDTH;
+        internal int HEIGHT;
+    }
+
+    public class VirtualPanelArgs : EventArgs
+    {
+        public VirtualPanelArgs(VirtualPanel panel, Rectangle rect, int radius)
+        {
+            Panel = panel;
+            Rect = rect;
+            Radius = radius;
+        }
+        public VirtualPanel Panel { get; private set; }
+        public Rectangle Rect { get; private set; }
+        public int Radius { get; private set; }
     }
 }
