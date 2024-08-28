@@ -114,7 +114,9 @@ namespace Overview.Controls
         private void button1_Click(object sender, EventArgs e)
         {
             vpanel.Items.Clear();
-            vpanel.Gap = 10;
+            vpanel.Gap = 0;
+            vpanel.Shadow = 10;
+            vpanel.ShadowOpacityAnimation = true;
             vpanel.Radius = 20;
             vpanel.Waterfall = true;
             vpanel.PauseLayout = true;
@@ -131,7 +133,7 @@ namespace Overview.Controls
         }
 
 
-        class VImg : AntdUI.VirtualItem
+        class VImg : AntdUI.VirtualShadowItem
         {
             Image image;
             string name, desc;
@@ -202,14 +204,23 @@ namespace Overview.Controls
             }
 
             StringFormat s_f = new StringFormat { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.EllipsisCharacter, FormatFlags = StringFormatFlags.NoWrap };
+            Bitmap bmp = null;
             public override void Paint(Graphics g, AntdUI.VirtualPanelArgs e)
             {
                 var dpi = AntdUI.Config.Dpi;
-
-                AntdUI.Helper.PaintImg(g,e.Rect, image, AntdUI.TFit.Fill, e.Radius, AntdUI.TShape.Default);
+                if (bmp == null || bmp.Width != e.Rect.Width || bmp.Height != e.Rect.Height)
+                {
+                    bmp?.Dispose();
+                    bmp = new Bitmap(e.Rect.Width, e.Rect.Height);
+                    using (var g2 = AntdUI.Helper.High(Graphics.FromImage(bmp)))
+                    {
+                        AntdUI.Helper.PaintImg(g2, new Rectangle(0, 0, bmp.Width, bmp.Height), image, AntdUI.TFit.Fill, e.Radius, AntdUI.TShape.Default);
+                    }
+                }
+                g.DrawImage(bmp, e.Rect);
                 using (var path = AntdUI.Helper.RoundPath(e.Rect, e.Radius))
                 {
-                    using (var brush_bor = new Pen(AntdUI.Style.Db.BorderColor, 1))
+                    using (var brush_bor = new Pen(AntdUI.Style.Db.BorderColor, 1.5F * dpi))
                     {
                         g.DrawPath(brush_bor, path);
                     }
