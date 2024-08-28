@@ -28,9 +28,6 @@
 		<PackageProjectUrl>https://gitee.com/andtui</PackageProjectUrl>
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-		<PackageReleaseNotes>[规范事件] 屎山
-强制规范为 object sender, EventArgs e，后续属性更改直接放到 EventArgs e
-后面将一直使用这种方式</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net40' OR '$(TargetFramework)'=='net46' OR '$(TargetFramework)'=='net48'">
