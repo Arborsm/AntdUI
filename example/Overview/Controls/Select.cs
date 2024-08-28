@@ -45,15 +45,5 @@ namespace Overview.Controls
                 new AntdUI.SelectItem("two"){ Sub=new List<object>{ "five menu item", "six six six menu item"} },
             });
         }
-
-        private void selectMultiple1_SelectedValueChanged(object sender, object value)
-        {
-
-        }
-
-        private void panel4_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
     }
 }

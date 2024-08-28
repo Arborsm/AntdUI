@@ -116,7 +116,6 @@ namespace Overview.Controls
             panel4.Name = "panel4";
             panel4.Size = new Size(555, 100);
             panel4.TabIndex = 5;
-            panel4.Paint += panel4_Paint;
             // 
             // select8
             // 
@@ -139,7 +138,6 @@ namespace Overview.Controls
             selectMultiple1.Name = "selectMultiple1";
             selectMultiple1.Size = new Size(316, 41);
             selectMultiple1.TabIndex = 0;
-            selectMultiple1.SelectedValueChanged += selectMultiple1_SelectedValueChanged;
             // 
             // divider3
             // 

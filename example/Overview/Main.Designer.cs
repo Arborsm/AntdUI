@@ -89,12 +89,14 @@ namespace Overview
             // virtualPanel
             // 
             virtualPanel.Dock = DockStyle.Fill;
+            virtualPanel.JustifyContent = AntdUI.TJustifyContent.SpaceEvenly;
             virtualPanel.Location = new Point(0, 40);
             virtualPanel.Name = "virtualPanel";
             virtualPanel.Shadow = 20;
             virtualPanel.ShadowOpacityAnimation = true;
             virtualPanel.Size = new Size(1300, 680);
             virtualPanel.TabIndex = 2;
+            virtualPanel.Waterfall = true;
             virtualPanel.ItemClick += ItemClick;
             // 
             // windowBar
