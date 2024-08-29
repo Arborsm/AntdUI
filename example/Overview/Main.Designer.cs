@@ -124,7 +124,7 @@ namespace Overview
             txt_search.Name = "txt_search";
             txt_search.Padding = new Padding(0, 2, 0, 2);
             txt_search.PlaceholderText = "输入关键字搜索...";
-            txt_search.PrefixSvg = Properties.Resources.icon_search;
+            txt_search.PrefixSvg = "SearchOutlined";
             txt_search.Size = new Size(170, 40);
             txt_search.TabIndex = 9;
             txt_search.PrefixClick += txt_search_PrefixClick;

@@ -1,4 +1,4 @@
-// COPYRIGHT (C) Tom. ALL RIGHTS RESERVED.
+﻿// COPYRIGHT (C) Tom. ALL RIGHTS RESERVED.
 // THE AntdUI PROJECT IS AN WINFORM LIBRARY LICENSED UNDER THE Apache-2.0 License.
 // LICENSED UNDER THE Apache License, VERSION 2.0 (THE "License")
 // YOU MAY NOT USE THIS FILE EXCEPT IN COMPLIANCE WITH THE License.
@@ -32,6 +32,7 @@ namespace Overview.Controls
             InitializeComponent();
             LoadData();
         }
+        #region 数据
 
         private void segmented1_SelectIndexChanged(object sender, AntdUI.IntEventArgs e)
         {
@@ -41,8 +42,12 @@ namespace Overview.Controls
         void LoadData()
         {
             var data = GetData();
-            var svgs = new List<VItem>(data.Count);
-            foreach (var it in data) svgs.Add(new VItem(it.Key, it.Value));
+            var svgs = new List<AntdUI.VirtualItem>(data.Count);
+            foreach (var it in data)
+            {
+                if (it.Value == null) svgs.Add(new TItem(it.Key));
+                else svgs.Add(new VItem(it.Key, it.Value));
+            }
             vpanel.Items.Clear();
             txt_search.Text = "";
             vpanel.Items.AddRange(svgs);
@@ -53,25 +58,66 @@ namespace Overview.Controls
             var svgs = new Dictionary<string, string>(AntdUI.SvgDb.Custom.Count);
             if (segmented1.SelectIndex == 0)
             {
+                svgs.Add("方向性图标", null);
                 foreach (var it in AntdUI.SvgDb.Custom)
                 {
                     if (it.Key == "StepBackwardFilled") return svgs;
+                    else if (it.Key == "QuestionOutlined") svgs.Add("提示建议性图标", null);
+                    else if (it.Key == "EditOutlined") svgs.Add("编辑类图标", null);
+                    else if (it.Key == "AreaChartOutlined") svgs.Add("数据类图标", null);
+                    else if (it.Key == "AndroidOutlined") svgs.Add("品牌和标识", null);
+                    else if (it.Key == "AccountBookOutlined") svgs.Add("网站通用图标", null);
                     svgs.Add(it.Key, it.Value);
                 }
             }
             else
             {
+                svgs.Add("方向性图标", null);
                 bool isadd = false;
                 foreach (var it in AntdUI.SvgDb.Custom)
                 {
                     if (it.Key == "UpCircleTwoTone") return svgs;
                     else if (it.Key == "StepBackwardFilled") isadd = true;
+                    else if (it.Key == "QuestionCircleFilled") svgs.Add("提示建议性图标", null);
+                    else if (it.Key == "EditFilled") svgs.Add("编辑类图标", null);
+                    else if (it.Key == "PieChartFilled") svgs.Add("数据类图标", null);
+                    else if (it.Key == "AndroidFilled") svgs.Add("品牌和标识", null);
+                    else if (it.Key == "AccountBookFilled") svgs.Add("网站通用图标", null);
                     if (isadd) svgs.Add(it.Key, it.Value);
                 }
             }
             return svgs;
         }
 
+        #endregion
+
+        #region 渲染
+
+        class TItem : AntdUI.VirtualItem
+        {
+            string Key;
+            public TItem(string key) { Tag = Key = key; }
+
+            StringFormat s_f = AntdUI.Helper.SF_NoWrap(lr: StringAlignment.Near);
+            public override void Paint(Graphics g, AntdUI.VirtualPanelArgs e)
+            {
+                var dpi = AntdUI.Config.Dpi;
+                using (var fore = new SolidBrush(AntdUI.Style.Db.TextBase))
+                {
+                    using (var font_title = new Font(e.Panel.Font.FontFamily, 12F, FontStyle.Bold))
+                    {
+                        AntdUI.CorrectionTextRendering.DrawStr(g, Key, font_title, fore, new Rectangle(e.Rect.X, e.Rect.Y + y, e.Rect.Width, e.Rect.Height - y), s_f);
+                    }
+                }
+            }
+            int y = 0;
+            public override Size Size(Graphics g, AntdUI.VirtualPanelArgs e)
+            {
+                var dpi = AntdUI.Config.Dpi;
+                y = (int)(8 * dpi);
+                return new Size(e.Rect.Width, (int)(36 * dpi) + y);
+            }
+        }
         class VItem : AntdUI.VirtualItem
         {
             public string Key, Value;
@@ -120,10 +166,18 @@ namespace Overview.Controls
             }
         }
 
+        #endregion
+
         private void vpanel_ItemClick(object sender, AntdUI.VirtualItemEventArgs e)
         {
-            Clipboard.SetText(e.Item.Tag.ToString());
+            if (e.Item is VItem item)
+            {
+                Clipboard.SetText(item.Key);
+                AntdUI.Message.success(form, item.Key + " 复制成功");
+            }
         }
+
+        #region 搜索
 
         private void txt_search_TextChanged(object sender, System.EventArgs e) => LoadSearchList();
         private void txt_search_SuffixClick(object sender, MouseEventArgs e) => LoadSearchList();
@@ -141,10 +195,15 @@ namespace Overview.Controls
                 else
                 {
                     string searchLower = search.ToLower();
-                    foreach (VItem it in vpanel.Items) it.Visible = it.Key.ToLower().Contains(search);
+                    foreach (var it in vpanel.Items)
+                    {
+                        if (it is VItem item) it.Visible = item.Key.ToLower().Contains(search);
+                    }
                 }
                 vpanel.PauseLayout = false;
             }));
         }
+
+        #endregion
     }
 }

@@ -237,9 +237,9 @@ namespace Overview.Controls
                 if (i == 2)
                 {
                     _btns = new AntdUI.CellLink[] {
-                        new AntdUI.CellButton("b1") { BorderWidth=1, IconSvg=Properties.Resources.icon_search,IconHoverSvg=Properties.Resources.icon_like,ShowArrow=true},
+                        new AntdUI.CellButton("b1") { BorderWidth=1, IconSvg="SearchOutlined",IconHoverSvg=Properties.Resources.icon_like,ShowArrow=true},
                         new AntdUI.CellButton("b2") {  ShowArrow=true},
-                        new AntdUI.CellButton("b3") { Type= AntdUI.TTypeMini.Primary, IconSvg=Properties.Resources.icon_search }
+                        new AntdUI.CellButton("b3") { Type= AntdUI.TTypeMini.Primary, IconSvg="SearchOutlined" }
                     };
                 }
                 else if (i == 3)
