@@ -53,10 +53,15 @@ namespace Overview.Controls
             select3.SelectedValue = vpanel.AlignContent;
             select3.SelectedValueChanged += Select3_SelectedValueChanged;
 
+            LoadData();
+        }
+
+        void LoadData()
+        {
             vpanel.Items.AddRange(new VItem[] {
-                new VItem(Color.FromArgb(255, 127, 80),100),
-                new VItem(Color.FromArgb(173, 216, 230),150),
-                new VItem(Color.FromArgb(240, 230, 255),200),
+                new VItem(Color.FromArgb(255, 127, 80),150),
+                new VItem(Color.FromArgb(173, 216, 230),200),
+                new VItem(Color.FromArgb(240, 230, 255),250),
                 new VItem(Color.FromArgb(255, 192, 203)),
 
 
@@ -88,11 +93,40 @@ namespace Overview.Controls
             if (e.Value is AntdUI.TAlignContent it) vpanel.AlignContent = it;
         }
 
+        private void checkbox1_CheckedChanged(object sender, AntdUI.BoolEventArgs e)
+        {
+            vpanel.Items.Clear();
+            if (e.Value)
+            {
+                vpanel.Items.AddRange(new VItem[] {
+                new VItem(Color.FromArgb(255, 127, 80),100,150),
+                new VItem(Color.FromArgb(173, 216, 230),100,200),
+                new VItem(Color.FromArgb(240, 230, 255),100,250),
+                new VItem(Color.FromArgb(255, 192, 203)),
+
+
+                new VItem(Color.FromArgb(255, 127, 80)),
+                new VItem(Color.FromArgb(173, 216, 230)),
+                new VItem(Color.FromArgb(255, 230, 140),100,200),
+                new VItem(Color.FromArgb(255, 192, 203)),
+
+
+                new VItem(Color.FromArgb(255, 127, 80)),
+                new VItem(Color.FromArgb(173, 216, 230)),
+                new VItem(Color.FromArgb(240, 230, 140)),
+                new VItem(Color.FromArgb(255, 192, 203))
+                });
+            }
+            else LoadData();
+            vpanel.Waterfall = e.Value;
+        }
+
         class VItem : AntdUI.VirtualItem
         {
             public Color data;
-            int size;
-            public VItem(Color d, int s = 70) { data = d; size = s; }
+            int width, height;
+            public VItem(Color d, int size = 100) { data = d; width = height = size; }
+            public VItem(Color d, int w, int h) { data = d; width = w; height = h; }
 
             public override void Paint(Graphics g, AntdUI.VirtualPanelArgs e)
             {
@@ -106,13 +140,13 @@ namespace Overview.Controls
             public override Size Size(Graphics g, AntdUI.VirtualPanelArgs e)
             {
                 var dpi = AntdUI.Config.Dpi;
-                int sizec = (int)(size * dpi);
-                return new Size(sizec, sizec);
+                return new Size((int)(width * dpi), (int)(height * dpi));
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            checkbox1.Checked = true;
             vpanel.Items.Clear();
             vpanel.Gap = 0;
             vpanel.Shadow = 10;

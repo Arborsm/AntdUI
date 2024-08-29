@@ -56,6 +56,7 @@ namespace Overview.Controls
             select2 = new AntdUI.Select();
             select1 = new AntdUI.Select();
             button1 = new System.Windows.Forms.Button();
+            checkbox1 = new AntdUI.Checkbox();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -75,27 +76,28 @@ namespace Overview.Controls
             // 
             vpanel.Dock = DockStyle.Fill;
             vpanel.Gap = 10;
-            vpanel.Location = new Point(0, 149);
+            vpanel.Location = new Point(0, 178);
             vpanel.Name = "vpanel";
             vpanel.Radius = 20;
-            vpanel.Size = new Size(835, 485);
+            vpanel.Size = new Size(835, 456);
             vpanel.TabIndex = 1;
             // 
             // panel1
             // 
+            panel1.Controls.Add(checkbox1);
             panel1.Controls.Add(select3);
             panel1.Controls.Add(select2);
             panel1.Controls.Add(select1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 79);
             panel1.Name = "panel1";
-            panel1.Size = new Size(835, 70);
+            panel1.Size = new Size(835, 99);
             panel1.TabIndex = 5;
             // 
             // select3
             // 
             select3.List = true;
-            select3.Location = new Point(498, 12);
+            select3.Location = new Point(279, 3);
             select3.Name = "select3";
             select3.PrefixText = "align-content";
             select3.Size = new Size(256, 40);
@@ -104,7 +106,7 @@ namespace Overview.Controls
             // select2
             // 
             select2.List = true;
-            select2.Location = new Point(280, 12);
+            select2.Location = new Point(3, 49);
             select2.Name = "select2";
             select2.PrefixText = "align-items";
             select2.Size = new Size(212, 40);
@@ -113,7 +115,7 @@ namespace Overview.Controls
             // select1
             // 
             select1.List = true;
-            select1.Location = new Point(3, 12);
+            select1.Location = new Point(3, 3);
             select1.Name = "select1";
             select1.PrefixText = "justify-content";
             select1.Size = new Size(270, 40);
@@ -128,6 +130,16 @@ namespace Overview.Controls
             button1.Text = "花瓣";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
+            // 
+            // checkbox1
+            // 
+            checkbox1.AutoCheck = true;
+            checkbox1.Location = new Point(229, 54);
+            checkbox1.Name = "checkbox1";
+            checkbox1.Size = new Size(91, 30);
+            checkbox1.TabIndex = 1;
+            checkbox1.Text = "瀑布流";
+            checkbox1.CheckedChanged += checkbox1_CheckedChanged;
             // 
             // VirtualPanel
             // 
@@ -150,5 +162,6 @@ namespace Overview.Controls
         private AntdUI.Select select3;
         private AntdUI.Select select2;
         private System.Windows.Forms.Button button1;
+        private AntdUI.Checkbox checkbox1;
     }
 }

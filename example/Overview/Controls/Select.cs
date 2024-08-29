@@ -28,7 +28,6 @@ namespace Overview.Controls
         {
             form = _form;
             InitializeComponent();
-
             select5.Items.AddRange(new AntdUI.SelectItem[] {
                 new AntdUI.SelectItem("one"){
                     Sub = new List<object>{
