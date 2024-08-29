@@ -356,7 +356,7 @@ namespace AntdUI
         {
             if (IsHandleCreated)
             {
-                if (items == null || items.Count == 0) return;
+                if (items == null || items.Count == 0) { scroll.Value = 0; return; }
                 if (pauseLayout) return;
                 var controls = new List<VirtualItem>(items.Count);
                 foreach (var it in items)
@@ -702,15 +702,22 @@ namespace AntdUI
             if (items == null || items.Count == 0) return;
             var g = e.Graphics.High();
             int sy = scroll.Value;
+            var rect = ClientRectangle;
+            rect.Offset(0, sy);
             g.TranslateTransform(0, -sy);
             int r = (int)(radius * Config.Dpi);
             foreach (var it in items)
             {
                 if (it.SHOW)
                 {
-                    if (it is VirtualShadowItem virtualShadow) DrawShadow(virtualShadow, g, r);
-                    it.Paint(g, new VirtualPanelArgs(this, it.RECT, r));
+                    it.SHOW_RECT = rect.Contains(rect.X, it.RECT.Y) || rect.Contains(rect.X, it.RECT.Bottom);
+                    if (it.SHOW_RECT)
+                    {
+                        if (it is VirtualShadowItem virtualShadow) DrawShadow(virtualShadow, g, r);
+                        it.Paint(g, new VirtualPanelArgs(this, it.RECT, r));
+                    }
                 }
+                else it.SHOW_RECT = false;
             }
             g.ResetTransform();
             scroll.Paint(g);
@@ -773,7 +780,7 @@ namespace AntdUI
                 int x = e.X, y = e.Y + scroll.Value;
                 foreach (var it in items)
                 {
-                    if (it.SHOW && it.CanClick && it.RECT.Contains(x, y))
+                    if (it.SHOW && it.SHOW_RECT && it.CanClick && it.RECT.Contains(x, y))
                     {
                         MDown = it;
                         return;
@@ -792,7 +799,7 @@ namespace AntdUI
                 int count = 0, hand = 0;
                 foreach (var it in items)
                 {
-                    if (it.SHOW && it.CanClick && it.RECT.Contains(x, y))
+                    if (it.SHOW && it.SHOW_RECT && it.CanClick && it.RECT.Contains(x, y))
                     {
                         hand++;
                         if (!it.Hover)
@@ -942,6 +949,7 @@ namespace AntdUI
         public abstract void Paint(Graphics g, VirtualPanelArgs e);
 
         internal bool SHOW = false;
+        internal bool SHOW_RECT = false;
         internal Rectangle RECT;
         internal int WIDTH;
         internal int HEIGHT;
