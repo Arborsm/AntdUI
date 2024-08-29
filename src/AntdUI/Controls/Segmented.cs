@@ -301,7 +301,7 @@ namespace AntdUI
                 if (_select == value) return;
                 var old = _select;
                 _select = value;
-                SelectIndexChanged?.Invoke(this, value);
+                SelectIndexChanged?.Invoke(this, new IntEventArgs(value));
                 SetRect(old, _select);
             }
         }
@@ -320,138 +320,132 @@ namespace AntdUI
         void SetRect(int old, int value)
         {
             if (items == null || items.Count == 0) return;
+            if (items.ListExceed(value)) { Invalidate(); return; }
             var _new = items[value];
-            if (_new == null) return;
-            if (old > -1)
-            {
-                var _old = items[old];
-                if (_old == null) AnimationBarValue = TabSelectRect = _new.Rect;
-                else
-                {
-                    ThreadBar?.Dispose();
-                    RectangleF OldValue = _old.Rect, NewValue = _new.Rect;
-                    if (Config.Animation)
-                    {
-                        if (vertical)
-                        {
-                            if (OldValue.X == NewValue.X)
-                            {
-                                AnimationBar = true;
-                                TabSelectRect = NewValue;
-                                float p_val = Math.Abs(NewValue.Y - AnimationBarValue.Y) * 0.09F, p_w_val = Math.Abs(NewValue.Height - AnimationBarValue.Height) * 0.1F, p_val2 = (NewValue.Y - AnimationBarValue.Y) * 0.5F;
-                                ThreadBar = new ITask(this, () =>
-                                {
-                                    if (AnimationBarValue.Height != NewValue.Height)
-                                    {
-                                        if (NewValue.Height > OldValue.Height)
-                                        {
-                                            AnimationBarValue.Height += p_w_val;
-                                            if (AnimationBarValue.Height > NewValue.Height) AnimationBarValue.Height = NewValue.Height;
-                                        }
-                                        else
-                                        {
-                                            AnimationBarValue.Height -= p_w_val;
-                                            if (AnimationBarValue.Height < NewValue.Height) AnimationBarValue.Height = NewValue.Height;
-                                        }
-                                    }
-                                    if (NewValue.Y > OldValue.Y)
-                                    {
-                                        if (AnimationBarValue.Y > p_val2) AnimationBarValue.Y += p_val / 2F;
-                                        else AnimationBarValue.Y += p_val;
-                                        if (AnimationBarValue.Y > NewValue.Y)
-                                        {
-                                            AnimationBarValue.Y = NewValue.Y;
-                                            Invalidate();
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        AnimationBarValue.Y -= p_val;
-                                        if (AnimationBarValue.Y < NewValue.Y)
-                                        {
-                                            AnimationBarValue.Y = NewValue.Y;
-                                            Invalidate();
-                                            return false;
-                                        }
-                                    }
-                                    Invalidate();
-                                    return true;
-                                }, 10, () =>
-                                {
-                                    AnimationBarValue = NewValue;
-                                    AnimationBar = false;
-                                    Invalidate();
-                                });
-                            }
-                        }
-                        else
-                        {
-                            if (OldValue.Y == NewValue.Y)
-                            {
-                                AnimationBar = true;
-                                TabSelectRect = NewValue;
-                                float p_val = Math.Abs(NewValue.X - AnimationBarValue.X) * 0.09F, p_w_val = Math.Abs(NewValue.Width - AnimationBarValue.Width) * 0.1F, p_val2 = (NewValue.X - AnimationBarValue.X) * 0.5F;
-                                ThreadBar = new ITask(this, () =>
-                                {
-                                    if (AnimationBarValue.Width != NewValue.Width)
-                                    {
-                                        if (NewValue.Width > OldValue.Width)
-                                        {
-                                            AnimationBarValue.Width += p_w_val;
-                                            if (AnimationBarValue.Width > NewValue.Width) AnimationBarValue.Width = NewValue.Width;
-                                        }
-                                        else
-                                        {
-                                            AnimationBarValue.Width -= p_w_val;
-                                            if (AnimationBarValue.Width < NewValue.Width) AnimationBarValue.Width = NewValue.Width;
-                                        }
-                                    }
-                                    if (NewValue.X > OldValue.X)
-                                    {
-                                        if (AnimationBarValue.X > p_val2) AnimationBarValue.X += p_val / 2F;
-                                        else AnimationBarValue.X += p_val;
-                                        if (AnimationBarValue.X > NewValue.X)
-                                        {
-                                            AnimationBarValue.X = NewValue.X;
-                                            Invalidate();
-                                            return false;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        AnimationBarValue.X -= p_val;
-                                        if (AnimationBarValue.X < NewValue.X)
-                                        {
-                                            AnimationBarValue.X = NewValue.X;
-                                            Invalidate();
-                                            return false;
-                                        }
-                                    }
-                                    Invalidate();
-                                    return true;
-                                }, 10, () =>
-                                {
-                                    AnimationBarValue = NewValue;
-                                    AnimationBar = false;
-                                    Invalidate();
-                                });
-                            }
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        TabSelectRect = AnimationBarValue = NewValue;
-                        Invalidate();
-                        return;
-                    }
-                }
-            }
-            else
+            if (items.ListExceed(old))
             {
                 AnimationBarValue = TabSelectRect = _new.Rect;
                 Invalidate();
+                return;
+            }
+            var _old = items[old];
+            ThreadBar?.Dispose();
+            RectangleF OldValue = _old.Rect, NewValue = _new.Rect;
+            if (Config.Animation)
+            {
+                if (vertical)
+                {
+                    if (OldValue.X == NewValue.X)
+                    {
+                        AnimationBar = true;
+                        TabSelectRect = NewValue;
+                        float p_val = Math.Abs(NewValue.Y - AnimationBarValue.Y) * 0.09F, p_w_val = Math.Abs(NewValue.Height - AnimationBarValue.Height) * 0.1F, p_val2 = (NewValue.Y - AnimationBarValue.Y) * 0.5F;
+                        ThreadBar = new ITask(this, () =>
+                        {
+                            if (AnimationBarValue.Height != NewValue.Height)
+                            {
+                                if (NewValue.Height > OldValue.Height)
+                                {
+                                    AnimationBarValue.Height += p_w_val;
+                                    if (AnimationBarValue.Height > NewValue.Height) AnimationBarValue.Height = NewValue.Height;
+                                }
+                                else
+                                {
+                                    AnimationBarValue.Height -= p_w_val;
+                                    if (AnimationBarValue.Height < NewValue.Height) AnimationBarValue.Height = NewValue.Height;
+                                }
+                            }
+                            if (NewValue.Y > OldValue.Y)
+                            {
+                                if (AnimationBarValue.Y > p_val2) AnimationBarValue.Y += p_val / 2F;
+                                else AnimationBarValue.Y += p_val;
+                                if (AnimationBarValue.Y > NewValue.Y)
+                                {
+                                    AnimationBarValue.Y = NewValue.Y;
+                                    Invalidate();
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                AnimationBarValue.Y -= p_val;
+                                if (AnimationBarValue.Y < NewValue.Y)
+                                {
+                                    AnimationBarValue.Y = NewValue.Y;
+                                    Invalidate();
+                                    return false;
+                                }
+                            }
+                            Invalidate();
+                            return true;
+                        }, 10, () =>
+                        {
+                            AnimationBarValue = NewValue;
+                            AnimationBar = false;
+                            Invalidate();
+                        });
+                    }
+                }
+                else
+                {
+                    if (OldValue.Y == NewValue.Y)
+                    {
+                        AnimationBar = true;
+                        TabSelectRect = NewValue;
+                        float p_val = Math.Abs(NewValue.X - AnimationBarValue.X) * 0.09F, p_w_val = Math.Abs(NewValue.Width - AnimationBarValue.Width) * 0.1F, p_val2 = (NewValue.X - AnimationBarValue.X) * 0.5F;
+                        ThreadBar = new ITask(this, () =>
+                        {
+                            if (AnimationBarValue.Width != NewValue.Width)
+                            {
+                                if (NewValue.Width > OldValue.Width)
+                                {
+                                    AnimationBarValue.Width += p_w_val;
+                                    if (AnimationBarValue.Width > NewValue.Width) AnimationBarValue.Width = NewValue.Width;
+                                }
+                                else
+                                {
+                                    AnimationBarValue.Width -= p_w_val;
+                                    if (AnimationBarValue.Width < NewValue.Width) AnimationBarValue.Width = NewValue.Width;
+                                }
+                            }
+                            if (NewValue.X > OldValue.X)
+                            {
+                                if (AnimationBarValue.X > p_val2) AnimationBarValue.X += p_val / 2F;
+                                else AnimationBarValue.X += p_val;
+                                if (AnimationBarValue.X > NewValue.X)
+                                {
+                                    AnimationBarValue.X = NewValue.X;
+                                    Invalidate();
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                AnimationBarValue.X -= p_val;
+                                if (AnimationBarValue.X < NewValue.X)
+                                {
+                                    AnimationBarValue.X = NewValue.X;
+                                    Invalidate();
+                                    return false;
+                                }
+                            }
+                            Invalidate();
+                            return true;
+                        }, 10, () =>
+                        {
+                            AnimationBarValue = NewValue;
+                            AnimationBar = false;
+                            Invalidate();
+                        });
+                    }
+                }
+                return;
+            }
+            else
+            {
+                TabSelectRect = AnimationBarValue = NewValue;
+                Invalidate();
+                return;
             }
         }
 
@@ -465,14 +459,7 @@ namespace AntdUI
         /// 点击项时发生
         /// </summary>
         [Description("点击项时发生"), Category("行为")]
-        public event ItemClickEventHandler? ItemClick = null;
-
-        /// <summary>
-        /// 点击项时发生
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="value">数值</param>
-        public delegate void ItemClickEventHandler(object sender, MouseEventArgs e, SegmentedItem value);
+        public event SegmentedItemEventHandler? ItemClick = null;
 
         #region Change
 
@@ -523,7 +510,13 @@ namespace AntdUI
 
         internal void ChangeItems()
         {
-            if (pauseLayout || items == null || items.Count == 0) return;
+            if (items == null || items.Count == 0)
+            {
+                _select = -1;
+                return;
+            }
+            else if (_select >= items.Count) _select = items.Count - 1;
+            if (pauseLayout) return;
             var _rect = ClientRectangle.PaddingRect(Padding);
             if (_rect.Width == 0 || _rect.Height == 0) return;
             var rect = _rect.PaddingRect(Margin);
@@ -539,7 +532,7 @@ namespace AntdUI
                     int len = items.Count;
                     if (Vertical)
                     {
-                        float heightone = (rect.Height * 1F - (_igap * (len - 1))) / len, y = 0;
+                        int heightone = (rect.Height * 1 - (_igap * (len - 1))) / len, y = 0;
                         switch (iconalign)
                         {
                             case TAlignMini.Top:
@@ -547,8 +540,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectTop(new RectangleF(rect.X, rect.Y + y, rect.Width, heightone), imgsize_t, text_heigth, sp);
+                                    it.SetRectTop(new Rectangle(rect.X, rect.Y + y, rect.Width, heightone), imgsize_t, text_heigth, sp);
                                     y += heightone + _igap;
                                 }
                                 break;
@@ -557,8 +549,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectBottom(new RectangleF(rect.X, rect.Y + y, rect.Width, heightone), imgsize_b, text_heigth, sp);
+                                    it.SetRectBottom(new Rectangle(rect.X, rect.Y + y, rect.Width, heightone), imgsize_b, text_heigth, sp);
                                     y += heightone + _igap;
                                 }
                                 break;
@@ -567,8 +558,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectLeft(new RectangleF(rect.X, rect.Y + y, rect.Width, heightone), imgsize_l, sp, gap);
+                                    it.SetRectLeft(new Rectangle(rect.X, rect.Y + y, rect.Width, heightone), imgsize_l, sp, gap);
                                     y += heightone + _igap;
                                 }
                                 break;
@@ -577,8 +567,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectRight(new RectangleF(rect.X, rect.Y + y, rect.Width, heightone), imgsize_r, sp, gap);
+                                    it.SetRectRight(new Rectangle(rect.X, rect.Y + y, rect.Width, heightone), imgsize_r, sp, gap);
                                     y += heightone + _igap;
                                 }
                                 break;
@@ -586,8 +575,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectNone(new RectangleF(rect.X, rect.Y + y, rect.Width, heightone));
+                                    it.SetRectNone(new Rectangle(rect.X, rect.Y + y, rect.Width, heightone));
                                     y += heightone + _igap;
                                 }
                                 break;
@@ -595,7 +583,7 @@ namespace AntdUI
                     }
                     else
                     {
-                        float widthone = (rect.Width * 1F - (_igap * (len - 1))) / len, x = 0;
+                        int widthone = (rect.Width * 1 - (_igap * (len - 1))) / len, x = 0;
                         switch (iconalign)
                         {
                             case TAlignMini.Top:
@@ -603,8 +591,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectTop(new RectangleF(rect.X + x, rect.Y, widthone, rect.Height), imgsize_t, text_heigth, sp);
+                                    it.SetRectTop(new Rectangle(rect.X + x, rect.Y, widthone, rect.Height), imgsize_t, text_heigth, sp);
                                     x += widthone + _igap;
                                 }
                                 break;
@@ -613,8 +600,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectBottom(new RectangleF(rect.X + x, rect.Y, widthone, rect.Height), imgsize_b, text_heigth, sp);
+                                    it.SetRectBottom(new Rectangle(rect.X + x, rect.Y, widthone, rect.Height), imgsize_b, text_heigth, sp);
                                     x += widthone + _igap;
                                 }
                                 break;
@@ -623,8 +609,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectLeft(new RectangleF(rect.X + x, rect.Y, widthone, rect.Height), imgsize_l, sp, gap);
+                                    it.SetRectLeft(new Rectangle(rect.X + x, rect.Y, widthone, rect.Height), imgsize_l, sp, gap);
                                     x += widthone + _igap;
                                 }
                                 break;
@@ -633,8 +618,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectRight(new RectangleF(rect.X + x, rect.Y, widthone, rect.Height), imgsize_r, sp, gap);
+                                    it.SetRectRight(new Rectangle(rect.X + x, rect.Y, widthone, rect.Height), imgsize_r, sp, gap);
                                     x += widthone + _igap;
                                 }
                                 break;
@@ -642,8 +626,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectNone(new RectangleF(rect.X + x, rect.Y, widthone, rect.Height));
+                                    it.SetRectNone(new Rectangle(rect.X + x, rect.Y, widthone, rect.Height));
                                     x += widthone + _igap;
                                 }
                                 break;
@@ -655,7 +638,7 @@ namespace AntdUI
                 {
                     if (Vertical)
                     {
-                        float y = 0;
+                        int y = 0;
                         switch (iconalign)
                         {
                             case TAlignMini.Top:
@@ -663,8 +646,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectTop(new RectangleF(rect.X, rect.Y + y, rect.Width, heigth_t), imgsize_t, text_heigth, sp);
+                                    it.SetRectTop(new Rectangle(rect.X, rect.Y + y, rect.Width, heigth_t), imgsize_t, text_heigth, sp);
                                     y += it.Rect.Height + _igap;
                                 }
                                 break;
@@ -673,8 +655,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectBottom(new RectangleF(rect.X, rect.Y + y, rect.Width, heigth_b), imgsize_b, text_heigth, sp);
+                                    it.SetRectBottom(new Rectangle(rect.X, rect.Y + y, rect.Width, heigth_b), imgsize_b, text_heigth, sp);
                                     y += it.Rect.Height + _igap;
                                 }
                                 break;
@@ -683,8 +664,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectLeft(new RectangleF(rect.X, rect.Y + y, rect.Width, heigth_l), imgsize_l, sp, gap);
+                                    it.SetRectLeft(new Rectangle(rect.X, rect.Y + y, rect.Width, heigth_l), imgsize_l, sp, gap);
                                     y += it.Rect.Height + _igap;
                                 }
                                 break;
@@ -693,8 +673,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectRight(new RectangleF(rect.X, rect.Y + y, rect.Width, heigth_r), imgsize_r, sp, gap);
+                                    it.SetRectRight(new Rectangle(rect.X, rect.Y + y, rect.Width, heigth_r), imgsize_r, sp, gap);
                                     y += it.Rect.Height + _igap;
                                 }
                                 break;
@@ -703,8 +682,7 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectNone(new RectangleF(rect.X, rect.Y + y, rect.Width, heigth));
+                                    it.SetRectNone(new Rectangle(rect.X, rect.Y + y, rect.Width, heigth));
                                     y += it.Rect.Height + _igap;
                                 }
                                 break;
@@ -713,7 +691,7 @@ namespace AntdUI
                     }
                     else
                     {
-                        float x = 0;
+                        int x = 0;
                         switch (iconalign)
                         {
                             case TAlignMini.Top:
@@ -721,8 +699,8 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectTop(new RectangleF(rect.X + x, rect.Y, size.Width + gap2, rect.Height), imgsize_t, text_heigth, sp);
+                                    var size = g.MeasureString(it.Text, Font).Size();
+                                    it.SetRectTop(new Rectangle(rect.X + x, rect.Y, size.Width + gap2, rect.Height), imgsize_t, text_heigth, sp);
                                     x += it.Rect.Width + _igap;
                                 }
                                 break;
@@ -731,8 +709,8 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectBottom(new RectangleF(rect.X + x, rect.Y, size.Width + gap2, rect.Height), imgsize_b, text_heigth, sp);
+                                    var size = g.MeasureString(it.Text, Font).Size();
+                                    it.SetRectBottom(new Rectangle(rect.X + x, rect.Y, size.Width + gap2, rect.Height), imgsize_b, text_heigth, sp);
                                     x += it.Rect.Width + _igap;
                                 }
                                 break;
@@ -741,8 +719,8 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectLeft(new RectangleF(rect.X + x, rect.Y, size.Width + imgsize_l + sp + gap2, rect.Height), imgsize_l, sp, gap);
+                                    var size = g.MeasureString(it.Text, Font).Size();
+                                    it.SetRectLeft(new Rectangle(rect.X + x, rect.Y, size.Width + imgsize_l + sp + gap2, rect.Height), imgsize_l, sp, gap);
                                     x += it.Rect.Width + _igap;
                                 }
                                 break;
@@ -751,8 +729,8 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectRight(new RectangleF(rect.X + x, rect.Y, size.Width + imgsize_r + sp + gap2, rect.Height), imgsize_r, sp, gap);
+                                    var size = g.MeasureString(it.Text, Font).Size();
+                                    it.SetRectRight(new Rectangle(rect.X + x, rect.Y, size.Width + imgsize_r + sp + gap2, rect.Height), imgsize_r, sp, gap);
                                     x += it.Rect.Width + _igap;
                                 }
                                 break;
@@ -760,8 +738,8 @@ namespace AntdUI
                                 foreach (SegmentedItem it in items)
                                 {
                                     it.PARENT = this;
-                                    var size = g.MeasureString(it.Text, Font);
-                                    it.SetRectNone(new RectangleF(rect.X + x, rect.Y, size.Width + gap2, rect.Height));
+                                    var size = g.MeasureString(it.Text, Font).Size();
+                                    it.SetRectNone(new Rectangle(rect.X + x, rect.Y, size.Width + gap2, rect.Height));
                                     x += it.Rect.Width + _igap;
                                 }
                                 break;
@@ -773,7 +751,6 @@ namespace AntdUI
             if (_select > -1)
             {
                 var _new = items[_select];
-                if (_new == null) return;
                 AnimationBarValue = TabSelectRect = _new.Rect;
             }
         }
@@ -898,7 +875,7 @@ namespace AntdUI
                         using (var brush_active = new SolidBrush(foreactive ?? Style.Db.Text))
                         {
                             if (PaintImg(g, it, brush_active.Color, it.IconActiveSvg, it.IconActive)) PaintImg(g, it, brush_active.Color, it.IconSvg, it.Icon);
-                            g.DrawString(it.Text, Font, brush_active, it.RectText, Helper.stringFormatCenter);
+                            g.DrawStr(it.Text, Font, brush_active, it.RectText, Helper.stringFormatCenter);
                         }
                     }
                     else
@@ -908,13 +885,13 @@ namespace AntdUI
                             using (var brush_active = new SolidBrush(ForeHover ?? Style.Db.HoverColor))
                             {
                                 PaintImg(g, it, brush_active.Color, it.IconSvg, it.Icon);
-                                g.DrawString(it.Text, Font, brush_active, it.RectText, Helper.stringFormatCenter);
+                                g.DrawStr(it.Text, Font, brush_active, it.RectText, Helper.stringFormatCenter);
                             }
                         }
                         else
                         {
                             PaintImg(g, it, brush.Color, it.IconSvg, it.Icon);
-                            g.DrawString(it.Text, Font, brush, it.RectText, Helper.stringFormatCenter);
+                            g.DrawStr(it.Text, Font, brush, it.RectText, Helper.stringFormatCenter);
                         }
                     }
                 }
@@ -1003,7 +980,7 @@ namespace AntdUI
                 if (it != null && it.Rect.Contains(e.Location))
                 {
                     SelectIndex = i;
-                    ItemClick?.Invoke(this, e, it);
+                    ItemClick?.Invoke(this, new SegmentedItemEventArgs(it, e));
                     return;
                 }
             }
@@ -1108,56 +1085,56 @@ namespace AntdUI
 
         internal bool Hover { get; set; }
 
-        internal void SetRectTop(RectangleF rect, int imgsize, int text_heigth, int gap)
+        internal void SetRectTop(Rectangle rect, int imgsize, int text_heigth, int gap)
         {
             Rect = rect;
             if (HasIcon)
             {
-                float y = (rect.Height - (imgsize + text_heigth + gap)) / 2F;
-                RectImg = new RectangleF(rect.X + (rect.Width - imgsize) / 2F, rect.Y + y, imgsize, imgsize);
-                RectText = new RectangleF(rect.X, RectImg.Bottom + gap, rect.Width, text_heigth);
+                int y = (rect.Height - (imgsize + text_heigth + gap)) / 2;
+                RectImg = new Rectangle(rect.X + (rect.Width - imgsize) / 2, rect.Y + y, imgsize, imgsize);
+                RectText = new Rectangle(rect.X, RectImg.Bottom + gap, rect.Width, text_heigth);
             }
             else RectText = rect;
         }
-        internal void SetRectBottom(RectangleF rect, int imgsize, int text_heigth, int gap)
+        internal void SetRectBottom(Rectangle rect, int imgsize, int text_heigth, int gap)
         {
             Rect = rect;
             if (HasIcon)
             {
-                float y = (rect.Height - (imgsize + text_heigth + gap)) / 2F;
-                RectText = new RectangleF(rect.X, rect.Y + y, rect.Width, text_heigth);
-                RectImg = new RectangleF(rect.X + (rect.Width - imgsize) / 2F, RectText.Bottom + gap, imgsize, imgsize);
+                int y = (rect.Height - (imgsize + text_heigth + gap)) / 2;
+                RectText = new Rectangle(rect.X, rect.Y + y, rect.Width, text_heigth);
+                RectImg = new Rectangle(rect.X + (rect.Width - imgsize) / 2, RectText.Bottom + gap, imgsize, imgsize);
             }
             else RectText = rect;
         }
-        internal void SetRectLeft(RectangleF rect, int imgsize, int gap, int sp)
+        internal void SetRectLeft(Rectangle rect, int imgsize, int gap, int sp)
         {
             Rect = rect;
             if (HasIcon)
             {
-                RectImg = new RectangleF(rect.X + sp, rect.Y + (rect.Height - imgsize) / 2F, imgsize, imgsize);
-                RectText = new RectangleF(RectImg.Right + gap, rect.Y, rect.Width - sp - imgsize - gap, rect.Height);
+                RectImg = new Rectangle(rect.X + sp, rect.Y + (rect.Height - imgsize) / 2, imgsize, imgsize);
+                RectText = new Rectangle(RectImg.Right + gap, rect.Y, rect.Width - sp - imgsize - gap, rect.Height);
             }
             else RectText = rect;
         }
-        internal void SetRectRight(RectangleF rect, int imgsize, int gap, int sp)
+        internal void SetRectRight(Rectangle rect, int imgsize, int gap, int sp)
         {
             Rect = rect;
             if (HasIcon)
             {
-                RectText = new RectangleF(rect.X, rect.Y, rect.Width - sp - imgsize - gap, rect.Height);
-                RectImg = new RectangleF(RectText.Right + gap, rect.Y + (rect.Height - imgsize) / 2F, imgsize, imgsize);
+                RectText = new Rectangle(rect.X, rect.Y, rect.Width - sp - imgsize - gap, rect.Height);
+                RectImg = new Rectangle(RectText.Right + gap, rect.Y + (rect.Height - imgsize) / 2, imgsize, imgsize);
             }
             else RectText = rect;
         }
-        internal void SetRectNone(RectangleF rect)
+        internal void SetRectNone(Rectangle rect)
         {
             Rect = rect;
             RectText = rect;
         }
-        internal RectangleF Rect { get; set; }
-        internal RectangleF RectImg { get; set; }
-        internal RectangleF RectText { get; set; }
+        internal Rectangle Rect { get; set; }
+        internal Rectangle RectImg { get; set; }
+        internal Rectangle RectText { get; set; }
 
         internal Segmented? PARENT { get; set; }
 

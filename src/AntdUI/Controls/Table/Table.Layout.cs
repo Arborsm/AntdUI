@@ -748,6 +748,11 @@ namespace AntdUI
                 else if (value is ICell icell) AddRows(ref cells, new Template(this, prop, ov, column, ref processing, new ICell[] { icell }));
                 else cells.Add(new TCellText(this, prop, ov, column, value.ToString()));
             }
+            if (ov is INotifyPropertyChanged notify)
+            {
+                notify.PropertyChanged -= Notify_PropertyChanged;
+                notify.PropertyChanged += Notify_PropertyChanged;
+            }
         }
 
         void AddRows(ref List<TCell> cells, TCell data)
@@ -764,11 +769,6 @@ namespace AntdUI
                         Invalidate();
                     };
                 }
-            }
-            if (data.VALUE is INotifyPropertyChanged notify)
-            {
-                notify.PropertyChanged -= Notify_PropertyChanged;
-                notify.PropertyChanged += Notify_PropertyChanged;
             }
         }
 
@@ -993,7 +993,7 @@ namespace AntdUI
                     {
                         checkCell.Checked = value;
                         SetValue(item, checkCell.Checked);
-                        CheckedChanged?.Invoke(this, value, rows[i_row].RECORD, i_row, i_cel);
+                        CheckedChanged?.Invoke(this, new TableCheckEventArgs(value, rows[i_row].RECORD, i_row, i_cel));
                     }
                     else nocount++;
                 }

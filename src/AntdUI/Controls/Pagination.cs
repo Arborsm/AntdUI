@@ -21,7 +21,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -52,7 +51,7 @@ namespace AntdUI
                 else if (value > PageTotal) value = PageTotal;
                 if (current == value) return;
                 current = value;
-                ValueChanged?.Invoke(current, total, pageSize, PageTotal);
+                ValueChanged?.Invoke(this, new PagePageEventArgs(current, total, pageSize, PageTotal));
                 ButtonLayout();
                 Invalidate();
             }
@@ -88,8 +87,13 @@ namespace AntdUI
                 if (pageSize == value) return;
                 pageSize = value;
                 if (Math.Ceiling(total * 1.0 / pageSize) < current) current = (int)Math.Ceiling(total * 1.0 / pageSize);
-                ValueChanged?.Invoke(current, total, pageSize, PageTotal);
-                if (input_SizeChanger != null) input_SizeChanger.Text = value.ToString();
+                ValueChanged?.Invoke(this, new PagePageEventArgs(current, total, pageSize, PageTotal));
+                if (input_SizeChanger != null)
+                {
+                    string tips = Localization.Provider?.GetLocalizedString("ItemsPerPage") ?? "条/页";
+                    input_SizeChanger.Clear();
+                    input_SizeChanger.PlaceholderText = value.ToString() + " " + tips;
+                }
                 ButtonLayout();
                 Invalidate();
             }
@@ -128,33 +132,13 @@ namespace AntdUI
         /// Value 属性值更改时发生
         /// </summary>
         [Description("Value 属性值更改时发生"), Category("行为")]
-        public event ValueEventHandler? ValueChanged;
-
-        /// <summary>
-        /// 显示数据总量
-        /// </summary>
-        /// <param name="current">当前页数</param>
-        /// <param name="total">数据总数</param>
-        /// <param name="pageSize">每页条数</param>
-        /// <param name="pageTotal">总页数</param>
-        /// <returns></returns>
-        public delegate void ValueEventHandler(int current, int total, int pageSize, int pageTotal);
-
-        /// <summary>
-        /// 显示数据总量
-        /// </summary>
-        /// <param name="current">当前页数</param>
-        /// <param name="total">数据总数</param>
-        /// <param name="pageSize">每页条数</param>
-        /// <param name="pageTotal">总页数</param>
-        /// <returns></returns>
-        public delegate string RtValueEventHandler(int current, int total, int pageSize, int pageTotal);
+        public event PageValueEventHandler? ValueChanged;
 
         /// <summary>
         /// 显示数据总量
         /// </summary>
         [Description("用于显示数据总量"), Category("行为")]
-        public event RtValueEventHandler? ShowTotalChanged;
+        public event PageValueRtEventHandler? ShowTotalChanged;
 
         bool showSizeChanger = false;
         /// <summary>
@@ -168,7 +152,7 @@ namespace AntdUI
             {
                 if (showSizeChanger == value) return;
                 showSizeChanger = value;
-                if (!value && input_SizeChanger != null) { input_SizeChanger.Dispose(); input_SizeChanger = null; }
+                if (!value) InputSizeChangerDispose();
                 ButtonLayout();
                 Invalidate();
             }
@@ -186,7 +170,7 @@ namespace AntdUI
             {
                 if (pageSizeOptions == value) return;
                 pageSizeOptions = value;
-                if (input_SizeChanger != null) { input_SizeChanger.Dispose(); input_SizeChanger = null; }
+                InputSizeChangerDispose();
                 if (showSizeChanger)
                 {
                     ButtonLayout();
@@ -195,8 +179,29 @@ namespace AntdUI
             }
         }
 
-        [Description("SizeChanger 宽度"), Category("行为"), DefaultValue(60)]
-        public int SizeChangerWidth { get; set; } = 60;
+        int sizeChangerWidth = 0;
+        [Description("SizeChanger 宽度"), Category("行为"), DefaultValue(0)]
+        public int SizeChangerWidth
+        {
+            get => sizeChangerWidth;
+            set
+            {
+                if (sizeChangerWidth == value) return;
+                sizeChangerWidth = value;
+                if (showSizeChanger)
+                {
+                    InputSizeChangerDispose();
+                    ButtonLayout();
+                    Invalidate();
+                }
+            }
+        }
+
+        int pyr = 0;
+        public override Rectangle DisplayRectangle
+        {
+            get => ClientRectangle.PaddingRect(Padding, 0, 0, pyr, 0, borderWidth * Config.Dpi);
+        }
 
         Color? fill;
         /// <summary>
@@ -256,11 +261,6 @@ namespace AntdUI
             {
                 if (rightToLeft == value) return;
                 rightToLeft = value;
-                if (input_SizeChanger != null)
-                {
-                    bool r = rightToLeft == RightToLeft.Yes;
-                    input_SizeChanger.Dock = r ? DockStyle.Right : DockStyle.Left;
-                }
                 ButtonLayout();
                 Invalidate();
             }
@@ -327,7 +327,7 @@ namespace AntdUI
 
                     using (var brush = new SolidBrush(fore))
                     {
-                        if (showTotal != null) g.DrawString(showTotal, Font, brush, rect_text, Helper.stringFormatCenter2);
+                        if (showTotal != null) g.DrawStr(showTotal, Font, brush, rect_text, Helper.stringFormatCenter2);
                         for (int i = 2; i < buttons.Length; i++)
                         {
                             var btn = buttons[i];
@@ -342,7 +342,7 @@ namespace AntdUI
                             {
                                 using (var brush_prog = new SolidBrush(Style.Db.TextQuaternary))
                                 {
-                                    g.DrawString("•••", Font, brush_prog, btn.rect, Helper.stringFormatCenter2);
+                                    g.DrawStr("•••", Font, brush_prog, btn.rect, Helper.stringFormatCenter2);
                                 }
                             }
                             else
@@ -357,7 +357,7 @@ namespace AntdUI
                                         }
                                     }
                                 }
-                                g.DrawString(btn.key, Font, brush, btn.rect, Helper.stringFormatCenter2);
+                                g.DrawStr(btn.key, Font, brush, btn.rect, Helper.stringFormatCenter2);
                             }
                         }
                     }
@@ -383,13 +383,13 @@ namespace AntdUI
 
                 using (var brush = new SolidBrush(Style.Db.TextQuaternary))
                 {
-                    if (showTotal != null) g.DrawString(showTotal, Font, brush, rect_text, Helper.stringFormatCenter2);
+                    if (showTotal != null) g.DrawStr(showTotal, Font, brush, rect_text, Helper.stringFormatCenter2);
                     for (int i = 2; i < buttons.Length; i++)
                     {
                         var btn = buttons[i];
                         if (btn.prog > 0)
                         {
-                            g.DrawString("•••", Font, brush, btn.rect, Helper.stringFormatCenter2);
+                            g.DrawStr("•••", Font, brush, btn.rect, Helper.stringFormatCenter2);
                         }
                         else
                         {
@@ -403,7 +403,7 @@ namespace AntdUI
                                     }
                                 }
                             }
-                            g.DrawString(btn.key, Font, brush, btn.rect, Helper.stringFormatCenter2);
+                            g.DrawStr(btn.key, Font, brush, btn.rect, Helper.stringFormatCenter2);
                         }
                     }
                 }
@@ -498,12 +498,28 @@ namespace AntdUI
 
         ButtonLoad[] buttons = new ButtonLoad[0];
         internal string? showTotal = null;
-        internal RectangleF rect_text;
+        internal Rectangle rect_text;
 
         Input? input_SizeChanger = null;
+        void InputSizeChangerDispose()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(InputSizeChangerDispose));
+                return;
+            }
+            input_SizeChanger?.Dispose();
+            input_SizeChanger = null;
+        }
         void ButtonLayout()
         {
             var rect = ClientRectangle.PaddingRect(Padding, borderWidth * Config.Dpi);
+            if (showSizeChanger)
+            {
+                int wsize = (int)(4 * Config.Dpi);
+                rect.Y += wsize;
+                rect.Height -= wsize * 2;
+            }
             bool sizeChanger = ShowSizeChanger;
             int t_Width = rect.Width, _SizeChangerWidth = 0;
             if (t_Width > 1)
@@ -523,20 +539,19 @@ namespace AntdUI
                 int total_page = (int)Math.Ceiling((total * 1.0) / pageSize);//总页数
                 if (total_page == 0) total_page = 1;
 
-                if (textdesc == null) showTotal = ShowTotalChanged?.Invoke(current, total, pageSize, total_page);
+                if (textdesc == null) showTotal = ShowTotalChanged?.Invoke(this, new PagePageEventArgs(current, total, pageSize, total_page));
                 else showTotal = textdesc;
 
-                Helper.GDI(g =>
+                int pyrn = Helper.GDI(g =>
                 {
-                    var dir = new Dictionary<int, float>();
-                    int min = 100;
-                    float max_size = rect.Height;
+                    var dir = new Dictionary<int, int>();
+                    int min = 100, max_size = rect.Height;
                     for (int i = 0; i <= total_page; i++)
                     {
                         if (i == min)
                         {
                             min = min * 10;
-                            var size_font = g.MeasureString((i + 1).ToString(), Font);
+                            var size_font = g.MeasureString((i + 1).ToString(), Font).Size();
                             if (size_font.Width > rect.Height)
                             {
                                 max_size = size_font.Width;
@@ -549,14 +564,14 @@ namespace AntdUI
                     {
                         var size_font = g.MeasureString(showTotal, Font);
                         x = (int)Math.Ceiling(size_font.Width);
-                        rect_text = new RectangleF(rect.X, rect.Y, x, rect.Height);
+                        rect_text = new Rectangle(rect.X, rect.Y, x, rect.Height);
                     }
 
-                    total_button = (int)Math.Floor((t_Width - x) / (max_size + gap));//总共多少按钮
+                    total_button = (int)Math.Floor((t_Width - x) / ((max_size * 1.0) + gap));//总共多少按钮
                     if (total_button < 3)
                     {
                         buttons = new ButtonLoad[0];
-                        return;
+                        return 0;
                     }
 
                     if (MaxPageTotal > 0 && total_button > MaxPageTotal + 2) total_button = MaxPageTotal + 2;
@@ -566,12 +581,9 @@ namespace AntdUI
                     PageTotal = total_page;
                     bool has_previous = current > 1, has_next = total_page > current;//是否还有下一页
                     var _buttons = new List<ButtonLoad>(total_button) {
-                    new ButtonLoad(new RectangleF(x + rect.X, rect.Y, rect.Height, rect.Height))
-                    {
-                        enabled = has_previous
-                    }
-                    };
-                    float n_x = _buttons[0].rect.Right + gap;
+                        new ButtonLoad(new Rectangle(x + rect.X, rect.Y, rect.Height, rect.Height),has_previous)
+                     };
+                    int n_x = _buttons[0].rect.Right + gap;
                     if (total_page > total_page_button)
                     {
                         //大于
@@ -579,43 +591,17 @@ namespace AntdUI
                         int center_page_button = (int)Math.Ceiling(total_page_button / 2F);
                         if (current <= center_page_button)
                         {
-                            for (int i = 0; i < _tol - 2; i++)
-                            {
-                                n_x += AddButs(ref _buttons, dir, new ButtonLoad(i + 1, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                                {
-                                    enabled = true
-                                }) + gap;
-                            }
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(_tol - 2, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true,
-                                prog = 1
-                            }) + gap;
+                            for (int i = 0; i < _tol - 2; i++) n_x += AddButs(ref _buttons, dir, new ButtonLoad(i + 1, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(_tol - 2, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true, 1)) + gap;
                             //添加最后一页
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(total_page, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true
-                            });
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(total_page, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true));
                         }
                         else if (current > total_page - center_page_button)
                         {
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true
-                            }) + gap;
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
                             int last_i = total_page - (_tol - 3);
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true,
-                                prog = 2
-                            }) + gap;
-                            for (int i = 0; i < _tol - 2; i++)
-                            {
-                                n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i + i, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                                {
-                                    enabled = true
-                                }) + gap;
-                            }
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true, 2)) + gap;
+                            for (int i = 0; i < _tol - 2; i++) n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i + i, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
                         }
                         else
                         {
@@ -623,39 +609,19 @@ namespace AntdUI
 
                             #region 前
 
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true
-                            }) + gap;
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true,
-                                prog = 2
-                            }) + gap;
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(1, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true, 2)) + gap;
 
                             #endregion
 
                             int center_len = (_tol - 4);
                             var start = current - center_len / 2;
-                            for (int i = 0; i < center_len; i++)
-                            {
-                                n_x += AddButs(ref _buttons, dir, new ButtonLoad(start + i, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                                {
-                                    enabled = true
-                                }) + gap;
-                            }
+                            for (int i = 0; i < center_len; i++) n_x += AddButs(ref _buttons, dir, new ButtonLoad(start + i, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
 
                             #region 后
 
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true,
-                                prog = 1
-                            }) + gap;
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(total_page, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true
-                            });
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(last_i, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true, 1)) + gap;
+                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(total_page, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true));
 
                             #endregion
                         }
@@ -663,56 +629,42 @@ namespace AntdUI
                     else
                     {
                         //不够
-                        for (int i = 0; i < total_page; i++)
-                        {
-                            n_x += AddButs(ref _buttons, dir, new ButtonLoad(i + 1, new RectangleF(n_x, rect.Y, rect.Height, rect.Height))
-                            {
-                                enabled = true
-                            }) + gap;
-                        }
+                        for (int i = 0; i < total_page; i++) n_x += AddButs(ref _buttons, dir, new ButtonLoad(i + 1, new Rectangle(n_x, rect.Y, rect.Height, rect.Height), true)) + gap;
                     }
-                    _buttons.Insert(1, new ButtonLoad(new RectangleF(_buttons[_buttons.Count - 1].rect.Right + gap, rect.Y, rect.Height, rect.Height))
-                    {
-                        enabled = has_next
-                    });
+                    _buttons.Insert(1, new ButtonLoad(new Rectangle(_buttons[_buttons.Count - 1].rect.Right + gap, rect.Y, rect.Height, rect.Height), has_next));
+                    int valr = 0;
                     if (RightToLeft == RightToLeft.Yes)
                     {
                         var py = rect.Right - _buttons[1].rect.Right;
                         if (sizeChanger) py -= _SizeChangerWidth;
-                        foreach (var btn in _buttons)
-                        {
-                            btn._rect.Offset(py, 0);
-                        }
+                        foreach (var btn in _buttons) btn._rect.Offset(py, 0);
                         rect_text.Offset(py, 0);
                     }
-                    else if (sizeChanger)
-                    {
-                        int py = _SizeChangerWidth;
-                        foreach (var btn in _buttons)
-                        {
-                            btn._rect.Offset(py, 0);
-                        }
-                        rect_text.Offset(py, 0);
-                    }
+                    else if (sizeChanger) valr = rect.Right - _buttons[1].rect.Right - _SizeChangerWidth;
                     buttons = _buttons.ToArray();
+                    return valr;
                 });
+                if (pyr == pyrn) return;
+                pyr = pyrn;
+                if (InvokeRequired) Invoke(new Action(() => { OnSizeChanged(EventArgs.Empty); }));
+                else OnSizeChanged(EventArgs.Empty);
             }
         }
-        int InitSizeChanger(RectangleF rect)
+        int InitSizeChanger(Rectangle rect)
         {
             if (input_SizeChanger == null)
             {
+                string tips = Localization.Provider?.GetLocalizedString("ItemsPerPage") ?? "条/页";
+                var placeholder = pageSize.ToString() + " " + tips;
                 bool r = rightToLeft == RightToLeft.Yes;
-                int width;
+                int width = GetSizeChangerWidth(placeholder);
                 if (pageSizeOptions == null || pageSizeOptions.Length == 0)
                 {
-                    width = (int)(SizeChangerWidth * Config.Dpi);
                     var input = new Input
                     {
-                        Size = new Size(width, (int)rect.Height),
-                        Dock = r ? DockStyle.Right : DockStyle.Left,
-                        Text = pageSize.ToString(),
-                        TextAlign = HorizontalAlignment.Center,
+                        PlaceholderText = placeholder,
+                        Size = new Size(width, rect.Height),
+                        Dock = DockStyle.Right,
                         Font = Font,
                         BorderColor = fill
                     };
@@ -720,40 +672,78 @@ namespace AntdUI
                 }
                 else
                 {
-                    var max = pageSizeOptions.Max();
-                    if (max >= 100)
-                    {
-                        width = Helper.GDI(g =>
-                        {
-                            var size = g.MeasureString(max.ToString(), Font);
-                            return (int)Math.Ceiling(size.Width + (size.Height * 2F));
-                        });
-                    }
-                    else width = (int)(SizeChangerWidth * Config.Dpi);
                     var input = new Select
                     {
-                        List = true,
+                        PlaceholderText = placeholder,
                         ListAutoWidth = true,
+                        DropDownArrow = true,
                         Placement = TAlignFrom.Top,
-                        Size = new Size(width, (int)rect.Height),
-                        Dock = r ? DockStyle.Right : DockStyle.Left,
-                        Text = pageSize.ToString(),
-                        TextAlign = HorizontalAlignment.Center,
+                        Size = new Size(width, rect.Height),
+                        Dock = DockStyle.Right,
                         Font = Font,
                         BorderColor = fill
                     };
                     foreach (var it in pageSizeOptions) input.Items.Add(it);
+                    input.SelectedValue = pageSize;
+                    input.Text = "";
                     input.SelectedValueChanged += (a, b) =>
                     {
-                        if (b is int pageSize) PageSize = pageSize;
+                        if (b.Value is int pageSize) PageSize = pageSize;
                     };
                     input_SizeChanger = input;
                 }
-                Controls.Add(input_SizeChanger);
+                if (InvokeRequired)
+                {
+                    Invoke(new Action(() =>
+                    {
+                        Controls.Add(input_SizeChanger);
+                    }));
+                }
+                else Controls.Add(input_SizeChanger);
                 input_SizeChanger.KeyPress += Input_SizeChanger_KeyPress;
                 return width;
             }
-            else return input_SizeChanger.Width;
+            else
+            {
+                if (sizeChangerWidth <= 0)
+                {
+                    string tips = Localization.Provider?.GetLocalizedString("ItemsPerPage") ?? "条/页";
+                    var placeholder = pageSize.ToString() + " " + tips;
+                    int width = GetSizeChangerWidth(placeholder);
+                    if (InvokeRequired)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            input_SizeChanger.Width = width;
+                        }));
+                    }
+                    else input_SizeChanger.Width = width;
+                    return width;
+                }
+                return input_SizeChanger.Width;
+            }
+        }
+
+        int GetSizeChangerWidth(string placeholder)
+        {
+            if (sizeChangerWidth > 0) return (int)(sizeChangerWidth * Config.Dpi);
+            int wsize = (int)(4 * Config.Dpi) * 2;
+            if (pageSizeOptions == null || pageSizeOptions.Length == 0)
+            {
+                return Helper.GDI(g =>
+                {
+                    var size = g.MeasureString(placeholder, Font).Size();
+                    return size.Width + wsize + (int)Math.Ceiling(size.Height * 0.6F);
+                });
+            }
+            else
+            {
+                return Helper.GDI(g =>
+                {
+                    var size = g.MeasureString(placeholder, Font).Size();
+                    return size.Width + wsize + (int)Math.Ceiling(size.Height * 1.32F);
+                });
+            }
         }
 
         protected override void OnFontChanged(EventArgs e)
@@ -762,7 +752,7 @@ namespace AntdUI
             if (input_SizeChanger != null) input_SizeChanger.Font = Font;
         }
 
-        float AddButs(ref List<ButtonLoad> buttons, Dictionary<int, float> dir, ButtonLoad button)
+        int AddButs(ref List<ButtonLoad> buttons, Dictionary<int, int> dir, ButtonLoad button)
         {
             if (button.key.Length > 1)
             {
@@ -785,19 +775,30 @@ namespace AntdUI
 
         class ButtonLoad
         {
-            public ButtonLoad(RectangleF _rect)
+            public ButtonLoad(Rectangle _rect, bool enable)
             {
                 rect = _rect;
                 key = "";
+                enabled = enable;
             }
-            public ButtonLoad(int _num, RectangleF _rect)
+
+            public ButtonLoad(int _num, Rectangle _rect, bool enable)
             {
                 num = _num;
                 rect = _rect;
                 key = _num.ToString();
+                enabled = enable;
             }
-            internal RectangleF _rect;
-            public RectangleF rect { get => _rect; set => _rect = value; }
+            public ButtonLoad(int _num, Rectangle _rect, bool enable, int p)
+            {
+                num = _num;
+                rect = _rect;
+                key = _num.ToString();
+                enabled = enable;
+                prog = p;
+            }
+            internal Rectangle _rect;
+            public Rectangle rect { get => _rect; set => _rect = value; }
 
             public string key { get; set; }
             public int num { get; set; }

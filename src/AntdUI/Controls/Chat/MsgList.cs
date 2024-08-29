@@ -92,10 +92,10 @@ namespace AntdUI.Chat
 
                         try
                         {
-                            g.DrawString(it.Name, Font, brush, it.rect_name, SFL);
-                            g.DrawString(it.Text, font_text, brush, it.rect_text, SFL);
+                            g.DrawStr(it.Name, Font, brush, it.rect_name, SFL);
+                            g.DrawStr(it.Text, font_text, brush, it.rect_text, SFL);
 
-                            g.DrawString(it.Time, font_time, brush, it.rect_time, SFR);
+                            g.DrawStr(it.Time, font_time, brush, it.rect_time, SFR);
                         }
                         catch { }
                     }
@@ -114,10 +114,10 @@ namespace AntdUI.Chat
                     {
                         try
                         {
-                            g.DrawString(it.Name, Font, brush, it.rect_name, SFL);
-                            g.DrawString(it.Text, font_text, brush, it.rect_text, SFL);
+                            g.DrawStr(it.Name, Font, brush, it.rect_name, SFL);
+                            g.DrawStr(it.Text, font_text, brush, it.rect_text, SFL);
 
-                            g.DrawString(it.Time, font_time, brush, it.rect_time, SFR);
+                            g.DrawStr(it.Time, font_time, brush, it.rect_time, SFR);
                         }
                         catch { }
                     }
@@ -135,7 +135,7 @@ namespace AntdUI.Chat
                             {
                                 g.FillPath(Brushes.Red, path);
                             }
-                            g.DrawString("99+", font_time, Brushes.White, rect_badge, SFBage);
+                            g.DrawStr("99+", font_time, Brushes.White, rect_badge, SFBage);
                         }
                         else if (it.Count > 1)
                         {
@@ -143,7 +143,7 @@ namespace AntdUI.Chat
                             int badge_size = badgesize.Width > badgesize.Height ? badgesize.Width : badgesize.Height, xy = badge_size / 3;
                             var rect_badge = new Rectangle(it.rect_icon.Right - badge_size + xy, it.rect_icon.Y - xy, badge_size, badge_size);
                             g.FillEllipse(Brushes.Red, rect_badge);
-                            g.DrawString(it.Count.ToString(), font_time, Brushes.White, rect_badge, SFBage);
+                            g.DrawStr(it.Count.ToString(), font_time, Brushes.White, rect_badge, SFBage);
                         }
                         else
                         {
@@ -254,7 +254,6 @@ namespace AntdUI.Chat
 
         #region 事件
 
-        public delegate void ItemSelectedEventHandler(object sender, MsgItemEventArgs e);
         public event ItemSelectedEventHandler? ItemSelected;
         protected virtual void OnItemSelected(MsgItem selectedItem)
         {
@@ -541,15 +540,5 @@ namespace AntdUI.Chat
         internal Rectangle rect_time { get; set; }
         internal Rectangle rect_text { get; set; }
         internal Rectangle rect_icon { get; set; }
-    }
-
-    public class MsgItemEventArgs : EventArgs
-    {
-        public MsgItem SelectedItem { get; private set; }
-
-        public MsgItemEventArgs(MsgItem selectedItem)
-        {
-            SelectedItem = selectedItem;
-        }
     }
 }

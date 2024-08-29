@@ -346,7 +346,7 @@ namespace AntdUI
                                 g.FillPath(brush, path);
                             }
                         }
-                        g.PaintIconClose(rect_close, Style.Db.Text, 0.6F);
+                        g.PaintIconClose(rect_close, Style.Db.Text, .6F);
                     }
                     else if (close_button.Switch)
                     {
@@ -357,21 +357,21 @@ namespace AntdUI
                                 g.FillPath(brush, path);
                             }
                         }
-                        g.PaintIconClose(rect_close, Style.Db.Text, 0.6F);
+                        g.PaintIconClose(rect_close, Style.Db.Text, .6F);
                     }
-                    else g.PaintIconClose(rect_close, Style.Db.TextTertiary, 0.6F);
+                    else g.PaintIconClose(rect_close, Style.Db.TextTertiary, .6F);
                 }
                 using (var brush = new SolidBrush(Style.Db.TextBase))
                 {
-                    g.DrawString(config.Title, font_title, brush, rect_title, Helper.stringFormatLeft);
-                    g.DrawString(config.Text, Font, brush, rect_txt, stringFormat);
+                    g.DrawStr(config.Title, font_title, brush, rect_title, Helper.stringFormatLeft);
+                    g.DrawStr(config.Text, Font, brush, rect_txt, stringFormat);
                 }
                 if (config.Link != null)
                 {
                     using (var brush = new SolidBrush(Style.Db.Primary))
                     using (var pen = new Pen(Style.Db.Primary, 1F * Config.Dpi))
                     {
-                        g.DrawString(config.Link.Text, Font, brush, rect_link_text, Helper.stringFormatLeft);
+                        g.DrawStr(config.Link.Text, Font, brush, rect_link_text, Helper.stringFormatLeft);
                         g.DrawLines(pen, TAlignMini.Right.TriangleLines(rect_links));
                     }
                 }
@@ -386,7 +386,7 @@ namespace AntdUI
         /// <param name="g">GDI</param>
         /// <param name="rect_client">客户区域</param>
         /// <param name="rect_read">真实区域</param>
-        GraphicsPath DrawShadow(Graphics g, Rectangle rect_client, RectangleF rect_read)
+        GraphicsPath DrawShadow(Graphics g, Rectangle rect_client, Rectangle rect_read)
         {
             var path = rect_read.RoundPath((int)(config.Radius * Config.Dpi));
             if (Config.ShadowEnabled)

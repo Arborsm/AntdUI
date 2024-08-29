@@ -17,6 +17,7 @@
 // QQ: 17379620
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -214,7 +215,7 @@ namespace AntdUI
 
         #region 图标渲染
 
-        internal static void PaintIcons(this Graphics g, TType icon, RectangleF rect)
+        internal static void PaintIcons(this Graphics g, TType icon, Rectangle rect)
         {
             switch (icon)
             {
@@ -248,11 +249,11 @@ namespace AntdUI
                     break;
             }
         }
-        internal static void PaintIcons(this Graphics g, TType icon, RectangleF rect, Color back)
+        internal static void PaintIcons(this Graphics g, TType icon, Rectangle rect, Color back)
         {
             using (var brush = new SolidBrush(back))
             {
-                g.FillEllipse(brush, new RectangleF(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2));
+                g.FillEllipse(brush, new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2));
             }
             switch (icon)
             {
@@ -286,7 +287,7 @@ namespace AntdUI
                     break;
             }
         }
-        internal static void PaintIconGhosts(this Graphics g, TType icon, RectangleF rect, Color color)
+        internal static void PaintIconGhosts(this Graphics g, TType icon, Rectangle rect, Color color)
         {
             switch (icon)
             {
@@ -320,11 +321,11 @@ namespace AntdUI
                     break;
             }
         }
-        internal static void PaintIconClose(this Graphics g, RectangleF rect, Color color)
+        internal static void PaintIconClose(this Graphics g, Rectangle rect, Color color)
         {
             PaintIconCore(g, rect, SvgDb.IcoErrorGhost, color);
         }
-        internal static void PaintIconClose(this Graphics g, RectangleF rect, Color color, float dot)
+        internal static void PaintIconClose(this Graphics g, Rectangle rect, Color color, float dot)
         {
             PaintIconCore(g, rect, SvgDb.IcoErrorGhost, color, dot);
         }
@@ -332,7 +333,7 @@ namespace AntdUI
         /// <summary>
         /// 绘制带圆背景的镂空图标
         /// </summary>
-        internal static void PaintIconCoreGhost(this Graphics g, RectangleF rect, string svg, Color back, Color fore)
+        internal static void PaintIconCoreGhost(this Graphics g, Rectangle rect, string svg, Color back, Color fore)
         {
             using (var brush = new SolidBrush(back))
             {
@@ -344,11 +345,11 @@ namespace AntdUI
                 g.DrawImage(bmp, rect);
             }
         }
-        internal static void PaintIconCore(this Graphics g, RectangleF rect, string svg, Color back, Color fore)
+        internal static void PaintIconCore(this Graphics g, Rectangle rect, string svg, Color back, Color fore)
         {
             using (var brush = new SolidBrush(back))
             {
-                g.FillEllipse(brush, new RectangleF(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2));
+                g.FillEllipse(brush, new Rectangle(rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2));
             }
             using (var bmp = SvgExtend.GetImgExtend(svg, rect, fore))
             {
@@ -356,7 +357,7 @@ namespace AntdUI
                 g.DrawImage(bmp, rect);
             }
         }
-        internal static void PaintIconCore(this Graphics g, RectangleF rect, string svg, Color color)
+        internal static void PaintIconCore(this Graphics g, Rectangle rect, string svg, Color color)
         {
             using (var bmp = SvgExtend.GetImgExtend(svg, rect, color))
             {
@@ -364,10 +365,10 @@ namespace AntdUI
                 g.DrawImage(bmp, rect);
             }
         }
-        internal static void PaintIconCore(this Graphics g, RectangleF rect, string svg, Color color, float dot)
+        internal static void PaintIconCore(this Graphics g, Rectangle rect, string svg, Color color, float dot)
         {
-            float size = rect.Height * dot;
-            var rect_ico = new RectangleF(rect.X + (rect.Width - size) / 2F, rect.Y + (rect.Height - size) / 2F, size, size);
+            int size = (int)(rect.Height * dot);
+            var rect_ico = new Rectangle(rect.X + (rect.Width - size) / 2, rect.Y + (rect.Height - size) / 2, size, size);
             using (var bmp = SvgExtend.GetImgExtend(svg, rect_ico, color))
             {
                 if (bmp == null) return;
@@ -842,6 +843,15 @@ namespace AntdUI
             }
             return new Rectangle(rect.X + padding.Left, rect.Y + padding.Top, rect.Width - padding.Horizontal, rect.Height - padding.Vertical);
         }
+        public static Rectangle PaddingRect(this Rectangle rect, Padding padding, int x, int y, int r, int b, float size = 0F)
+        {
+            if (size > 0)
+            {
+                int pr = (int)Math.Round(size), pr2 = pr * 2;
+                return new Rectangle(rect.X + padding.Left + pr + x, rect.Y + padding.Top + pr + y, rect.Width - padding.Horizontal - pr2 - r, rect.Height - padding.Vertical - pr2 - b);
+            }
+            return new Rectangle(rect.X + padding.Left + x, rect.Y + padding.Top + y, rect.Width - padding.Horizontal - r, rect.Height - padding.Vertical - b);
+        }
 
         /// <summary>
         /// 得到真实渲染区域
@@ -1143,9 +1153,20 @@ namespace AntdUI
             return RoundPathCore(rect, radius);
         }
 
+        public static GraphicsPath RoundPath(this RectangleF rect, float radius)
+        {
+            return RoundPathCore(rect, radius);
+        }
+
         internal static GraphicsPath RoundPath(this RectangleF rect, float radius, TShape shape)
         {
             return RoundPath(rect, radius, shape == TShape.Round);
+        }
+
+        internal static GraphicsPath RoundPath(this Rectangle rect, float radius, bool round)
+        {
+            if (round) return CapsulePathCore(rect);
+            return RoundPathCore(rect, radius);
         }
 
         internal static GraphicsPath RoundPath(this RectangleF rect, float radius, bool round)
@@ -1154,12 +1175,7 @@ namespace AntdUI
             return RoundPathCore(rect, radius);
         }
 
-        public static GraphicsPath RoundPath(this RectangleF rect, float radius)
-        {
-            return RoundPathCore(rect, radius);
-        }
-
-        internal static GraphicsPath RoundPath(this RectangleF rect, float radius, TAlignMini shadowAlign)
+        internal static GraphicsPath RoundPath(this Rectangle rect, float radius, TAlignMini shadowAlign)
         {
             switch (shadowAlign)
             {
@@ -1181,7 +1197,7 @@ namespace AntdUI
         /// <param name="TR">↗</param>
         /// <param name="BR">↘</param>
         /// <param name="BL">↙</param>
-        public static GraphicsPath RoundPath(this RectangleF rect, float radius, bool TL, bool TR, bool BR, bool BL)
+        public static GraphicsPath RoundPath(this Rectangle rect, float radius, bool TL, bool TR, bool BR, bool BL)
         {
             var path = new GraphicsPath();
             if (radius <= 0F) path.AddRectangle(rect);
@@ -1223,7 +1239,7 @@ namespace AntdUI
         /// <param name="TR">↗</param>
         /// <param name="BR">↘</param>
         /// <param name="BL">↙</param>
-        public static GraphicsPath RoundPath(this Rectangle rect, float radius, bool TL, bool TR, bool BR, bool BL)
+        public static GraphicsPath RoundPath(this RectangleF rect, float radius, bool TL, bool TR, bool BR, bool BL)
         {
             var path = new GraphicsPath();
             if (radius <= 0F) path.AddRectangle(rect);
@@ -1569,7 +1585,7 @@ namespace AntdUI
                                         g.DrawEllipse(pen, rect_badge);
                                     }
                                 }
-                                g.DrawString(control.Badge, font, brush_fore, rect_badge, stringFormatCenter2);
+                                g.DrawStr(control.Badge, font, brush_fore, rect_badge, stringFormatCenter2);
                             }
                             else
                             {
@@ -1586,7 +1602,7 @@ namespace AntdUI
                                         }
                                     }
                                 }
-                                g.DrawString(control.Badge, font, brush_fore, rect_badge, stringFormatCenter2);
+                                g.DrawStr(control.Badge, font, brush_fore, rect_badge, stringFormatCenter2);
                             }
                         }
                     }
@@ -1633,7 +1649,7 @@ namespace AntdUI
                                 g.DrawEllipse(pen, rect_badge);
                             }
                         }
-                        g.DrawString(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
+                        g.DrawStr(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
                     }
                     else
                     {
@@ -1650,7 +1666,7 @@ namespace AntdUI
                                 }
                             }
                         }
-                        g.DrawString(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
+                        g.DrawStr(countStr, font, brush_fore, rect_badge, stringFormatCenter2);
                     }
                 }
             }
@@ -1658,7 +1674,7 @@ namespace AntdUI
 
         #endregion
 
-        public static void PaintShadow(this Graphics g, ShadowConfig config, Rectangle _rect, RectangleF rect, float radius, bool round)
+        public static void PaintShadow(this Graphics g, ShadowConfig config, Rectangle _rect, Rectangle rect, float radius, bool round)
         {
             int shadow = (int)(config.Shadow * Config.Dpi), shadowOffsetX = (int)(config.ShadowOffsetX * Config.Dpi), shadowOffsetY = (int)(config.ShadowOffsetY * Config.Dpi);
             using (var bmp_shadow = new Bitmap(_rect.Width, _rect.Height))
@@ -2035,6 +2051,12 @@ namespace AntdUI
             {
                 return true;
             }
+        }
+
+        public static bool ListExceed(this IList? list, int index)
+        {
+            if (list == null || list.Count <= index || index < 0) return true;
+            return false;
         }
     }
 

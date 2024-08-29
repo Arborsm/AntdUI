@@ -31,6 +31,7 @@ namespace AntdUI
         List<OMenuItem> Items;
         public LayeredFormMenuDown(Menu control, int radius, Rectangle rect_read, MenuItemCollection items)
         {
+            MessageCloseMouseLeave = true;
             isauto = control.Theme == TAMode.Auto;
             isdark = Config.IsDark || control.Theme == TAMode.Dark;
             control.Parent.SetTopMost(Handle);
@@ -299,7 +300,7 @@ namespace AntdUI
                 {
                     string emptytext = Localization.Provider?.GetLocalizedString("NoData") ?? "暂无数据";
                     using (var brush = new SolidBrush(Color.FromArgb(180, Style.Db.Text)))
-                    { g.DrawString(emptytext, Font, brush, rect_read, Helper.stringFormatCenter2); }
+                    { g.DrawStr(emptytext, Font, brush, rect_read, Helper.stringFormatCenter2); }
                 }
                 else
                 {
@@ -355,7 +356,7 @@ namespace AntdUI
                         }
                         using (var brush_select = new SolidBrush(Style.Db.TextBase))
                         {
-                            g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
+                            g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
                         }
                         PaintIcon(g, it, brush.Color);
                     }
@@ -371,7 +372,7 @@ namespace AntdUI
                                 }
                             }
                         }
-                        g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
+                        g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
                         PaintIcon(g, it, brush.Color);
                     }
                 }
@@ -388,7 +389,7 @@ namespace AntdUI
                         }
                         using (var brush_select = new SolidBrush(Style.Db.TextBase))
                         {
-                            g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
+                            g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
                         }
                     }
                     else
@@ -403,7 +404,7 @@ namespace AntdUI
                                 }
                             }
                         }
-                        g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
+                        g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
                     }
                     PaintIcon(g, it, brush.Color);
                 }
@@ -423,7 +424,7 @@ namespace AntdUI
                         }
                         using (var brush_select = new SolidBrush(Color.White))
                         {
-                            g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
+                            g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
                         }
                         PaintIcon(g, it, brush.Color);
                     }
@@ -439,7 +440,7 @@ namespace AntdUI
                                 }
                             }
                         }
-                        g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
+                        g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
                         PaintIcon(g, it, brush.Color);
                     }
                 }
@@ -456,7 +457,7 @@ namespace AntdUI
                         }
                         using (var brush_select = new SolidBrush(Style.Db.TextBase))
                         {
-                            g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
+                            g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush_select, it.RectText, stringFormatLeft);
                         }
                     }
                     else
@@ -471,7 +472,7 @@ namespace AntdUI
                                 }
                             }
                         }
-                        g.DrawString(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
+                        g.DrawStr(it.Val.Text, it.Val.Font ?? Font, brush, it.RectText, stringFormatLeft);
                     }
                     PaintIcon(g, it, brush.Color);
                 }

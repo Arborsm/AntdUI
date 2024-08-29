@@ -168,7 +168,7 @@ namespace AntdUI
                 if (selectIndex == value) return;
                 if (items != null)
                 {
-                    if (items.Count <= value || value < 0)
+                    if (items.ListExceed(value))
                     {
                         selectIndex = 0;
                         return;
@@ -200,7 +200,7 @@ namespace AntdUI
                 AnimationChange = true;
                 var old = selectIndex;
                 selectIndex = value;
-                SelectIndexChanged?.Invoke(this, value);
+                SelectIndexChanged?.Invoke(this, new IntEventArgs(value));
                 var speed = Math.Abs(end - AnimationChangeValue) / 50F;
                 if (speed < 8) speed = 8F;
                 if (left)
@@ -394,7 +394,7 @@ namespace AntdUI
             var rect = _rect.PaddingRect(Padding);
             var g = e.Graphics.High();
             int len = items.Count;
-            var image = items[selectIndex]?.Img;
+            var image = items[selectIndex].Img;
             float _radius = radius * Config.Dpi;
             if (image != null)
             {
@@ -404,9 +404,9 @@ namespace AntdUI
                     if (bmp == null || bmpcode != select_range.i)
                     {
                         bmpcode = select_range.i;
-                        bmp = PaintBmp(select_range, rect, _radius);
+                        bmp = PaintBmp(items, select_range, rect, _radius);
                     }
-                    g.DrawImage(bmp, rect.X - AnimationChangeValue, rect.Y, bmp.Width, bmp.Height);
+                    g.DrawImage(bmp, (int)(rect.X - AnimationChangeValue), rect.Y, bmp.Width, bmp.Height);
                 }
                 else g.PaintImg(rect, image, imageFit, _radius, round);
             }
@@ -445,7 +445,7 @@ namespace AntdUI
             base.OnPaint(e);
         }
 
-        Bitmap PaintBmp(CarouselRectPanel select_range, Rectangle rect, float radius)
+        Bitmap PaintBmp(CarouselItemCollection items, CarouselRectPanel select_range, Rectangle rect, float radius)
         {
             bmpcode = select_range.i;
             Bitmap bmp;
@@ -454,8 +454,8 @@ namespace AntdUI
                 bmp = new Bitmap(AnimationChangeMax + rect.Width, rect.Height);
                 using (var g2 = Graphics.FromImage(bmp).High())
                 {
-                    PaintBmp(select_range, g2, radius);
-                    var bmo = Image[0]?.Img;
+                    PaintBmp(items, select_range, g2, radius);
+                    var bmo = items[0].Img;
                     if (bmo != null) g2.PaintImg(new RectangleF(AnimationChangeMax, 0, rect.Width, rect.Height), bmo, imageFit, radius, round);
                 }
             }
@@ -464,16 +464,16 @@ namespace AntdUI
                 bmp = new Bitmap(AnimationChangeMax, rect.Height);
                 using (var g2 = Graphics.FromImage(bmp).High())
                 {
-                    PaintBmp(select_range, g2, radius);
+                    PaintBmp(items, select_range, g2, radius);
                 }
             }
             return bmp;
         }
-        void PaintBmp(CarouselRectPanel select_range, Graphics g2, float radius)
+        void PaintBmp(CarouselItemCollection items, CarouselRectPanel select_range, Graphics g2, float radius)
         {
             foreach (var it in select_range.list)
             {
-                var bmo = Image[it.i]?.Img;
+                var bmo = items[it.i].Img;
                 if (bmo != null)
                 {
                     g2.PaintImg(it.rect, bmo, imageFit, radius, round);
@@ -648,14 +648,15 @@ namespace AntdUI
         {
             if (down)
             {
-                int len = Image.Count;
+                if (items == null) { down = false; return; }
+                int len = items.Count;
                 var rect = ClientRectangle;
                 int width = rect.Width;
                 var val = x - e.Location.X;
                 var select_range = SelectRangeOne(len, rect);
                 AnimationChange = false;
                 if (select_range != null) SetSelectIndex(select_range.i);
-                else if (val > AnimationChangeMax - width) SetSelectIndex(Image.Count - 1);
+                else if (val > AnimationChangeMax - width) SetSelectIndex(items.Count - 1);
                 else if (val < 0) SetSelectIndex(0);
                 Invalidate();
             }

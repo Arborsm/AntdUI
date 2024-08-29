@@ -37,32 +37,13 @@ namespace AntdUI
     {
         #region 属性
 
-        #region 系统
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
         [Description("文字颜色"), Category("外观"), DefaultValue(null)]
         [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public new Color? ForeColor
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) fore = value;
-                fore = value;
-                Invalidate();
-            }
-        }
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
         {
             get => fore;
             set
@@ -112,7 +93,7 @@ namespace AntdUI
             {
                 if (_checked == value) return;
                 _checked = value;
-                CheckedChanged?.Invoke(this, value);
+                CheckedChanged?.Invoke(this, new BoolEventArgs(value));
                 ThreadCheck?.Dispose();
                 if (IsHandleCreated && Config.Animation)
                 {
@@ -290,7 +271,7 @@ namespace AntdUI
                         var textRect = Checked
                             ? new RectangleF(rect_read.X + (rect_read.Width - rect_read.Height + gap2) / 2 - textSize.Width / 2, rect_read.Y + rect_read.Height / 2 - textSize.Height / 2, textSize.Width, textSize.Height)
                             : new RectangleF(rect_read.X + (rect_read.Height - gap + (rect_read.Width - rect_read.Height + gap) / 2 - textSize.Width / 2), rect_read.Y + rect_read.Height / 2 - textSize.Height / 2, textSize.Width, textSize.Height);
-                        g.DrawString(textToRender, Font, brush, textRect);
+                        g.DrawStr(textToRender, Font, brush, textRect);
                     }
                 }
             }

@@ -51,6 +51,7 @@ namespace AntdUI
             control.Parent.SetTopMost(Handle);
             PARENT = control;
             ClickEnd = control.ClickEnd;
+            MessageCloseMouseLeave = control.Trigger == Trigger.Hover;
             select_x = 0;
             scrollY = new ScrollY(this);
             MaxCount = control.MaxCount;
@@ -141,7 +142,8 @@ namespace AntdUI
                     if (ui_arrow) b_w += (int)Math.Ceiling(font_size * 0.6F);
                     if (b_w > w || control is LayeredFormSelectDown) w = r_w = b_w + gap_y;
                 }
-                else stringFormatLeft.Trimming = StringTrimming.EllipsisCharacter; stringFormatLeft.FormatFlags = StringFormatFlags.NoWrap;
+                else stringFormatLeft.Trimming = StringTrimming.EllipsisCharacter;
+                stringFormatLeft.FormatFlags = StringFormatFlags.NoWrap;
 
                 int selY = -1;
                 int item_count = 0, divider_count = 0;
@@ -267,66 +269,8 @@ namespace AntdUI
                 return false;
             };
         }
-        void MyPoint(Point point, Control control, int height, TAlignFrom Placement, bool ShowArrow, Rectangle rect_read)
-        {
-            switch (Placement)
-            {
-                case TAlignFrom.Top:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.Top;
-                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - height + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y - height + 10);
-                    break;
-                case TAlignFrom.TL:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.TL;
-                        SetLocation(point.X + rect_read.X - 10, point.Y - height + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + rect_read.X - 10, point.Y - height + 10);
-                    break;
-                case TAlignFrom.TR:
-                    Inverted = true;
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.TR;
-                        SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y - height + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y - height + 10);
-                    break;
-                case TAlignFrom.Bottom:
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.Bottom;
-                        SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (control.Width - (r_w + 20)) / 2, point.Y + control.Height - 10);
-                    break;
-                case TAlignFrom.BR:
-                    if (control is Tabs) SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y + rect_read.Bottom - 10);
-                    else if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.BR;
-                        SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (rect_read.X + rect_read.Width) - r_w - 10, point.Y + control.Height - 10);
-                    break;
-                case TAlignFrom.BL:
-                default:
-                    if (ShowArrow)
-                    {
-                        ArrowAlign = TAlign.BL;
-                        SetLocation(point.X + rect_read.X - 10, point.Y + control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + rect_read.X - 10, point.Y + control.Height - 10);
-                    break;
 
-            }
-        }
+        void MyPoint(Point point, Control control, int height, TAlignFrom Placement, bool ShowArrow, Rectangle rect_read) => CLocation(control, point, Placement, ShowArrow, ArrowSize, r_w, height, rect_read, ref Inverted, ref ArrowAlign);
 
         StringFormat stringFormatLeft = Helper.SF(lr: StringAlignment.Near);
         void ReadList(object obj, int i, int w, int y2, int gap_x, int gap_y, int gap, int font_size, int text_height, ref int item_count, ref int divider_count, ref int y, ref int selY, bool NoIndex = true)
@@ -841,7 +785,7 @@ namespace AntdUI
                     {
                         string emptytext = Localization.Provider?.GetLocalizedString("NoData") ?? "暂无数据";
                         using (var brush = new SolidBrush(Color.FromArgb(180, Style.Db.Text)))
-                        { g.DrawString(emptytext, Font, brush, rect_read, Helper.stringFormatCenter2); }
+                        { g.DrawStr(emptytext, Font, brush, rect_read, Helper.stringFormatCenter2); }
                     }
                     else
                     {
@@ -870,7 +814,7 @@ namespace AntdUI
         void DrawItem(Graphics g, SolidBrush brush, SolidBrush subbrush, SolidBrush brush_back_hover, SolidBrush brush_fore, SolidBrush brush_split, ObjectItem it)
         {
             if (it.ID == -1) g.FillRectangle(brush_split, it.Rect);
-            else if (it.Group) g.DrawString(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
+            else if (it.Group) g.DrawStr(it.Text, Font, brush_fore, it.RectText, stringFormatLeft);
             else if (selectedValue == it.Val || it.Val is SelectItem item && item.Tag == selectedValue)
             {
                 using (var brush_back = new SolidBrush(Style.Db.PrimaryBg))
@@ -884,7 +828,7 @@ namespace AntdUI
                 {
                     var size = g.MeasureString(it.Text, Font);
                     var rectSubText = new RectangleF(it.RectText.X + size.Width, it.RectText.Y, it.RectText.Width - size.Width, it.RectText.Height);
-                    g.DrawString(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
+                    g.DrawStr(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
                 }
                 DrawTextIconSelect(g, it);
             }
@@ -901,7 +845,7 @@ namespace AntdUI
                 {
                     var size = g.MeasureString(it.Text, Font);
                     var rectSubText = new RectangleF(it.RectText.X + size.Width, it.RectText.Y, it.RectText.Width - size.Width, it.RectText.Height);
-                    g.DrawString(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
+                    g.DrawStr(it.SubText, Font, subbrush, rectSubText, stringFormatLeft);
                 }
                 DrawTextIcon(g, it, brush);
             }
@@ -922,26 +866,26 @@ namespace AntdUI
             {
                 using (var fore = new SolidBrush(Style.Db.TextBase))
                 {
-                    g.DrawString(it.Text, Font, fore, it.RectText, stringFormatLeft);
+                    g.DrawStr(it.Text, Font, fore, it.RectText, stringFormatLeft);
                 }
             }
             else
             {
                 using (var fore = new SolidBrush(Style.Db.TextQuaternary))
                 {
-                    g.DrawString(it.Text, Font, fore, it.RectText, stringFormatLeft);
+                    g.DrawStr(it.Text, Font, fore, it.RectText, stringFormatLeft);
                 }
             }
             DrawIcon(g, it, Style.Db.TextBase);
         }
         void DrawTextIcon(Graphics g, ObjectItem it, SolidBrush brush)
         {
-            if (it.Enable) g.DrawString(it.Text, Font, brush, it.RectText, stringFormatLeft);
+            if (it.Enable) g.DrawStr(it.Text, Font, brush, it.RectText, stringFormatLeft);
             else
             {
                 using (var fore = new SolidBrush(Style.Db.TextQuaternary))
                 {
-                    g.DrawString(it.Text, Font, fore, it.RectText, stringFormatLeft);
+                    g.DrawStr(it.Text, Font, fore, it.RectText, stringFormatLeft);
                 }
             }
             DrawIcon(g, it, brush.Color);

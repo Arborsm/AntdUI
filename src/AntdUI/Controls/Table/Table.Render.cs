@@ -74,8 +74,8 @@ namespace AntdUI
                     {
                         foreach (var it in rows)
                         {
-                            it.SHOW = it.ShowExpand && !it.IsColumn && it.RECT.Y > sy - it.RECT.Height && it.RECT.Bottom < sy + rect_read.Height + it.RECT.Height;
-                            if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, it.RECORD, it.INDEX)));
+                            it.SHOW = it.ShowExpand && !it.IsColumn && (rect_read.Contains(rect_read.X, it.RECT.Y - sy) || rect_read.Contains(rect_read.X, it.RECT.Bottom - sy));
+                            if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, new TableSetRowStyleEventArgs(it.RECORD, it.INDEX))));
                         }
 
                         g.TranslateTransform(0, -sy);
@@ -111,7 +111,7 @@ namespace AntdUI
                         foreach (var it in rows)
                         {
                             it.SHOW = it.ShowExpand && it.RECT.Y > sy - it.RECT.Height && it.RECT.Bottom < sy + rect_read.Height + it.RECT.Height;
-                            if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, it.RECORD, it.INDEX)));
+                            if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, new TableSetRowStyleEventArgs(it.RECORD, it.INDEX))));
                         }
                         g.TranslateTransform(0, -sy);
                         foreach (var it in shows)
@@ -163,7 +163,7 @@ namespace AntdUI
                     {
                         var it = rows[index_r];
                         it.SHOW = it.RECT.Y > sy - it.RECT.Height && it.RECT.Bottom < sy + rect_read.Height + it.RECT.Height;
-                        if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, it.RECORD, it.INDEX)));
+                        if (it.SHOW) shows.Add(new StyleRow(it, SetRowStyle?.Invoke(this, new TableSetRowStyleEventArgs(it.RECORD, it.INDEX))));
                     }
 
                     g.TranslateTransform(0, -sy);
@@ -272,7 +272,7 @@ namespace AntdUI
                         }
                     }
                     if (column.column is ColumnCheck columnCheck && columnCheck.NoTitle) PaintCheck(g, column, columnCheck);
-                    else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
+                    else g.DrawStr(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
 
                     if (dragHeader.i == column.INDEX)
                     {
@@ -326,7 +326,7 @@ namespace AntdUI
                         }
                     }
                     if (column.column is ColumnCheck columnCheck && columnCheck.NoTitle) PaintCheck(g, column, columnCheck);
-                    else g.DrawString(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
+                    else g.DrawStr(column.value, column_font, fore, column.rect, StringF(column.column.ColAlign ?? column.column.Align));
                 }
             }
         }
@@ -440,7 +440,7 @@ namespace AntdUI
             {
                 var state = g.Save();
                 g.SetClip(it.RECT);
-                g.DrawString(text.value, Font, fore, text.rect, StringF(text.column));
+                g.DrawStr(text.value, Font, fore, text.rect, StringF(text.column));
                 g.Restore(state);
             }
             if (dragHeader != null && dragHeader.i == it.INDEX)
@@ -959,7 +959,7 @@ namespace AntdUI
             using (var fore = new SolidBrush(Style.Db.Text))
             {
                 string emptytext = EmptyText ?? Localization.Provider?.GetLocalizedString("NoData") ?? "暂无数据";
-                if (EmptyImage == null) g.DrawString(emptytext, Font, fore, rect, stringCenter);
+                if (EmptyImage == null) g.DrawStr(emptytext, Font, fore, rect, stringCenter);
                 else
                 {
                     int gap = (int)(_gap * Config.Dpi);
@@ -967,7 +967,7 @@ namespace AntdUI
                     RectangleF rect_img = new RectangleF(rect.X + (rect.Width - EmptyImage.Width) / 2F, rect.Y + (rect.Height - EmptyImage.Height) / 2F - size.Height, EmptyImage.Width, EmptyImage.Height),
                         rect_font = new RectangleF(rect.X, rect_img.Bottom + gap, rect.Width, size.Height);
                     g.DrawImage(EmptyImage, rect_img);
-                    g.DrawString(emptytext, Font, fore, rect_font, stringCenter);
+                    g.DrawStr(emptytext, Font, fore, rect_font, stringCenter);
                 }
             }
         }

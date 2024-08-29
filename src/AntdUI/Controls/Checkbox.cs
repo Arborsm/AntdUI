@@ -36,8 +36,7 @@ namespace AntdUI
     {
         #region 属性
 
-        #region 系统
-
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
@@ -49,26 +48,6 @@ namespace AntdUI
             set
             {
                 if (fore == value) fore = value;
-                fore = value;
-                Invalidate();
-            }
-        }
-
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) return;
                 fore = value;
                 Invalidate();
             }
@@ -139,7 +118,7 @@ namespace AntdUI
             {
                 if (_checked == value) return;
                 _checked = value;
-                CheckedChanged?.Invoke(this, value);
+                CheckedChanged?.Invoke(this, new BoolEventArgs(value));
                 ThreadCheck?.Dispose();
                 if (IsHandleCreated && Config.Animation)
                 {
@@ -225,7 +204,7 @@ namespace AntdUI
 
             using (var brush = fore.Brush(Style.Db.Text, Style.Db.TextQuaternary, enabled))
             {
-                g.DrawString(text, Font, brush, text_rect, stringFormat);
+                g.DrawStr(text, Font, brush, text_rect, stringFormat);
             }
 
             this.PaintBadge(g);

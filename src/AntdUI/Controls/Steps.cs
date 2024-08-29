@@ -37,8 +37,7 @@ namespace AntdUI
     {
         #region 属性
 
-        #region 系统
-
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
@@ -50,26 +49,6 @@ namespace AntdUI
             set
             {
                 if (fore == value) fore = value;
-                fore = value;
-                Invalidate();
-            }
-        }
-
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) return;
                 fore = value;
                 Invalidate();
             }
@@ -343,55 +322,61 @@ namespace AntdUI
                 {
                     if (it.Visible)
                     {
+                        Color ccolor;
                         if (i == current)
                         {
                             switch (status)
                             {
                                 case TStepState.Finish:
-                                    g.DrawString(it.Title, Font, brush_fore, it.title_rect, stringLeft);
-                                    g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                                    g.DrawString(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                                    g.DrawStr(it.Title, Font, brush_fore, it.title_rect, stringLeft);
+                                    g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                                    g.DrawStr(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                                    ccolor = brush_primary.Color;
                                     break;
                                 case TStepState.Wait:
-                                    g.DrawString(it.Title, Font, brush_fore2, it.title_rect, stringLeft);
-                                    g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                                    g.DrawString(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                                    g.DrawStr(it.Title, Font, brush_fore2, it.title_rect, stringLeft);
+                                    g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                                    g.DrawStr(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                                    ccolor = brush_fore2.Color;
                                     break;
                                 case TStepState.Error:
                                     using (var brush_error = new SolidBrush(Style.Db.Error))
                                     {
-                                        g.DrawString(it.Title, Font, brush_error, it.title_rect, stringLeft);
-                                        g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                                        g.DrawString(it.Description, font_description, brush_error, it.description_rect, stringLeft);
+                                        g.DrawStr(it.Title, Font, brush_error, it.title_rect, stringLeft);
+                                        g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                                        g.DrawStr(it.Description, font_description, brush_error, it.description_rect, stringLeft);
+                                        ccolor = brush_error.Color;
                                     }
                                     break;
                                 case TStepState.Process:
                                 default:
 
-                                    g.DrawString(it.Title, Font, brush_fore, it.title_rect, stringLeft);
-                                    g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                                    g.DrawString(it.Description, font_description, brush_fore, it.description_rect, stringLeft);
+                                    g.DrawStr(it.Title, Font, brush_fore, it.title_rect, stringLeft);
+                                    g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                                    g.DrawStr(it.Description, font_description, brush_fore, it.description_rect, stringLeft);
 
+                                    ccolor = brush_fore.Color;
                                     break;
                             }
                         }
                         else if (i < current)
                         {
                             //过
-                            g.DrawString(it.Title, Font, brush_fore, it.title_rect, stringLeft);
-                            g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                            g.DrawString(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                            g.DrawStr(it.Title, Font, brush_fore, it.title_rect, stringLeft);
+                            g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                            g.DrawStr(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                            ccolor = brush_fore.Color;
                         }
                         else
                         {
                             //未
-                            g.DrawString(it.Title, Font, brush_fore2, it.title_rect, stringLeft);
-                            g.DrawString(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
-                            g.DrawString(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                            g.DrawStr(it.Title, Font, brush_fore2, it.title_rect, stringLeft);
+                            g.DrawStr(it.SubTitle, Font, brush_fore2, it.subtitle_rect, stringLeft);
+                            g.DrawStr(it.Description, font_description, brush_fore2, it.description_rect, stringLeft);
+                            ccolor = brush_fore2.Color;
                         }
 
-                        if (it.Icon != null) g.DrawImage(it.Icon, it.ico_rect);
-                        else
+                        if (PaintIcon(g, it, ccolor))
                         {
                             if (i == current)
                             {
@@ -402,7 +387,7 @@ namespace AntdUI
                                         break;
                                     case TStepState.Wait:
                                         g.FillEllipse(brush_bg2, it.ico_rect);
-                                        g.DrawString((i + 1).ToString(), font_description, brush_fore3, it.ico_rect, stringCenter);
+                                        g.DrawStr((i + 1).ToString(), font_description, brush_fore3, it.ico_rect, stringCenter);
                                         break;
                                     case TStepState.Error:
                                         g.PaintIconCore(it.ico_rect, SvgDb.IcoError, Style.Db.ErrorColor, Style.Db.Error);
@@ -410,7 +395,7 @@ namespace AntdUI
                                     case TStepState.Process:
                                     default:
                                         g.FillEllipse(brush_primary, it.ico_rect);
-                                        g.DrawString((i + 1).ToString(), font_description, brush_primary_fore, it.ico_rect, stringCenter);
+                                        g.DrawStr((i + 1).ToString(), font_description, brush_primary_fore, it.ico_rect, stringCenter);
                                         break;
                                 }
                             }
@@ -418,7 +403,7 @@ namespace AntdUI
                             else
                             {
                                 g.FillEllipse(brush_bg2, it.ico_rect);
-                                g.DrawString((i + 1).ToString(), font_description, brush_fore3, it.ico_rect, stringCenter);
+                                g.DrawStr((i + 1).ToString(), font_description, brush_fore3, it.ico_rect, stringCenter);
                             }
                         }
                     }
@@ -429,6 +414,19 @@ namespace AntdUI
             base.OnPaint(e);
         }
 
+        bool PaintIcon(Graphics g, StepsItem it, Color fore)
+        {
+            if (it.Icon != null) { g.DrawImage(it.Icon, it.ico_rect); return false; }
+            else if (it.IconSvg != null)
+            {
+                using (var _bmp = SvgExtend.GetImgExtend(it.IconSvg, it.ico_rect, fore))
+                {
+                    if (_bmp != null) { g.DrawImage(_bmp, it.ico_rect); return false; }
+                }
+            }
+            return true;
+        }
+
         #endregion
 
         #region 事件
@@ -437,14 +435,7 @@ namespace AntdUI
         /// 点击项时发生
         /// </summary>
         [Description("点击项时发生"), Category("行为")]
-        public event ItemClickEventHandler? ItemClick = null;
-
-        /// <summary>
-        /// 点击项时发生
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="value">数值</param>
-        public delegate void ItemClickEventHandler(object sender, MouseEventArgs e, StepsItem value);
+        public event StepsItemEventHandler? ItemClick = null;
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
@@ -457,7 +448,7 @@ namespace AntdUI
                 {
                     if (it.rect.Contains(e.Location))
                     {
-                        ItemClick(this, e, it);
+                        ItemClick(this, new StepsItemEventArgs(it, e));
                         return;
                     }
                 }
@@ -524,9 +515,9 @@ namespace AntdUI
         }
         Image? icon = null;
         /// <summary>
-        /// 步骤图标的类型，可选
+        /// 图标，可选
         /// </summary>
-        [Description("步骤图标的类型，可选"), Category("外观"), DefaultValue(null)]
+        [Description("图标，可选"), Category("外观"), DefaultValue(null)]
         public Image? Icon
         {
             get => icon;
@@ -538,11 +529,27 @@ namespace AntdUI
             }
         }
 
+        string? iconSvg = null;
+        /// <summary>
+        /// 图标SVG，可选
+        /// </summary>
+        [Description("图标SVG，可选"), Category("外观"), DefaultValue(null)]
+        public string? IconSvg
+        {
+            get => iconSvg;
+            set
+            {
+                if (iconSvg == value) return;
+                iconSvg = value;
+                PARENT?.Invalidate();
+            }
+        }
+
         int? iconsize = null;
         /// <summary>
-        /// 步骤图标的大小，可选
+        /// 图标的大小，可选
         /// </summary>
-        [Description("步骤图标的大小，可选"), Category("外观"), DefaultValue(null)]
+        [Description("图标的大小，可选"), Category("外观"), DefaultValue(null)]
         public int? IconSize
         {
             get => iconsize;
@@ -603,9 +610,9 @@ namespace AntdUI
         string? description = null;
         internal bool showDescription = false;
         /// <summary>
-        /// 步骤的详情描述，可选
+        /// 详情描述，可选
         /// </summary>
-        [Description("步骤的详情描述，可选"), Category("外观"), DefaultValue(null)]
+        [Description("详情描述，可选"), Category("外观"), DefaultValue(null)]
         public string? Description
         {
             get => description;

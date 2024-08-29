@@ -81,7 +81,7 @@ namespace Overview.Controls
             // header1
             // 
             header1.Dock = DockStyle.Top;
-            header1.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            header1.Font = new Font("Microsoft YaHei UI", 12F);
             header1.Location = new Point(0, 0);
             header1.Name = "header1";
             header1.Padding = new Padding(6);
@@ -141,7 +141,7 @@ namespace Overview.Controls
             // divider3
             // 
             divider3.Dock = DockStyle.Top;
-            divider3.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            divider3.Font = new Font("Microsoft YaHei UI", 10F);
             divider3.Location = new Point(0, 257);
             divider3.Name = "divider3";
             divider3.Orientation = AntdUI.TOrientation.Left;
@@ -186,7 +186,7 @@ namespace Overview.Controls
             // button1
             // 
             button1.Dock = DockStyle.Right;
-            button1.IconSvg = Properties.Resources.icon_search;
+            button1.IconSvg = "SearchOutlined";
             button1.JoinLeft = true;
             button1.Location = new Point(170, 0);
             button1.Name = "button1";
@@ -219,7 +219,7 @@ namespace Overview.Controls
             // button4
             // 
             button4.Dock = DockStyle.Right;
-            button4.IconSvg = Properties.Resources.icon_search;
+            button4.IconSvg = "SearchOutlined";
             button4.JoinLeft = true;
             button4.Location = new Point(170, 0);
             button4.Name = "button4";
@@ -230,7 +230,7 @@ namespace Overview.Controls
             // divider2
             // 
             divider2.Dock = DockStyle.Top;
-            divider2.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            divider2.Font = new Font("Microsoft YaHei UI", 10F);
             divider2.Location = new Point(0, 135);
             divider2.Name = "divider2";
             divider2.Orientation = AntdUI.TOrientation.Left;
@@ -313,7 +313,7 @@ namespace Overview.Controls
             // divider1
             // 
             divider1.Dock = DockStyle.Top;
-            divider1.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            divider1.Font = new Font("Microsoft YaHei UI", 10F);
             divider1.Location = new Point(0, 0);
             divider1.Name = "divider1";
             divider1.Orientation = AntdUI.TOrientation.Left;
@@ -326,7 +326,7 @@ namespace Overview.Controls
             // 
             Controls.Add(panel1);
             Controls.Add(header1);
-            Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            Font = new Font("Microsoft YaHei UI", 12F);
             Name = "Select";
             Size = new Size(555, 554);
             panel1.ResumeLayout(false);

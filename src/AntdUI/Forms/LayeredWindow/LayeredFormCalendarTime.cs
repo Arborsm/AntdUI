@@ -26,7 +26,7 @@ namespace AntdUI
     public class LayeredFormCalendarTime : ILayeredFormOpacityDown
     {
         bool ShowSecond = true;
-        public LayeredFormCalendarTime(TimePicker _control, RectangleF rect_read, TimeSpan date, Action<TimeSpan> _action)
+        public LayeredFormCalendarTime(TimePicker _control, Rectangle rect_read, TimeSpan date, Action<TimeSpan> _action)
         {
             _control.Parent.SetTopMost(Handle);
             control = _control;
@@ -111,63 +111,7 @@ namespace AntdUI
 
             rect_button = new Rectangle(10, 10 + t_height, t_width / 2, t_button);
             rect_buttonok = new Rectangle(rect_button.Right, rect_button.Top, rect_button.Width, rect_button.Height);
-
-            switch (_control.Placement)
-            {
-                case TAlignFrom.Top:
-                    Inverted = true;
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.Top;
-                        SetLocation(point.X + (_control.Width - (t_width + 20)) / 2, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (_control.Width - (t_width + 20)) / 2, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.TL:
-                    Inverted = true;
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.TL;
-                        SetLocation(point.X + (int)rect_read.X - 10, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)rect_read.X - 10, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.TR:
-                    Inverted = true;
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.TR;
-                        SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - t_width - 10, point.Y - EndHeight + 10 - ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - t_width - 10, point.Y - EndHeight + 10);
-                    break;
-                case TAlignFrom.Bottom:
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.Bottom;
-                        SetLocation(point.X + (_control.Width - (t_width + 20)) / 2, point.Y + _control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (_control.Width - (t_width + 20)) / 2, point.Y + _control.Height - 10);
-                    break;
-                case TAlignFrom.BR:
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.BR;
-                        SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - t_width - 10, point.Y + _control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)(rect_read.X + rect_read.Width) - t_width - 10, point.Y + _control.Height - 10);
-                    break;
-                case TAlignFrom.BL:
-                default:
-                    if (_control.DropDownArrow)
-                    {
-                        ArrowAlign = TAlign.BL;
-                        SetLocation(point.X + (int)rect_read.X - 10, point.Y + _control.Height - 10 + ArrowSize);
-                    }
-                    else SetLocation(point.X + (int)rect_read.X - 10, point.Y + _control.Height - 10);
-                    break;
-
-            }
+            CLocation(_control, point, _control.Placement, _control.DropDownArrow, ArrowSize, t_width, EndHeight, rect_read, ref Inverted, ref ArrowAlign);
         }
 
         #region 属性
@@ -265,7 +209,7 @@ namespace AntdUI
                                             g2.FillPath(brush_hove, path);
                                         }
                                     }
-                                    g2.DrawString(it.v, Font, brush_fore, it.rect_read, stringFormatC);
+                                    g2.DrawStr(it.v, Font, brush_fore, it.rect_read, stringFormatC);
                                 }
                             }
                         }
@@ -279,37 +223,37 @@ namespace AntdUI
                     {
                         if (hover_button.Animation)
                         {
-                            g.DrawString(button_text, Font, brush_active, rect_button, stringFormatC);
+                            g.DrawStr(button_text, Font, brush_active, rect_button, stringFormatC);
                             using (var brush_hove = new SolidBrush(Helper.ToColor(hover_button.Value, Style.Db.PrimaryActive)))
                             {
-                                g.DrawString(button_text, Font, brush_hove, rect_button, stringFormatC);
+                                g.DrawStr(button_text, Font, brush_hove, rect_button, stringFormatC);
                             }
                         }
                         else if (hover_button.Switch)
                         {
                             using (var brush_hove = new SolidBrush(Style.Db.PrimaryActive))
                             {
-                                g.DrawString(button_text, Font, brush_hove, rect_button, stringFormatC);
+                                g.DrawStr(button_text, Font, brush_hove, rect_button, stringFormatC);
                             }
                         }
-                        else g.DrawString(button_text, Font, brush_active, rect_button, stringFormatC);
+                        else g.DrawStr(button_text, Font, brush_active, rect_button, stringFormatC);
 
                         if (hover_buttonok.Animation)
                         {
-                            g.DrawString(OKButton, Font, brush_active, rect_buttonok, stringFormatC);
+                            g.DrawStr(OKButton, Font, brush_active, rect_buttonok, stringFormatC);
                             using (var brush_hove = new SolidBrush(Helper.ToColor(hover_buttonok.Value, Style.Db.PrimaryActive)))
                             {
-                                g.DrawString(OKButton, Font, brush_hove, rect_buttonok, stringFormatC);
+                                g.DrawStr(OKButton, Font, brush_hove, rect_buttonok, stringFormatC);
                             }
                         }
                         else if (hover_buttonok.Switch)
                         {
                             using (var brush_hove = new SolidBrush(Style.Db.PrimaryActive))
                             {
-                                g.DrawString(OKButton, Font, brush_hove, rect_buttonok, stringFormatC);
+                                g.DrawStr(OKButton, Font, brush_hove, rect_buttonok, stringFormatC);
                             }
                         }
-                        else g.DrawString(OKButton, Font, brush_active, rect_buttonok, stringFormatC);
+                        else g.DrawStr(OKButton, Font, brush_active, rect_buttonok, stringFormatC);
                     }
                 }
             }

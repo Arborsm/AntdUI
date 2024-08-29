@@ -37,8 +37,7 @@ namespace AntdUI
     {
         #region 属性
 
-        #region 系统
-
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
@@ -50,26 +49,6 @@ namespace AntdUI
             set
             {
                 if (fore == value) fore = value;
-                fore = value;
-                Invalidate();
-            }
-        }
-
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) return;
                 fore = value;
                 Invalidate();
             }
@@ -219,8 +198,8 @@ namespace AntdUI
                 {
                     if (it.Visible)
                     {
-                        g.DrawString(it.Text, Font, brush_fore, it.txt_rect, stringFormatLeft);
-                        g.DrawString(it.Description, font_Description, brush_fore2, it.description_rect, stringFormatLeft);
+                        g.DrawStr(it.Text, Font, brush_fore, it.txt_rect, stringFormatLeft);
+                        g.DrawStr(it.Description, font_Description, brush_fore2, it.description_rect, stringFormatLeft);
                         if (it.Icon != null) g.DrawImage(it.Icon, it.ico_rect);
                         else
                         {
@@ -323,14 +302,7 @@ namespace AntdUI
         /// 点击项时发生
         /// </summary>
         [Description("点击项时发生"), Category("行为")]
-        public event ItemClickEventHandler? ItemClick = null;
-
-        /// <summary>
-        /// 点击项时发生
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="value">数值</param>
-        public delegate void ItemClickEventHandler(object sender, MouseEventArgs e, TimelineItem value);
+        public event TimelineEventHandler? ItemClick = null;
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
@@ -343,7 +315,7 @@ namespace AntdUI
                 {
                     if (it.rect.Contains(e.X, e.Y + scroll.Value))
                     {
-                        ItemClick(this, e, it);
+                        ItemClick(this, new TimelineItemEventArgs(it, e));
                         return;
                     }
                 }

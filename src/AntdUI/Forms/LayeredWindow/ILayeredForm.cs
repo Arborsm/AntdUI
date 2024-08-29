@@ -18,7 +18,6 @@
 
 using System;
 using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace AntdUI
@@ -37,7 +36,6 @@ namespace AntdUI
             FormBorderStyle = FormBorderStyle.None;
             ShowInTaskbar = false;
             Size = new Size(0, 0);
-            new Thread(FrameRenderTask) { IsBackground = true }.Start();
         }
 
         internal Control? PARENT = null;
@@ -48,13 +46,10 @@ namespace AntdUI
         {
             if (InvokeRequired)
             {
-                Invoke(new Action(() =>
-                {
-                    LoadMessage();
-                }));
+                Invoke(new Action(LoadMessage));
                 return;
             }
-            if (MessageClose) Application.AddMessageFilter(this);
+            if (MessageEnable) Application.AddMessageFilter(this);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -62,20 +57,17 @@ namespace AntdUI
             base.OnLoad(e);
             if (CanLoadMessage) LoadMessage();
         }
+
+        bool can_render = true;
         protected override void Dispose(bool disposing)
         {
+            can_render = false;
             base.Dispose(disposing);
             Application.RemoveMessageFilter(this);
-            _event.Dispose();
         }
 
         public virtual bool UFocus => true;
 
-        /// <summary>
-        /// 是否点击外面关闭
-        /// </summary>
-        public virtual bool MessageClose => false;
-        public virtual bool MessageCloseSub => false;
         public abstract Bitmap PrintBit();
         public byte alpha = 10;
 
@@ -147,56 +139,30 @@ namespace AntdUI
 
         public void Print()
         {
-            if (IsHandleCreated && target_rect.Width > 0 && target_rect.Height > 0) _event.Set();
-        }
-
-        #region 逐帧渲染
-
-        ManualResetEvent _event = new ManualResetEvent(false);
-        void FrameRenderTask()
-        {
-            while (true)
+            if (IsHandleCreated && can_render && target_rect.Width > 0 && target_rect.Height > 0)
             {
-                if (_event.Wait() || !IsHandleCreated || target_rect.Width == 0 && target_rect.Height == 0) return;
-                Render();
-                try
-                {
-                    _event.Reset();
-                }
-                catch
-                {
-                    return;
-                }
-            }
-        }
-
-        void Render()
-        {
-            try
-            {
-                if (InvokeRequired)
-                {
-                    Invoke(new Action(() =>
-                    {
-                        Render();
-                    }));
-                    return;
-                }
                 try
                 {
                     using (var bmp = PrintBit())
                     {
                         if (bmp == null) return;
-                        Win32.SetBits(bmp, target_rect, Handle, alpha);
+                        Render(bmp);
                     }
                     GC.Collect();
                 }
                 catch { }
             }
-            catch { }
         }
 
-        #endregion
+        void Render(Bitmap bmp)
+        {
+            try
+            {
+                if (InvokeRequired) Invoke(new Action(() => { Render(bmp); }));
+                else Win32.SetBits(bmp, target_rect, Handle, alpha);
+            }
+            catch { }
+        }
 
         internal void SetCursor(bool val)
         {
@@ -263,6 +229,16 @@ namespace AntdUI
             }
         }
 
+        /// <summary>
+        /// 点击外面关闭使能
+        /// </summary>
+        public virtual bool MessageEnable => false;
+        public virtual bool MessageCloseSub => false;
+
+        /// <summary>
+        /// 鼠标离开关闭
+        /// </summary>
+        public bool MessageCloseMouseLeave { get; set; }
 
         public bool PreFilterMessage(ref System.Windows.Forms.Message m)
         {
@@ -270,6 +246,30 @@ namespace AntdUI
             //0x2a1 (WM_MOUSEHOVER)
             //0x2a3 (WM_MOUSELEAVE)
             if ((m.Msg == 0x201 || m.Msg == 0xa0))
+            {
+                var mousePosition = MousePosition;
+                if (!target_rect.Contains(mousePosition))
+                {
+                    try
+                    {
+                        if (PARENT != null && PARENT.IsHandleCreated)
+                        {
+                            if (ContainsPosition(PARENT, mousePosition)) return false;
+                            if (new Rectangle(PARENT.PointToScreen(Point.Empty), PARENT.Size).Contains(mousePosition)) return false;
+
+                            #region 判断内容
+
+                            if (MessageCloseSub && FunSub(PARENT, mousePosition)) return false;
+
+                            #endregion
+                        }
+                        IClose();
+                    }
+                    catch { }
+                    return false;
+                }
+            }
+            else if (m.Msg == 0x2a3 && MessageCloseMouseLeave)
             {
                 var mousePosition = MousePosition;
                 if (!target_rect.Contains(mousePosition))

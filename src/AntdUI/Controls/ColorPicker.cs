@@ -42,24 +42,7 @@ namespace AntdUI
 
         #region 属性
 
-        #region 系统
-
-        /// <summary>
-        /// 背景颜色
-        /// </summary>
-        [Description("背景颜色"), Category("外观"), DefaultValue(null)]
-        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
-        public new Color? BackColor
-        {
-            get => back;
-            set
-            {
-                if (back == value) return;
-                back = value;
-                Invalidate();
-            }
-        }
-
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
@@ -76,26 +59,6 @@ namespace AntdUI
             }
         }
 
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) return;
-                fore = value;
-                Invalidate();
-            }
-        }
-
         #region 背景
 
         internal Color? back;
@@ -103,9 +66,8 @@ namespace AntdUI
         /// 背景颜色
         /// </summary>
         [Description("背景颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 BackColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Back
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
+        public new Color? BackColor
         {
             get => back;
             set
@@ -216,7 +178,7 @@ namespace AntdUI
             {
                 if (value == _value) return;
                 _value = value;
-                ValueChanged?.Invoke(this, value);
+                ValueChanged?.Invoke(this, new ColorEventArgs(value));
                 if (BeforeAutoSize()) Invalidate();
             }
         }
@@ -283,7 +245,7 @@ namespace AntdUI
         internal StringFormat stringLeft = Helper.SF_NoWrap(lr: StringAlignment.Near);
         protected override void OnPaint(PaintEventArgs e)
         {
-            RectangleF rect = ClientRectangle.PaddingRect(Padding);
+            var rect = ClientRectangle.PaddingRect(Padding);
             var g = e.Graphics.High();
             var rect_read = ReadRectangle;
             float _radius = round ? rect_read.Height : radius * Config.Dpi;
@@ -368,7 +330,7 @@ namespace AntdUI
                     using (var brush = new SolidBrush(_fore))
                     {
                         var wi = gap * 2 + size_color;
-                        g.DrawString("#" + _value.ToHex(), Font, brush, new RectangleF(rect_read.X + wi, rect_read.Y, rect_read.Width - wi, rect_read.Height), stringLeft);
+                        g.DrawStr("#" + _value.ToHex(), Font, brush, new RectangleF(rect_read.X + wi, rect_read.Y, rect_read.Width - wi, rect_read.Height), stringLeft);
                     }
                 }
                 else
@@ -390,7 +352,7 @@ namespace AntdUI
 
         #region 渲染帮助
 
-        internal GraphicsPath Path(RectangleF rect_read, float _radius)
+        internal GraphicsPath Path(Rectangle rect_read, float _radius)
         {
             if (JoinLeft && JoinRight) return rect_read.RoundPath(0);
             else if (JoinRight) return rect_read.RoundPath(_radius, true, false, false, true);
@@ -400,7 +362,7 @@ namespace AntdUI
 
         #region 点击动画
 
-        internal void PaintClick(Graphics g, GraphicsPath path, RectangleF rect, Color color, float radius)
+        internal void PaintClick(Graphics g, GraphicsPath path, Rectangle rect, Color color, float radius)
         {
             if (AnimationFocus)
             {

@@ -88,7 +88,7 @@ namespace AntdUI
                 if (currentValue == value) return;
                 currentValue = Constrain(value);
                 Text = GetNumberText(currentValue);
-                ValueChanged?.Invoke(this, currentValue);
+                ValueChanged?.Invoke(this, new DecimalEventArgs(currentValue));
             }
         }
 
@@ -383,6 +383,7 @@ namespace AntdUI
         {
             if (showcontrol && !ReadOnly && rect_button.Contains(e.Location))
             {
+                if (decimal.TryParse(Text, out var _d)) Value = _d;
                 if (rect_button_up.Contains(e.Location))
                 {
                     Value = currentValue + Increment;

@@ -98,7 +98,7 @@ namespace AntdUI
 
         internal void DropDownChange(object value)
         {
-            SelectedValueChanged?.Invoke(this, value);
+            SelectedValueChanged?.Invoke(this, new ObjectNEventArgs(value));
             select_x = 0;
             subForm = null;
         }
@@ -181,28 +181,11 @@ namespace AntdUI
                     System.Threading.Thread.Sleep(100);
                     if (subForm == null && mousein)
                     {
-                        BeginInvoke(new Action(() =>
-                        {
-                            ClickDown();
-                        }));
+                        BeginInvoke(new Action(ClickDown));
                     }
                 });
             }
             base.OnMouseEnter(e);
-        }
-
-        protected override void OnMouseLeave(EventArgs e)
-        {
-            mousein = false;
-            if (Trigger == Trigger.Hover && subForm != null)
-            {
-                ITask.Run(() =>
-                {
-                    System.Threading.Thread.Sleep(200);
-                    if (Trigger == Trigger.Hover && !mousein && subForm != null && subForm.tag1) subForm?.IClose();
-                });
-            }
-            base.OnMouseLeave(e);
         }
 
         protected override void OnLostFocus(EventArgs e)
@@ -231,21 +214,6 @@ namespace AntdUI
                         subForm = null;
                         Expand = false;
                     };
-                    if (Trigger == Trigger.Hover)
-                    {
-                        subForm.MouseEnter += (a, b) =>
-                        {
-                            if (a is LayeredFormSelectDown form) form.tag1 = false;
-                        };
-                        subForm.MouseLeave += (a, b) =>
-                        {
-                            if (a is LayeredFormSelectDown form) form.IClose();
-                        };
-                        subForm.Leave += (a, b) =>
-                        {
-                            if (a is LayeredFormSelectDown form) form.IClose();
-                        };
-                    }
                     subForm.Show(this);
                 }
                 else subForm?.IClose();

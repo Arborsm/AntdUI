@@ -36,50 +36,13 @@ namespace AntdUI
     {
         #region 属性
 
-        #region 系统
-
-        /// <summary>
-        /// 背景颜色
-        /// </summary>
-        [Description("背景颜色"), Category("外观"), DefaultValue(null)]
-        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
-        public new Color? BackColor
-        {
-            get => back;
-            set
-            {
-                if (back == value) return;
-                back = value;
-                Invalidate();
-            }
-        }
-
+        Color? fore;
         /// <summary>
         /// 文字颜色
         /// </summary>
         [Description("文字颜色"), Category("外观"), DefaultValue(null)]
         [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
         public new Color? ForeColor
-        {
-            get => fore;
-            set
-            {
-                if (fore == value) fore = value;
-                fore = value;
-                Invalidate();
-            }
-        }
-
-        #endregion
-
-        Color? fore;
-        /// <summary>
-        /// 文字颜色
-        /// </summary>
-        [Description("文字颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 ForeColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Fore
         {
             get => fore;
             set
@@ -97,9 +60,8 @@ namespace AntdUI
         /// 背景颜色
         /// </summary>
         [Description("背景颜色"), Category("外观"), DefaultValue(null)]
-        [Obsolete("使用 BackColor 属性替代"), Browsable(false)]
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public Color? Back
+        [Editor(typeof(Design.ColorEditor), typeof(UITypeEditor))]
+        public new Color? BackColor
         {
             get => back;
             set
@@ -337,17 +299,10 @@ namespace AntdUI
         #region 事件
 
         /// <summary>
-        /// Close事件
-        /// </summary>
-        /// <param name="sender">触发对象</param>
-        /// <param name="value">数值</param>
-        public delegate bool CloseEventHandler(object sender);
-
-        /// <summary>
         /// Close时发生
         /// </summary>
         [Description("Close时发生"), Category("行为")]
-        public event CloseEventHandler? CloseChanged = null;
+        public event RBoolEventHandler? CloseChanged = null;
 
         #endregion
 
@@ -433,17 +388,17 @@ namespace AntdUI
 
         #region 渲染帮助
 
-        internal void PaintText(Graphics g, string? text, Color color, RectangleF rect_read)
+        internal void PaintText(Graphics g, string? text, Color color, Rectangle rect_read)
         {
-            var font_size = g.MeasureString(text ?? Config.NullText, Font);
+            var font_size = g.MeasureString(text ?? Config.NullText, Font).Size();
             if (text == null)
             {
                 if (PaintImageNoText(g, color, font_size, rect_read))
                 {
                     if (closeIcon)
                     {
-                        float size = rect_read.Height * 0.4F;
-                        var rect_arrow = new RectangleF(rect_read.X + (rect_read.Width - size) / 2F, rect_read.Y + (rect_read.Height - size) / 2F, size, size);
+                        int size = (int)(rect_read.Height * .4F);
+                        var rect_arrow = new Rectangle(rect_read.X + (rect_read.Width - size) / 2, rect_read.Y + (rect_read.Height - size) / 2, size, size);
                         rect_close = rect_arrow;
                         if (hover_close.Animation) g.PaintIconClose(rect_arrow, Helper.ToColor(hover_close.Value + Style.Db.TextQuaternary.A, Style.Db.Text));
                         else if (hover_close.Switch) g.PaintIconClose(rect_arrow, Style.Db.Text);
@@ -465,7 +420,7 @@ namespace AntdUI
                 PaintImage(g, color, rect.l);
                 using (var brush = new SolidBrush(color))
                 {
-                    g.DrawString(text, Font, brush, rect.text, stringFormat);
+                    g.DrawStr(text, Font, brush, rect.text, stringFormat);
                 }
             }
         }
@@ -477,7 +432,7 @@ namespace AntdUI
         /// <param name="color">颜色</param>
         /// <param name="font_size">字体大小</param>
         /// <param name="rect_read">客户区域</param>
-        bool PaintImageNoText(Graphics g, Color? color, SizeF font_size, RectangleF rect_read)
+        bool PaintImageNoText(Graphics g, Color? color, Size font_size, Rectangle rect_read)
         {
             if (imageSvg != null)
             {
@@ -501,17 +456,17 @@ namespace AntdUI
         /// </summary>
         /// <param name="font_size">字体大小</param>
         /// <param name="rect_read">客户区域</param>
-        RectangleF GetImageRectCenter(SizeF font_size, RectangleF rect_read)
+        Rectangle GetImageRectCenter(Size font_size, Rectangle rect_read)
         {
             if (ImageSize.Width > 0 && ImageSize.Height > 0)
             {
                 int w = (int)(ImageSize.Width * Config.Dpi), h = (int)(ImageSize.Height * Config.Dpi);
-                return new RectangleF(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - h) / 2, w, h);
+                return new Rectangle(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - h) / 2, w, h);
             }
             else
             {
-                var w = font_size.Height * 0.8F;
-                return new RectangleF(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - w) / 2, w, w);
+                int w = (int)(font_size.Height * 0.8F);
+                return new Rectangle(rect_read.X + (rect_read.Width - w) / 2, rect_read.Y + (rect_read.Height - w) / 2, w, w);
             }
         }
 
@@ -587,7 +542,7 @@ namespace AntdUI
             if (e.Button == MouseButtons.Left && closeIcon && rect_close.Contains(e.Location))
             {
                 bool isclose = false;
-                if (CloseChanged == null || CloseChanged(this)) isclose = true;
+                if (CloseChanged == null || CloseChanged(this, EventArgs.Empty)) isclose = true;
                 if (isclose && Parent is Control control) control.Controls.Remove(this);
                 return;
             }
