@@ -389,7 +389,7 @@ namespace AntdUI
                     var size = it.Size(g, new VirtualPanelArgs(this, rect, r));
                     it.WIDTH = size.Width;
                     it.HEIGHT = size.Height;
-                    if (use_x + size.Width > rect.Width)
+                    if (tmps.Count > 0 && use_x + size.Width > rect.Width)
                     {
                         rows.Add(new RItem(use_x, use_y, max_height, tmps, true));
                         tmps.Clear();
@@ -435,7 +435,7 @@ namespace AntdUI
                         foreach (var row in rows)
                         {
                             int x = (rect.Width - row.use_x + gap);
-                            HandLayout(row.cel, x, 0);
+                            HandLayout(rect, row.cel, x, 0);
                         }
                         break;
                     case TJustifyContent.SpaceBetween:
@@ -449,7 +449,7 @@ namespace AntdUI
                                 int ux = rect.X;
                                 foreach (var item in row.cel)
                                 {
-                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    HandLayout(rect, item, ux - item.RECT.X, 0);
                                     ux += item.RECT.Width + sp;
                                 }
                             }
@@ -466,14 +466,14 @@ namespace AntdUI
                                 ux = rect.X + sp;
                                 foreach (var item in row.cel)
                                 {
-                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    HandLayout(rect, item, ux - item.RECT.X, 0);
                                     ux += item.RECT.Width + sp;
                                 }
                             }
                             else
                             {
                                 int x = (rect.Width - row.use_x + gap) / 2;
-                                HandLayout(row.cel, x, 0);
+                                HandLayout(rect, row.cel, x, 0);
                             }
                         }
                         break;
@@ -488,14 +488,14 @@ namespace AntdUI
                                 ux = rect.X + spaceAroundItems / 2;
                                 foreach (var item in row.cel)
                                 {
-                                    HandLayout(item, ux - item.RECT.X, 0);
+                                    HandLayout(rect, item, ux - item.RECT.X, 0);
                                     ux += item.RECT.Width + spaceBetweenItems;
                                 }
                             }
                             else
                             {
                                 int x = (rect.Width - row.use_x + gap) / 2;
-                                HandLayout(row.cel, x, 0);
+                                HandLayout(rect, row.cel, x, 0);
                             }
                         }
                         break;
@@ -504,7 +504,7 @@ namespace AntdUI
                         foreach (var row in rows)
                         {
                             int x = (rect.Width - row.use_x + gap) / 2;
-                            HandLayout(row.cel, x, 0);
+                            HandLayout(rect, row.cel, x, 0);
                         }
                         break;
                 }
@@ -515,7 +515,7 @@ namespace AntdUI
                         break;
                     case TAlignContent.End:
                         int yEnd = rect.Height - GetTotalHeight(rows);
-                        foreach (var row in rows) HandLayout(row.cel, 0, yEnd);
+                        foreach (var row in rows) HandLayout(rect, row.cel, 0, yEnd);
                         break;
                     case TAlignContent.SpaceBetween:
                         if (rows.Count > 1)
@@ -525,7 +525,7 @@ namespace AntdUI
                             int uy = rect.Y;
                             foreach (var row in rows)
                             {
-                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                foreach (var item in row.cel) HandLayout(rect, item, 0, uy - item.RECT.Y);
                                 uy += row.h + sp;
                             }
                         }
@@ -538,14 +538,14 @@ namespace AntdUI
                             uy = rect.Y + sp;
                             foreach (var row in rows)
                             {
-                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                foreach (var item in row.cel) HandLayout(rect, item, 0, uy - item.RECT.Y);
                                 uy += row.h + sp;
                             }
                         }
                         else
                         {
                             int yCenter2 = (rect.Height - GetTotalHeight(rows)) / 2;
-                            foreach (var row in rows) HandLayout(row.cel, 0, yCenter2);
+                            foreach (var row in rows) HandLayout(rect, row.cel, 0, yCenter2);
                         }
                         break;
                     case TAlignContent.SpaceAround:
@@ -556,20 +556,20 @@ namespace AntdUI
                             uy = rect.Y + spaceAroundItems / 2;
                             foreach (var row in rows)
                             {
-                                foreach (var item in row.cel) HandLayout(item, 0, uy - item.RECT.Y);
+                                foreach (var item in row.cel) HandLayout(rect, item, 0, uy - item.RECT.Y);
                                 uy += row.h + spaceBetweenItems;
                             }
                         }
                         else
                         {
                             int yCenter2 = (rect.Height - GetTotalHeight(rows)) / 2;
-                            foreach (var row in rows) HandLayout(row.cel, 0, yCenter2);
+                            foreach (var row in rows) HandLayout(rect, row.cel, 0, yCenter2);
                         }
                         break;
                     case TAlignContent.Center:
                     default:
                         int yCenter = (rect.Height - GetTotalHeight(rows)) / 2;
-                        foreach (var row in rows) HandLayout(row.cel, 0, yCenter);
+                        foreach (var row in rows) HandLayout(rect, row.cel, 0, yCenter);
                         break;
                 }
 
@@ -598,7 +598,7 @@ namespace AntdUI
                                             rj = rowold.cel.Count / 2;
                                             break;
                                         default:
-                                            HandLayout(row.cel[j], rowold.cel[j].RECT.X - row.cel[j].RECT.X, 0);
+                                            HandLayout(rect, row.cel[j], rowold.cel[j].RECT.X - row.cel[j].RECT.X, 0);
                                             break;
                                     }
                                 }
@@ -608,11 +608,11 @@ namespace AntdUI
                                 {
                                     int xc = rowold.h - item.HEIGHT;
                                     celdir.TryGetValue(rj, out int tmpY);
-                                    HandLayout(row.cel[j], 0, -xc - tmpY);
+                                    HandLayout(rect, row.cel[j], 0, -xc - tmpY);
                                     if (celdir.ContainsKey(rj)) celdir[rj] += xc;
                                     else celdir.Add(rj, xc);
                                 }
-                                else if (celdir.TryGetValue(rj, out int tmpY)) HandLayout(row.cel[j], 0, -tmpY);
+                                else if (celdir.TryGetValue(rj, out int tmpY)) HandLayout(rect, row.cel[j], 0, -tmpY);
                             }
                         }
                     }
@@ -629,7 +629,7 @@ namespace AntdUI
                                 foreach (var cel in row.cel)
                                 {
                                     int y = row.h - cel.RECT.Height;
-                                    HandLayout(cel, 0, y);
+                                    HandLayout(rect, cel, 0, y);
                                 }
                             }
                             break;
@@ -640,7 +640,7 @@ namespace AntdUI
                                 foreach (var cel in row.cel)
                                 {
                                     int y = (row.h - cel.RECT.Height) / 2;
-                                    HandLayout(cel, 0, y);
+                                    HandLayout(rect, cel, 0, y);
                                 }
                             }
                             break;
@@ -659,17 +659,29 @@ namespace AntdUI
             foreach (var row in rows) totalHeight += row.h;
             return totalHeight;
         }
-        void HandLayout(List<VirtualItem> d, int x, int y)
+        void HandLayout(Rectangle rect, List<VirtualItem> d, int x, int y)
         {
             if (x == 0 && y == 0) return;
             foreach (var item in d)
             {
-                if (item is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(x, y);
-                item.RECT.Offset(x, y);
+                if (item.WIDTH == rect.Width)
+                {
+                    if (y != 0)
+                    {
+                        if (item is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(0, y);
+                        item.RECT.Offset(0, y);
+                    }
+                }
+                else
+                {
+                    if (item is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(x, y);
+                    item.RECT.Offset(x, y);
+                }
             }
         }
-        void HandLayout(VirtualItem d, int x, int y)
+        void HandLayout(Rectangle rect, VirtualItem d, int x, int y)
         {
+            if (d.WIDTH == rect.Width) x = 0;
             if (x == 0 && y == 0) return;
             if (d is VirtualShadowItem virtualShadow2) virtualShadow2.RECT_S.Offset(x, y);
             d.RECT.Offset(x, y);
